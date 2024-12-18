@@ -22,11 +22,11 @@ struct CookbookApp: App {
     var body: some Scene {
         WindowGroup {
             SectionSelectView()
+                .modelContainer(container)
                 .environmentObject(selectedTab)
                 .environmentObject(shoppingList)
-                
         }
-        .modelContainer(for: [Recipe.self])
+        
         
     }
 }

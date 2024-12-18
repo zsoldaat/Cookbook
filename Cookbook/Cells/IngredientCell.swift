@@ -15,10 +15,7 @@ struct IngredientCell: View {
         VStack(alignment: .leading) {
             Text(ingredient.name)
                 .font(.headline)
-            HStack {
-                Text(String(ingredient.quantity))
-                Text(ingredient.unit)
-            }
+            Text(ingredient.getString())
             .font(.subheadline)
             
         }

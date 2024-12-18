@@ -78,6 +78,13 @@ struct AddRecipeView: View {
                     Button {
                         let recipe = Recipe(name: name, instructions: instructions, ingredients: ingredients)
                         context.insert(recipe)
+                        if context.hasChanges {
+                            do {
+                                try context.save()
+                            } catch (let error) {
+                                print(error)
+                            }
+                        }
                         selectedTab.selectedTabTag = 0
                     } label: {
                         Text("Save")
