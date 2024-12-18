@@ -6,12 +6,27 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct CookbookApp: App {
+    let container: ModelContainer = {
+        let scheme = Schema([Recipe.self])
+        let container = try! ModelContainer(for: scheme, configurations: [])
+        return container
+    }()
+    
+    @StateObject var selectedTab: SelectedTab = SelectedTab(selectedTabTag: 0)
+    @StateObject var shoppingList: ShoppingList = ShoppingList()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SectionSelectView()
+                .environmentObject(selectedTab)
+                .environmentObject(shoppingList)
+                
         }
+        .modelContainer(for: [Recipe.self])
+        
     }
 }
