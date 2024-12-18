@@ -26,6 +26,16 @@ struct RecipeListView: View {
                     } label: {
                         RecipeCell(recipe: recipe)
                     }
+                }.onDelete { indexSet in
+                    for i in indexSet {
+                        context.delete(recipes[i])
+                    }
+                    do {
+                        try context.save()
+                    } catch {
+                        print("error")
+                    }
+                    
                 }
             }
             .navigationTitle("Recipes")

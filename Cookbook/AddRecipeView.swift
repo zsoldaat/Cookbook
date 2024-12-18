@@ -21,7 +21,7 @@ struct AddRecipeView: View {
     @State private var ingredientUnit: String = "item"
     
     var units: [String] = [
-        "item", "cup", "quart", "tsp", "tbsp", "ml", "l", "oz", "lb", "mg", "g", "kg", "pinch"
+        "item", "cup", "quart", "tsp", "tbsp", "ml", "l", "oz", "lb", "g", "kg", "pinch"
     ]
     
     var body: some View {

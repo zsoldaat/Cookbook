@@ -17,7 +17,8 @@ struct IngredientCell: View {
                 .font(.headline)
             Text(ingredient.getString())
             .font(.subheadline)
-            
+        }.onTapGesture {
+            ingredient.changeDisplayUnit()
         }
         
     }
