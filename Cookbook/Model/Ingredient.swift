@@ -109,18 +109,6 @@ class Ingredient: Identifiable, Hashable {
         //        return "\(getQuantityString()) \(getUnitString()) - \(quantity)"
     }
     
-    func getUnitString() -> String {
-        
-        let realUnit = unit == displayUnit ? unit : displayUnit
-        
-        switch realUnit {
-        case "items":
-            return "item"
-        default:
-            return realUnit
-        }
-    }
-    
     //this code just cycles through the available conversion units for a given unit
     func changeDisplayUnit() {
         guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return}
@@ -141,7 +129,23 @@ class Ingredient: Identifiable, Hashable {
         displayUnit = units[currentIndex! + 1]
     }
     
-    func getQuantityString() -> String {
+    func resetDisplayUnit() {
+        displayUnit = unit
+    }
+    
+    private func getUnitString() -> String {
+        
+        let realUnit = unit == displayUnit ? unit : displayUnit
+        
+        switch realUnit {
+        case "items":
+            return "item"
+        default:
+            return realUnit
+        }
+    }
+    
+    private func getQuantityString() -> String {
         
         let realQuantity = unit == displayUnit ? quantity : quantity * unitConversions[unit]![displayUnit]!
         
@@ -164,7 +168,7 @@ class Ingredient: Identifiable, Hashable {
     }
     
     //returns nil if the decimals cannot be cleanly represented as a string
-    func decimalsRepresentedAsFraction(decimals: Double) -> String? {
+    private func decimalsRepresentedAsFraction(decimals: Double) -> String? {
         
         let decimalString = String(quantity - quantity.rounded(.down))
         
