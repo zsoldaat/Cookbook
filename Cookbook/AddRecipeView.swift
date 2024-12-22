@@ -13,16 +13,10 @@ struct AddRecipeView: View {
     @EnvironmentObject var selectedTab: SelectedTab
     
     @State private var name: String = ""
-    @State private var ingredients: [Ingredient] = []
     @State private var instructions: String = ""
+    @State var ingredients: [Ingredient] = []
     
-    @State private var ingredientName: String = ""
-    @State private var ingredientQuantity: String = ""
-    @State private var ingredientUnit: String = "item"
-    
-    var units: [String] = [
-        "item", "cup", "quart", "tsp", "tbsp", "ml", "l", "oz", "lb", "g", "kg", "pinch"
-    ]
+    @State private var ingredientModalShowing: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -37,30 +31,8 @@ struct AddRecipeView: View {
                         .lineLimit(5...10)
                 }
                 
-                Section {
-                    TextField("Ingredient Name", text: $ingredientName)
-                    
-                    TextField("Quantity", text: $ingredientQuantity)
-                        .keyboardType(.decimalPad)
-                    
-                    Picker("Ingredient Unit", selection: $ingredientUnit) {
-                        ForEach(units, id: \.self) { unit in
-                            Text(unit)
-                        }
-                    }
-                }
-                
-                Button {
-                    ingredients.append(Ingredient(name: ingredientName, quantity: Double(ingredientQuantity) ?? 0, unit: ingredientUnit))
-                    ingredientName = ""
-                    ingredientQuantity = ""
-                    ingredientUnit = "item"}
-                label: {
-                    HStack{
-                        Spacer()
-                        Text("Add Ingredient")
-                        Spacer()
-                    }
+                Button("+ Add Ingredients") {
+                    ingredientModalShowing = true
                 }
                 
                 Section {
@@ -91,8 +63,9 @@ struct AddRecipeView: View {
                     }
                 }
             }
-            
-            
+            .sheet(isPresented: $ingredientModalShowing) {
+                NavigationStack {AddIngredientModal(ingredients: $ingredients)}
+            }
         }
     }
 }
