@@ -64,7 +64,12 @@ struct AddRecipeView: View {
                 }
             }
             .sheet(isPresented: $ingredientModalShowing) {
-                NavigationStack {AddIngredientModal(ingredients: $ingredients)}
+                NavigationStack {
+                    AddIngredientModal(ingredients: $ingredients)
+                }
+            }.onAppear {
+                name = ""
+                instructions = ""
             }
         }
     }
