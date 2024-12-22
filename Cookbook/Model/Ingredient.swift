@@ -10,8 +10,8 @@ import SwiftData
 
 var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
     "cup": [
-        "ml": 240,
-        "l": 0.24,
+        "mL": 240,
+        "L": 0.24,
         "tsp": 48,
         "tbsp": 16,
         "quart": 0.25,
@@ -21,40 +21,40 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "cup": 4,
         "tsp": 192,
         "tbsp": 64,
-        "ml": 960,
-        "l": 0.96,
+        "mL": 960,
+        "L": 0.96,
         "oz": 32
     ],
     "tsp": [
         "cup": 0.02,
         "quart": 0.005,
         "tbsp": 0.33,
-        "ml": 5,
-        "l": 0.005,
+        "mL": 5,
+        "L": 0.005,
         "oz": 0.166,
     ],
     "tbsp": [
         "cup": 0.0625,
         "quart": 0.015,
         "tsp": 3,
-        "ml": 14.7,
-        "l": 0.015,
+        "mL": 14.7,
+        "L": 0.015,
         "oz": 0.5
     ],
-    "ml": [
+    "mL": [
         "cup": 0.004,
         "quart": 0.001,
         "tsp": 0.2,
         "tbsp": 0.067,
-        "l": 0.001,
+        "L": 0.001,
         "oz": 0.033,
     ],
-    "l": [
+    "L": [
         "cup": 4.22,
         "quart": 1.05,
         "tsp": 202.88,
         "tbsp": 67.6,
-        "ml": 1000,
+        "mL": 1000,
         "oz": 33.8,
     ],
     "oz": [
@@ -62,8 +62,8 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "quart": 0.03,
         "tsp": 6,
         "tbsp": 2,
-        "ml": 29.57,
-        "l": 0.03,
+        "mL": 29.57,
+        "L": 0.03,
         "lb": 0.0625,
         "g": 28.34,
         "kg": 0.0283
@@ -77,7 +77,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "oz": 0.0353,
         "lb": 0.0022,
         "kg": 0.001,
-        "ml": 1,
+        "mL": 1,
     ],
     "kg": [
         "oz": 35.274,
@@ -109,9 +109,22 @@ class Ingredient: Identifiable, Hashable {
         //        return "\(getQuantityString()) \(getUnitString()) - \(quantity)"
     }
     
+    func getUnitString() -> String {
+        
+        let realUnit = unit == displayUnit ? unit : displayUnit
+        
+        switch realUnit {
+        case "items":
+            return "item"
+        default:
+            return realUnit
+        }
+    }
+    
     //this code just cycles through the available conversion units for a given unit
     func changeDisplayUnit() {
         guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return}
+        
         let units: [String] = Array(conversionInfo.keys)
     
         if (unit == displayUnit) {
@@ -132,72 +145,62 @@ class Ingredient: Identifiable, Hashable {
         
         let realQuantity = unit == displayUnit ? quantity : quantity * unitConversions[unit]![displayUnit]!
         
-        if (getQuantityWhole(quantity: realQuantity) == 0) {return getQuantityFractionString(quantity: realQuantity)}
-        if (getQuantityFractionString(quantity: realQuantity).isEmpty) {return String(getQuantityWhole(quantity: realQuantity))}
+        let quantityIsWhole = realQuantity.isNaN || realQuantity.isFinite && realQuantity.rounded() == realQuantity
         
-        return "\(getQuantityWhole(quantity: realQuantity)) \(getQuantityFractionString(quantity: realQuantity))"
-    }
-    
-    func getUnitString() -> String {
-        
-        let realUnit = unit == displayUnit ? unit : displayUnit
-        
-        switch realUnit {
-        case "items":
-            return "item"
-        default:
-            return realUnit
-        }
-    }
-    
-    //Find quantity value before decimal
-    func getQuantityWhole(quantity: Double) -> Int {
-        let whole = quantity.rounded(.down)
-        if (whole > 0) {return Int(whole)}
-        
-        return 0
-    }
-    
-    //Turn quantity value after decimal into fraction
-    func getQuantityFractionString(quantity: Double) -> String {
-        
-        let isQuantityWhole = quantity.isNaN || quantity.isFinite && quantity.rounded() == quantity
-        
-        if (isQuantityWhole) {
-            return ""
+        if (quantityIsWhole) {
+            return String(Int(realQuantity))
         }
         
-        let decimalsOfDouble = String(quantity).split(separator: ".")[1...].joined()
+        let wholePart = Int(realQuantity.rounded(.down))
+        let decimalPart = realQuantity - realQuantity.rounded(.down)
         
-        let double = Double("0.\(decimalsOfDouble)") ?? 0
+        guard let decimalsAsFraction = decimalsRepresentedAsFraction(decimals: decimalPart) else {
+            let roundedToFourDecimals = (realQuantity*10000).rounded() / 10000
+            return String(roundedToFourDecimals)
+        }
         
-        switch decimalsOfDouble.count {
+        return "\(String(wholePart)) \(decimalsAsFraction)"
+        
+    }
+    
+    //returns nil if the decimals cannot be cleanly represented as a string
+    func decimalsRepresentedAsFraction(decimals: Double) -> String? {
+        
+        let decimalString = String(quantity - quantity.rounded(.down))
+        
+        var decimalsRepresentedAsFraction: String = ""
+        
+        switch decimalString.count {
         case 1:
-            if (decimalsOfDouble == "5") { return "1/2"}
+            if (decimalString == "5") { decimalsRepresentedAsFraction = "1/2"}
         case 2:
-            if (decimalsOfDouble == "25") {return "1/4"}
-            if (decimalsOfDouble == "33") {return "1/3"}
-            if (decimalsOfDouble == "66") {return "2/3"}
-            if (decimalsOfDouble == "67") {return "2/3"}
-            if (decimalsOfDouble == "75") {return "3/4"}
+            if (decimalString == "25") {decimalsRepresentedAsFraction = "1/4"}
+            if (decimalString == "33") {decimalsRepresentedAsFraction = "1/3"}
+            if (decimalString == "66") {decimalsRepresentedAsFraction = "2/3"}
+            if (decimalString == "67") {decimalsRepresentedAsFraction = "2/3"}
+            if (decimalString == "75") {decimalsRepresentedAsFraction = "3/4"}
             
         case 3...:
-            if (decimalsOfDouble.prefix(2) == "33") {return "1/3"}
-            if (decimalsOfDouble.prefix(2) == "66") {return "2/3"}
+            if (decimalString.prefix(2) == "33") {decimalsRepresentedAsFraction = "1/3"}
+            if (decimalString.prefix(2) == "66") {decimalsRepresentedAsFraction = "2/3"}
             
-            if (double*8.rounded() == double*8) {
-                return "\(String(Int(double*8)))/8"
+            if ((decimals*8).rounded() == decimals*8) {
+                decimalsRepresentedAsFraction = "\(String(Int(decimals*8)))/8"
             }
             
-            if (double*4.rounded() == double*8) {
-                return "\(String(Int(double*4)))/4"
+            if ((decimals*4).rounded() == decimals*4) {
+                decimalsRepresentedAsFraction = "\(String(Int(decimals*4)))/4"
             }
             
         default:
-            return String(quantity)
+            decimalsRepresentedAsFraction = ""
         }
         
-        return String(quantity)
-        
+        if (decimalsRepresentedAsFraction.isEmpty) {
+            return nil
+        } else {
+            return decimalsRepresentedAsFraction
+        }
     }
+
 }

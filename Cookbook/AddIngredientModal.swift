@@ -21,7 +21,7 @@ struct AddIngredientModal: View {
     @FocusState private var keyboardIsActive: Bool
     
     private let units: [String] = [
-        "item", "cup", "quart", "tsp", "tbsp", "ml", "l", "oz", "lb", "g", "kg", "pinch"
+        "item", "cup", "quart", "tsp", "tbsp", "mL", "L", "oz", "lb", "g", "kg", "pinch"
     ]
     
     private let fractions: [String] = [
