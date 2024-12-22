@@ -98,7 +98,7 @@ struct AddIngredientModal: View {
             } header: {Text("Ingredients")}
             
         }
-        .navigationTitle(Text("Add Ingredients"))
+        .navigationTitle(Text("Ingredients"))
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {

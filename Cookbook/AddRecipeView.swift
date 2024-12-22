@@ -23,12 +23,16 @@ struct AddRecipeView: View {
             
             Form {
                 Section {
-                    TextField("Name", text: $name)
+                    TextField("", text: $name)
+                } header: {
+                    Text("Name")
                 }
                 
                 Section {
-                    TextField("Instructions", text: $instructions, axis: .vertical)
+                    TextField("", text: $instructions, axis: .vertical)
                         .lineLimit(5...10)
+                } header: {
+                    Text("Ingredient")
                 }
                 
                 Button("+ Add Ingredients") {
@@ -71,6 +75,7 @@ struct AddRecipeView: View {
                 name = ""
                 instructions = ""
             }
+            .navigationTitle("New Recipe")
         }
     }
 }
