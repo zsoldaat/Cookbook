@@ -21,7 +21,8 @@ struct SectionSelectView: View {
                     }
                 }
                 .tag(0)
-            CreateRecipeView()
+            @Bindable var recipe = Recipe(name: "", instructions: "", ingredients: [] )
+            CreateRecipeView(recipe: recipe)
                 .tabItem {
                     HStack {
                         Image(systemName: "plus")

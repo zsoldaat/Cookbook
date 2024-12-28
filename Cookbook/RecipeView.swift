@@ -42,7 +42,8 @@ struct RecipeView: View {
         .toolbar {
             if (selectedSection == "Recipe") {
                 NavigationLink {
-                    CreateRecipeView()
+                    @Bindable var recipe = recipe
+                    CreateRecipeView(recipe: recipe)
                 } label: {
                     Text("Edit")
                 }

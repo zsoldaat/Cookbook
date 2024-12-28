@@ -12,9 +12,7 @@ struct CreateRecipeView: View {
     @Environment(\.modelContext) var context
     @EnvironmentObject var selectedTab: SelectedTab
     
-    @State private var name: String = ""
-    @State private var instructions: String = ""
-    @State private var ingredients: [Ingredient] = []
+    @Bindable var recipe: Recipe
     
     @State private var ingredientModalShowing: Bool = false
     
@@ -22,13 +20,13 @@ struct CreateRecipeView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("", text: $name)
+                    TextField("", text: $recipe.name)
                 } header: {
                     Text("Name")
                 }
                 
                 Section {
-                    TextField("", text: $instructions, axis: .vertical)
+                    TextField("", text: $recipe.instructions, axis: .vertical)
                         .lineLimit(5...10)
                 } header: {
                     Text("Instructions")
@@ -40,10 +38,10 @@ struct CreateRecipeView: View {
                 
                 Section {
                     List {
-                        ForEach(ingredients) {ingredient in
+                        ForEach(recipe.ingredients) {ingredient in
                             IngredientCell(ingredient: ingredient)
                         }.onDelete { indexSet in
-                            ingredients.remove(atOffsets: indexSet)
+                            recipe.ingredients.remove(atOffsets: indexSet)
                         }
                     }
                     
@@ -51,8 +49,7 @@ struct CreateRecipeView: View {
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        let recipe = Recipe(name: name, instructions: instructions, ingredients: ingredients)
-                        recipe.createRecipe(context: context)
+                        recipe.createUpdateRecipe(context: context)
                         selectedTab.selectedTabTag = 0
                     } label: {
                         Text("Save")
@@ -61,12 +58,8 @@ struct CreateRecipeView: View {
             }
             .sheet(isPresented: $ingredientModalShowing) {
                 NavigationStack {
-                    AddIngredientModal(ingredients: $ingredients)
+                    AddIngredientModal(ingredients: $recipe.ingredients)
                 }
-            }.onAppear {
-                name = ""
-                instructions = ""
-                ingredients.removeAll()
             }
             .navigationTitle("New Recipe")
             .scrollDismissesKeyboard(.immediately)

@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class Recipe: Identifiable, Hashable {
+class Recipe: Identifiable, Hashable, ObservableObject {
     var id = UUID()
     var date = Date()
     var name: String
@@ -22,7 +22,7 @@ class Recipe: Identifiable, Hashable {
         self.ingredients = ingredients
     }
     
-    func createRecipe(context: ModelContext) {
+    func createUpdateRecipe(context: ModelContext) {
         context.insert(self)
         if context.hasChanges {
             do {
