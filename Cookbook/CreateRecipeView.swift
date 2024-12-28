@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct AddRecipeView: View {
+struct CreateRecipeView: View {
     
     @Environment(\.modelContext) var context
     @EnvironmentObject var selectedTab: SelectedTab
     
     @State private var name: String = ""
     @State private var instructions: String = ""
-    @State var ingredients: [Ingredient] = []
+    @State private var ingredients: [Ingredient] = []
     
     @State private var ingredientModalShowing: Bool = false
     
