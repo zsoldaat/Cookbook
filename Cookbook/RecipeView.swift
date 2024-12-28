@@ -23,7 +23,7 @@ struct RecipeView: View {
             NavigationLink {
                 IngredientListView(ingredients: recipe.ingredients)
             } label: {
-                Text("Shopping List")
+                Text("Ingredients")
             }
         }
         

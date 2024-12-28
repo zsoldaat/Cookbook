@@ -67,7 +67,7 @@ struct AddIngredientModal: View {
                 HStack {
                     
                     Picker("Whole quantity", selection: $ingredientQuantityWhole) {
-                        ForEach(1...10, id: \.self) { number in
+                        ForEach(0...10, id: \.self) { number in
                             Text(String(number))
                         }
                     }.pickerStyle(.wheel)

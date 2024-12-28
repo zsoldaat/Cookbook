@@ -163,6 +163,10 @@ class Ingredient: Identifiable, Hashable {
             return String(roundedToFourDecimals)
         }
         
+        if (wholePart == 0) {
+            return decimalsAsFraction
+        }
+        
         return "\(String(wholePart)) \(decimalsAsFraction)"
         
     }

@@ -32,7 +32,7 @@ struct AddRecipeView: View {
                     TextField("", text: $instructions, axis: .vertical)
                         .lineLimit(5...10)
                 } header: {
-                    Text("Ingredient")
+                    Text("Instructions")
                 }
                 
                 Button("+ Add Ingredients") {
@@ -53,14 +53,7 @@ struct AddRecipeView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         let recipe = Recipe(name: name, instructions: instructions, ingredients: ingredients)
-                        context.insert(recipe)
-                        if context.hasChanges {
-                            do {
-                                try context.save()
-                            } catch (let error) {
-                                print(error)
-                            }
-                        }
+                        recipe.createRecipe(context: context)
                         selectedTab.selectedTabTag = 0
                     } label: {
                         Text("Save")
@@ -74,6 +67,7 @@ struct AddRecipeView: View {
             }.onAppear {
                 name = ""
                 instructions = ""
+                ingredients.removeAll()
             }
             .navigationTitle("New Recipe")
         }

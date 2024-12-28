@@ -23,6 +23,7 @@ struct IngredientList: View {
                             selections.insert(ingredient.id)
                         }
                     }
+                
                 IngredientCell(ingredient: ingredient)
             }
         }

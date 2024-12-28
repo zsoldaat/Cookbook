@@ -22,4 +22,19 @@ class Recipe: Identifiable, Hashable {
         self.ingredients = ingredients
     }
     
+    func createRecipe(context: ModelContext) {
+        context.insert(self)
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch (let error) {
+                print(error)
+            }
+        }
+    }
+    
+    func deleteRecipe(context: ModelContext) {
+        
+    }
+    
 }
