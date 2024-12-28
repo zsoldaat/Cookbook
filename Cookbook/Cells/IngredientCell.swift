@@ -10,13 +10,14 @@ import SwiftUI
 struct IngredientCell: View {
     
     let ingredient: Ingredient
+    @State var selection: Int = 1
     
     var body: some View {
-        VStack(alignment: .leading) {
+        HStack {
             Text(ingredient.name)
                 .font(.headline)
             Text(ingredient.getString())
-            .font(.subheadline)
+                .font(.subheadline)
         }.onTapGesture {
             ingredient.changeDisplayUnit()
         }.onAppear {

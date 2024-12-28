@@ -13,7 +13,7 @@ struct IngredientList: View {
     @Binding var selections: Set<UUID>
     
     var body: some View {
-        List (ingredients, selection: $selections) { ingredient in
+        List (ingredients) { ingredient in
             HStack {
                 Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle" : "circle")
                     .onTapGesture {
