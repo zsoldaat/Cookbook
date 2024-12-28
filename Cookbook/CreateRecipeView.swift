@@ -57,9 +57,7 @@ struct CreateRecipeView: View {
                 }
             }
             .sheet(isPresented: $ingredientModalShowing) {
-                NavigationStack {
-                    AddIngredientModal(ingredients: $recipe.ingredients)
-                }
+                AddIngredientModal(ingredients: $recipe.ingredients)
             }
             .navigationTitle("New Recipe")
             .scrollDismissesKeyboard(.immediately)

@@ -15,7 +15,7 @@ struct RecipeView: View {
     
     var body: some View {
         
-        NavigationStack {
+        VStack {
             
             Picker("Section", selection: $selectedSection) {
                 Text("Recipe").tag("Recipe")
@@ -23,6 +23,7 @@ struct RecipeView: View {
             }
             .pickerStyle(.segmented)
             .padding()
+            
             
             if (selectedSection == "Recipe") {
                 List {
@@ -35,8 +36,6 @@ struct RecipeView: View {
             if (selectedSection == "Ingredients") {
                 IngredientListView(ingredients: recipe.ingredients)
             }
-
-            
         }
         .navigationTitle(recipe.name)
         .toolbar {
