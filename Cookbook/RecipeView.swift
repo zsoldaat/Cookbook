@@ -15,7 +15,13 @@ struct RecipeView: View {
         
         NavigationStack {
             
-            Text(recipe.instructions)
+            List {
+                Section(header: Text("Instructions")) {
+                    Text(recipe.instructions)
+                }
+            }
+            
+            
             
         }
         .navigationTitle(recipe.name)
