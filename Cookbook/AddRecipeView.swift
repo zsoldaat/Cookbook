@@ -70,6 +70,7 @@ struct AddRecipeView: View {
                 ingredients.removeAll()
             }
             .navigationTitle("New Recipe")
+            .scrollDismissesKeyboard(.immediately)
         }
     }
 }
