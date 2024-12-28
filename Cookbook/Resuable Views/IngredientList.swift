@@ -13,18 +13,25 @@ struct IngredientList: View {
     @Binding var selections: Set<UUID>
     
     var body: some View {
-        List (ingredients) { ingredient in
-            HStack {
-                Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle" : "circle")
-                    .onTapGesture {
-                        if (selections.contains(ingredient.id)) {
-                            selections.remove(ingredient.id)
-                        } else {
-                            selections.insert(ingredient.id)
-                        }
+        List {
+            Section(header: Text("Ingredients")) {
+                ForEach(ingredients) { ingredient in
+                    HStack {
+                        Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle" : "circle")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .onTapGesture {
+                                if (selections.contains(ingredient.id)) {
+                                    selections.remove(ingredient.id)
+                                } else {
+                                    selections.insert(ingredient.id)
+                                }
+                            }
+
+                        IngredientCell(ingredient: ingredient)
                     }
-                
-                IngredientCell(ingredient: ingredient)
+                }
             }
         }
     }

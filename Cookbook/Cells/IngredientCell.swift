@@ -16,11 +16,15 @@ struct IngredientCell: View {
         HStack {
             Text(ingredient.name)
                 .font(.headline)
+           Spacer()
             Text(ingredient.getString())
                 .font(.subheadline)
-        }.onTapGesture {
-            ingredient.changeDisplayUnit()
-        }.onAppear {
+                .onTapGesture {
+                    ingredient.changeDisplayUnit()
+                }
+        }
+        .padding(10)
+        .onAppear {
             ingredient.resetDisplayUnit()
         }
         
