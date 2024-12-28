@@ -21,7 +21,7 @@ struct SectionSelectView: View {
                     }
                 }
                 .tag(0)
-            AddRecipeView()
+            CreateRecipeView()
                 .tabItem {
                     HStack {
                         Image(systemName: "plus")

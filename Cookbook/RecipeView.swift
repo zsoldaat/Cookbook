@@ -42,7 +42,7 @@ struct RecipeView: View {
         .toolbar {
             if (selectedSection == "Recipe") {
                 NavigationLink {
-                    AddRecipeView()
+                    CreateRecipeView()
                 } label: {
                     Text("Edit")
                 }
