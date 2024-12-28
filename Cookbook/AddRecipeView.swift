@@ -20,7 +20,6 @@ struct AddRecipeView: View {
     
     var body: some View {
         NavigationStack {
-            
             Form {
                 Section {
                     TextField("", text: $name)

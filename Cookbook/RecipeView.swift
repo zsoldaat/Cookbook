@@ -11,26 +11,43 @@ struct RecipeView: View {
     
     let recipe: Recipe
     
+    @State private var selectedSection: String = "Recipe"
+    
     var body: some View {
         
         NavigationStack {
             
-            List {
-                Section(header: Text("Instructions")) {
-                    Text(recipe.instructions)
+            Picker("Section", selection: $selectedSection) {
+                Text("Recipe").tag("Recipe")
+                Text("Ingredients").tag("Ingredients")
+            }
+            .pickerStyle(.segmented)
+            .padding()
+            
+            if (selectedSection == "Recipe") {
+                List {
+                    Section(header: Text("Instructions")) {
+                        Text(recipe.instructions)
+                    }
                 }
             }
             
-            
+            if (selectedSection == "Ingredients") {
+                IngredientListView(ingredients: recipe.ingredients)
+            }
+
             
         }
         .navigationTitle(recipe.name)
         .toolbar {
-            NavigationLink {
-                IngredientListView(ingredients: recipe.ingredients)
-            } label: {
-                Text("Ingredients")
+            if (selectedSection == "Recipe") {
+                NavigationLink {
+                    AddRecipeView()
+                } label: {
+                    Text("Edit")
+                }
             }
+            
         }
         
         
