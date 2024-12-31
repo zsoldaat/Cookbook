@@ -12,11 +12,7 @@ struct AddIngredientModal: View {
     @Environment(\.dismiss) private var dismiss
     
     @Binding var ingredients: [Ingredient]
-    
-    @State private var ingredientName: String = ""
-    @State private var ingredientQuantityWhole: Int = 1
-    @State private var ingredientQuantityFraction: String = ""
-    @State private var ingredientUnit: String = "item"
+    @Bindable var ingredient: Ingredient
     
     @FocusState private var keyboardIsActive: Bool
     
@@ -29,34 +25,16 @@ struct AddIngredientModal: View {
     ]
     
     private func addIngredients() {
-        ingredients.append(Ingredient(name: ingredientName, quantity: getQuantityDouble(), unit: ingredientUnit))
-        ingredientName = ""
-        ingredientQuantityWhole = 1
-        ingredientQuantityFraction = ""
-        ingredientUnit = "item"
-    }
-    
-    private func getQuantityDouble() -> Double {
-        return Double(ingredientQuantityWhole) + fractionToDouble(fraction: ingredientQuantityFraction)
-    }
-    
-    private func fractionToDouble(fraction: String) -> Double {
-        if (fraction.isEmpty) {return Double(0)}
-        
-        let numerator = Double(String(fraction.first!))!
-        let denominator = Double(String(fraction.last!))!
-        
-        return numerator/denominator
-        
+        ingredients.append(ingredient)
     }
     
     var body: some View {
         Form {
             Section("Name") {
-                TextField("", text: $ingredientName)
+                TextField("", text: $ingredient.name)
                     .onSubmit {
                         keyboardIsActive = true
-                        if (ingredientName.isEmpty) {return}
+                        if (ingredient.name.isEmpty) {return}
                         addIngredients()
                     }
                     .submitLabel(.done)
@@ -66,19 +44,19 @@ struct AddIngredientModal: View {
             Section("Quantity") {
                 HStack {
                     
-                    Picker("Whole quantity", selection: $ingredientQuantityWhole) {
+                    Picker("Whole quantity", selection: $ingredient.quantityWhole) {
                         ForEach(0...10, id: \.self) { number in
                             Text(String(number))
                         }
                     }.pickerStyle(.wheel)
                     
-                    Picker("Fraction", selection: $ingredientQuantityFraction) {
+                    Picker("Fraction", selection: $ingredient.quantityFractionString) {
                         ForEach(fractions, id: \.self) { fraction in
                             Text(fraction)
                         }
                     }.pickerStyle(.wheel)
                     
-                    Picker("Unit", selection: $ingredientUnit) {
+                    Picker("Unit", selection: $ingredient.unit) {
                         ForEach(units, id: \.self) { unit in
                             Text(unit)
                         }

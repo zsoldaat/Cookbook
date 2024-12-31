@@ -93,20 +93,33 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
 class Ingredient: Identifiable, Hashable {
     var id = UUID()
     var name: String
-    var quantity: Double
+    var quantityWhole: Int
+    var quantityFractionString: String
+    var quantityFraction: Double {fractionToDouble(fraction: quantityFractionString)}
+    var quantity: Double {Double(quantityWhole) + quantityFraction}
     var unit: String
     var displayUnit: String
     
-    init( name: String, quantity: Double, unit: String) {
+    init(name: String, quantityWhole: Int, quantityFractionString: String, unit: String) {
         self.name = name
-        self.quantity = quantity
+        self.quantityWhole = quantityWhole
+        self.quantityFractionString = quantityFractionString
         self.unit = unit
         self.displayUnit = unit
     }
     
+    private func fractionToDouble(fraction: String) -> Double {
+        if (fraction.isEmpty) {return Double(0)}
+        
+        let numerator = Double(String(fraction.first!))!
+        let denominator = Double(String(fraction.last!))!
+        
+        return numerator/denominator
+        
+    }
+    
     func getString() -> String {
         return "\(getQuantityString()) \(getUnitString())"
-        //        return "\(getQuantityString()) \(getUnitString()) - \(quantity)"
     }
     
     //this code just cycles through the available conversion units for a given unit

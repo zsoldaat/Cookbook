@@ -57,7 +57,8 @@ struct CreateRecipeView: View {
                 }
             }
             .sheet(isPresented: $ingredientModalShowing) {
-                AddIngredientModal(ingredients: $recipe.ingredients)
+                @Bindable var ingredient = Ingredient(name: "", quantityWhole: 1, quantityFractionString: "", unit: "item")
+                AddIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
             }
             .navigationTitle("New Recipe")
             .scrollDismissesKeyboard(.immediately)

@@ -39,7 +39,6 @@ struct SectionSelectView: View {
                 }
                 .tag(2)
         }
-        
     }
     
     

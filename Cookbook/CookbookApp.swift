@@ -13,6 +13,7 @@ struct CookbookApp: App {
     let container: ModelContainer = {
         let scheme = Schema([Recipe.self])
         let container = try! ModelContainer(for: scheme, configurations: [])
+//        container.deleteAllData()
         return container
     }()
     
