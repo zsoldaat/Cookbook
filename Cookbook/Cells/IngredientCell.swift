@@ -22,6 +22,9 @@ struct IngredientCell: View {
                 .onTapGesture {
                     ingredient.changeDisplayUnit()
                 }
+                .onLongPressGesture {
+                    ingredient.resetDisplayUnit()
+                }
         }
         .padding(10)
         .onAppear {
