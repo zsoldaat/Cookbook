@@ -121,7 +121,7 @@ class Ingredient: Identifiable, Hashable {
     func getString() -> String {
         return "\(getQuantityString()) \(getUnitString())"
     }
-    
+
     //this code just cycles through the available conversion units for a given unit
     func changeDisplayUnit() {
         guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return}

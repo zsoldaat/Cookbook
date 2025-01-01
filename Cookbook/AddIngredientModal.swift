@@ -24,10 +24,6 @@ struct AddIngredientModal: View {
         "", "1/8", "1/4", "1/3", "3/8", "1/2", "5/8", "2/3", "3/4", "7/8"
     ]
     
-    private func addIngredients() {
-        ingredients.append(ingredient)
-    }
-    
     var body: some View {
         Form {
             Section("Name") {
@@ -35,7 +31,8 @@ struct AddIngredientModal: View {
                     .onSubmit {
                         keyboardIsActive = true
                         if (ingredient.name.isEmpty) {return}
-                        addIngredients()
+                        ingredient.displayUnit = ingredient.unit
+                        ingredients.append(ingredient)
                     }
                     .submitLabel(.done)
                     .focused($keyboardIsActive)
@@ -60,7 +57,8 @@ struct AddIngredientModal: View {
                         ForEach(units, id: \.self) { unit in
                             Text(unit)
                         }
-                    }.pickerStyle(.wheel)
+                    }
+                    .pickerStyle(.wheel)
                 }.frame(height: 120)
             }
             
