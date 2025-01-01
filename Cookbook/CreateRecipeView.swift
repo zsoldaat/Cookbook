@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateRecipeView: View {
     
     @Environment(\.modelContext) var context
-    @EnvironmentObject var selectedTab: SelectedTab
+    @Environment(\.dismiss) private var dismiss
     
     @Bindable var recipe: Recipe
     
@@ -50,7 +50,7 @@ struct CreateRecipeView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         recipe.createUpdateRecipe(context: context)
-                        selectedTab.selectedTabTag = 0
+                        dismiss()
                     } label: {
                         Text("Save")
                     }

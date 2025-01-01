@@ -11,9 +11,10 @@ import SwiftData
 struct RecipeListView: View {
     
     @Environment(\.modelContext) var context
-
+    
     @State private var isShowingItemSheet = false
     @State private var recipeToEdit: Recipe?
+    @State private var addRecipeShowing: Bool = false
     
     @Query(sort: \Recipe.name) var recipes: [Recipe]
     
@@ -39,6 +40,15 @@ struct RecipeListView: View {
                 }
             }
             .navigationTitle("Recipes")
+            .navigationBarItems(trailing: Button {
+                addRecipeShowing = true
+            } label: {
+                Image(systemName: "plus")
+            })
+            .sheet(isPresented: $addRecipeShowing) {
+                @Bindable var recipe: Recipe = Recipe(name: "", instructions: "", ingredients: [])
+                CreateRecipeView(recipe: recipe)
+            }
         }
         
     }
