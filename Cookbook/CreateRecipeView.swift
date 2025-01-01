@@ -36,16 +36,18 @@ struct CreateRecipeView: View {
                     ingredientModalShowing = true
                 }
                 
-                Section {
-                    List {
-                        ForEach(recipe.ingredients) {ingredient in
-                            IngredientCell(ingredient: ingredient)
-                        }.onDelete { indexSet in
-                            recipe.ingredients.remove(atOffsets: indexSet)
+                if (!recipe.ingredients.isEmpty) {
+                    Section {
+                        List {
+                            ForEach(recipe.ingredients) {ingredient in
+                                IngredientCell(ingredient: ingredient)
+                            }.onDelete { indexSet in
+                                recipe.ingredients.remove(atOffsets: indexSet)
+                            }
                         }
-                    }
-                    
-                } header: {Text("Ingredients")}
+                        
+                    } header: {Text("Ingredients")}
+                }
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

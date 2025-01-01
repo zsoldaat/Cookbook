@@ -25,6 +25,14 @@ struct AddIngredientModal: View {
     ]
     
     var body: some View {
+        HStack {
+            Spacer()
+            Button {
+                dismiss()
+            } label: {
+                Text("Done")
+            }.padding()
+        }
         Form {
             Section("Name") {
                 TextField("", text: $ingredient.name)
@@ -36,6 +44,9 @@ struct AddIngredientModal: View {
                     }
                     .submitLabel(.done)
                     .focused($keyboardIsActive)
+                    .onAppear {
+                        keyboardIsActive = true
+                    }
             }
             
             Section("Quantity") {
@@ -62,28 +73,21 @@ struct AddIngredientModal: View {
                 }.frame(height: 120)
             }
             
-            Section {
-                List {
-                    ForEach(ingredients) {ingredient in
-                        IngredientCell(ingredient: ingredient)
-                    }.onDelete { indexSet in
-                        ingredients.remove(atOffsets: indexSet)
+            if (!ingredients.isEmpty) {
+                Section {
+                    List {
+                        ForEach(ingredients) {ingredient in
+                            IngredientCell(ingredient: ingredient)
+                        }.onDelete { indexSet in
+                            ingredients.remove(atOffsets: indexSet)
+                        }
                     }
-                }
-                
-            } header: {Text("Ingredients")}
+                    
+                } header: {Text("Ingredients")}
+            }
             
         }
         .navigationTitle(Text("Ingredients"))
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Done")
-                }
-            }
-        }
         .onScrollPhaseChange { oldPhase, newPhase in
             
             if (oldPhase == .interacting) {
