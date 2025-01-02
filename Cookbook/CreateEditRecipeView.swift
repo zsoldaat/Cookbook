@@ -17,6 +17,7 @@ struct CreateEditRecipeView: View {
     @State var ingredientIdToEdit: UUID?
     
     @State private var ingredientModalShowing: Bool = false
+    @State private var alertShowing: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -69,6 +70,10 @@ struct CreateEditRecipeView: View {
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        if (recipe.name.isEmpty) {
+                            alertShowing = true
+                            return
+                        }
                         recipe.createUpdateRecipe(context: context)
                         dismiss()
                     } label: {
@@ -85,6 +90,7 @@ struct CreateEditRecipeView: View {
                     CreateEditIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
                 }
             }
+            .alert("Recipes must have a name.", isPresented: $alertShowing, actions: {})
             .navigationTitle(recipe.name.isEmpty ? "New Recipe" : recipe.name)
             .scrollDismissesKeyboard(.immediately)
         }
