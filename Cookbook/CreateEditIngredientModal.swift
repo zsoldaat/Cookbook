@@ -27,6 +27,10 @@ struct CreateEditIngredientModal: View {
         HStack {
             Spacer()
             Button {
+                if (!ingredient.name.isEmpty) {
+                    ingredient.displayUnit = ingredient.unit
+                    ingredients.append(ingredient)
+                }
                 dismiss()
             } label: {
                 Text("Done")
