@@ -14,6 +14,8 @@ struct CreateEditIngredientModal: View {
     @Binding var ingredients: [Ingredient]
     @Bindable var ingredient: Ingredient
     
+    @FocusState private var keyboardIsActive: Bool
+    
     var body: some View {
         HStack {
             Spacer()
@@ -25,7 +27,7 @@ struct CreateEditIngredientModal: View {
         }
         
         Form {
-            CreateEditIngredient(ingredient: ingredient, ingredients: $ingredients)
+            CreateEditIngredient(ingredient: ingredient, ingredients: $ingredients, keyboardIsActive: $keyboardIsActive)
             
             if (!ingredients.isEmpty) {
                 Section {
@@ -42,6 +44,11 @@ struct CreateEditIngredientModal: View {
             
         }
         .navigationTitle(Text("Ingredients"))
+        .onScrollPhaseChange { oldPhase, newPhase in
+            if (oldPhase == .interacting) {
+                keyboardIsActive = false
+            }
+        }
         
     }
 }

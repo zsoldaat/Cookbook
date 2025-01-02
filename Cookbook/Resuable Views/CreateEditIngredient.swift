@@ -12,7 +12,7 @@ struct CreateEditIngredient: View {
     @Bindable var ingredient: Ingredient
     @Binding var ingredients: [Ingredient]
     
-    @FocusState private var keyboardIsActive: Bool
+    @FocusState.Binding var keyboardIsActive: Bool
     
     private let units: [String] = [
         "item", "cup", "quart", "tsp", "tbsp", "mL", "L", "oz", "lb", "g", "kg", "pinch"
@@ -36,10 +36,6 @@ struct CreateEditIngredient: View {
                 .onAppear {
                     keyboardIsActive = true
                 }
-        }.onScrollPhaseChange { oldPhase, newPhase in
-            if (oldPhase == .interacting) {
-                keyboardIsActive = false
-            }
         }
         
         Section("Quantity") {
