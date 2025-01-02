@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateEditIngredient: View {
     
     @Bindable var ingredient: Ingredient
-    @Binding var ingredients: [Ingredient]
+    var onCreate: () -> Void
     
     @FocusState.Binding var keyboardIsActive: Bool
     
@@ -27,9 +27,7 @@ struct CreateEditIngredient: View {
             TextField("", text: $ingredient.name)
                 .onSubmit {
                     keyboardIsActive = true
-                    if (ingredient.name.isEmpty) {return}
-                    ingredient.displayUnit = ingredient.unit
-                    ingredients.append(ingredient)
+                    onCreate()
                 }
                 .submitLabel(.done)
                 .focused($keyboardIsActive)

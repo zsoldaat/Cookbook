@@ -16,6 +16,12 @@ struct CreateEditIngredientModal: View {
     
     @FocusState private var keyboardIsActive: Bool
     
+    func onCreate() {
+        if (ingredient.name.isEmpty) {return}
+        ingredient.displayUnit = ingredient.unit
+        ingredients.append(ingredient)
+    }
+    
     var body: some View {
         HStack {
             Spacer()
@@ -27,8 +33,7 @@ struct CreateEditIngredientModal: View {
         }
         
         Form {
-            CreateEditIngredient(ingredient: ingredient, ingredients: $ingredients, keyboardIsActive: $keyboardIsActive)
-            
+            CreateEditIngredient(ingredient: ingredient, onCreate: onCreate, keyboardIsActive: $keyboardIsActive)
             if (!ingredients.isEmpty) {
                 Section {
                     List {
