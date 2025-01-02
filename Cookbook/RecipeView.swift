@@ -12,6 +12,7 @@ struct RecipeView: View {
     let recipe: Recipe
     
     @State private var selectedSection: String = "Recipe"
+    @State private var editShowing: Bool = false
     
     var body: some View {
         
@@ -38,11 +39,14 @@ struct RecipeView: View {
             }
         }
         .navigationTitle(recipe.name)
+        .sheet(isPresented: $editShowing, content: {
+            @Bindable var recipe = recipe
+            CreateRecipeView(recipe: recipe)
+        })
         .toolbar {
-            if (selectedSection == "Recipe") {
-                NavigationLink {
-                    @Bindable var recipe = recipe
-                    CreateRecipeView(recipe: recipe)
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    editShowing = true
                 } label: {
                     Text("Edit")
                 }

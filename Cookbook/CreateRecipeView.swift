@@ -54,7 +54,7 @@ struct CreateRecipeView: View {
                         recipe.createUpdateRecipe(context: context)
                         dismiss()
                     } label: {
-                        Text("Save")
+                        Text("Done")
                     }
                 }
             }
@@ -62,7 +62,7 @@ struct CreateRecipeView: View {
                 @Bindable var ingredient = Ingredient(name: "", quantityWhole: 1, quantityFractionString: "", unit: "item")
                 AddIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
             }
-            .navigationTitle("New Recipe")
+            .navigationTitle(recipe.name.isEmpty ? "New Recipe" : recipe.name)
             .scrollDismissesKeyboard(.immediately)
         }
     }

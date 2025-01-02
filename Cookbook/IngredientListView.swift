@@ -21,6 +21,14 @@ struct IngredientListView: View {
         
         NavigationView {
             VStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        selections.removeAll()
+                    } label: {
+                        Text("Clear selected")
+                    }
+                }
                 IngredientList(ingredients: ingredients, selections: $selections)
                 Spacer()
                 Button {
@@ -36,12 +44,6 @@ struct IngredientListView: View {
                 .alert("Ingredients Added", isPresented: $showAlert, actions: {})
             }
             
-        }.toolbar{
-            Button {
-                selections.removeAll()
-            } label: {
-                Text("Clear selected")
-            }
         }
     }
 }
