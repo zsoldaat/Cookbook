@@ -13,16 +13,13 @@ struct RecipeView: View {
     
     @State private var selectedSection: String = "Recipe"
     @State private var editShowing: Bool = false
-    @State private var editIngredientShowing: Bool = false
     
     @EnvironmentObject var shoppingList: ShoppingList
     
     @State private var selections = Set<UUID>()
     @State private var showAlert = false
     
-    func editIngredient(ingredient: Ingredient) {
-        print(ingredient.name)
-    }
+    @FocusState var keyboardisActive: Bool
     
     var body: some View {
         
@@ -54,7 +51,7 @@ struct RecipeView: View {
                             Text("Clear selected")
                         }
                     }
-                    IngredientList(ingredients: recipe.ingredients, selections: $selections, onSwipeGesture: editIngredient)
+                    IngredientList(ingredients: recipe.ingredients, selections: $selections, editable: true)
                     Spacer()
                     Button {
                         shoppingList.items.append(contentsOf: recipe.ingredients.filter{item in

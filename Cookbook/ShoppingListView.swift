@@ -14,7 +14,7 @@ struct ShoppingListView: View {
     var body: some View {
         
         NavigationStack {
-            IngredientList(ingredients: shoppingList.items, selections: $shoppingList.selections)
+            IngredientList(ingredients: shoppingList.items, selections: $shoppingList.selections, editable: false)
                 .navigationTitle("Shopping List")
                 .toolbar {
                     Button {

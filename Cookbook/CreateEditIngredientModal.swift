@@ -16,7 +16,8 @@ struct CreateEditIngredientModal: View {
     
     @FocusState private var keyboardIsActive: Bool
     
-    func onCreate() {
+    func onCreateIngredient() {
+        keyboardIsActive = true
         if (ingredient.name.isEmpty) {return}
         ingredient.displayUnit = ingredient.unit
         ingredients.append(ingredient)
@@ -33,7 +34,7 @@ struct CreateEditIngredientModal: View {
         }
         
         Form {
-            CreateEditIngredient(ingredient: ingredient, onCreate: onCreate, keyboardIsActive: $keyboardIsActive)
+            CreateEditIngredient(ingredient: ingredient, onSubmit: onCreateIngredient, keyboardIsActive: $keyboardIsActive)
             if (!ingredients.isEmpty) {
                 Section {
                     List {

@@ -90,7 +90,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
 
 
 @Model
-class Ingredient: Identifiable, Hashable {
+class Ingredient: Identifiable, Hashable, ObservableObject {
     @Attribute(.unique) var id = UUID()
     var name: String
     var recipe: Recipe

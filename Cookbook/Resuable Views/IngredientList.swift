@@ -11,7 +11,14 @@ struct IngredientList: View {
     
     let ingredients: [Ingredient]
     @Binding var selections: Set<UUID>
-    var onSwipeGesture: ((Ingredient) -> Void)?
+    let editable: Bool
+    
+    @State var editIngredientShowing: Bool = false
+    @FocusState var keyboardIsActive: Bool
+    
+    func onEditIngredient() {
+        keyboardIsActive = false
+    }
     
     var body: some View {
         List {
@@ -29,18 +36,22 @@ struct IngredientList: View {
                                     selections.insert(ingredient.id)
                                 }
                             }
-                            
-
                         IngredientCell(ingredient: ingredient)
                     }.swipeActions {
-                        if let onSwipe = onSwipeGesture {
+                        if editable {
                             Button {
-                                onSwipe(ingredient)
+                                print(ingredient.name)
+//                                editIngredientShowing = true
                             } label: {
-                                Text("HEllo")
+                                Text("Edit")
                             }
+                            .tint(.yellow)
                         }
-                        
+                    }.sheet(isPresented: $editIngredientShowing) {
+                        @Bindable var ingredientToEdit = ingredient
+                        Form {
+                            CreateEditIngredient(ingredient: ingredientToEdit, onSubmit: onEditIngredient, keyboardIsActive: $keyboardIsActive)
+                        }
                     }
                 }
             }
