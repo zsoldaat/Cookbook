@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CreateRecipeView: View {
+struct CreateEditRecipeView: View {
     
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) private var dismiss
@@ -60,7 +60,7 @@ struct CreateRecipeView: View {
             }
             .sheet(isPresented: $ingredientModalShowing) {
                 @Bindable var ingredient = Ingredient(name: "", recipe: recipe, quantityWhole: 1, quantityFractionString: "", unit: "item")
-                AddIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
+                CreateEditIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
             }
             .navigationTitle(recipe.name.isEmpty ? "New Recipe" : recipe.name)
             .scrollDismissesKeyboard(.immediately)

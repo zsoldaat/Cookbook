@@ -47,7 +47,7 @@ struct RecipeListView: View {
             })
             .sheet(isPresented: $addRecipeShowing) {
                 @Bindable var recipe: Recipe = Recipe(name: "", instructions: "", ingredients: [])
-                CreateRecipeView(recipe: recipe)
+                CreateEditRecipeView(recipe: recipe)
             }
         }
         
