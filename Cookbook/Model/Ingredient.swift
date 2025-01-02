@@ -139,20 +139,16 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     }
 
     //this code just cycles through the available conversion units for a given unit
-    func changeDisplayUnit(displayUnit: String?) -> String {
-        guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return ""}
+    func changeDisplayUnit(displayUnit: String) -> String {
+        guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return unit}
         
-        let units: [String] = Array(conversionInfo.keys)
-    
-        if (unit == displayUnit || displayUnit == nil) {
-            return units.first!
-        }
+        let units: [String] = Array(conversionInfo.keys).sorted()
         
         if (units.last == displayUnit) {
-            return unit
+            return units.first!
         }
-        
-        let currentIndex = units.firstIndex(of: displayUnit!)
+
+        let currentIndex = units.firstIndex(of: displayUnit)
         return units[currentIndex! + 1]
     }
     

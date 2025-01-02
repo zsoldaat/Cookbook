@@ -21,7 +21,7 @@ struct IngredientCell: View {
             Text(ingredient.getString(displayUnit: displayUnit ?? ingredient.unit))
                 .font(.subheadline)
                 .onTapGesture {
-                    displayUnit = ingredient.changeDisplayUnit(displayUnit: displayUnit)
+                    displayUnit = ingredient.changeDisplayUnit(displayUnit: displayUnit ?? ingredient.unit)
                 }
                 .onLongPressGesture {
                     displayUnit = ingredient.unit
