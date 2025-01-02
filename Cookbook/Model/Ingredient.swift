@@ -115,15 +115,13 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     var quantityFraction: Double {fractionToDouble(fraction: quantityFractionString)}
     var quantity: Double {Double(quantityWhole) + quantityFraction}
     var unit: String
-    var displayUnit: String
-    
+
     init(name: String, recipe: Recipe, quantityWhole: Int, quantityFractionString: String, unit: String) {
         self.name = name
         self.recipe = recipe
         self.quantityWhole = quantityWhole
         self.quantityFractionString = quantityFractionString
         self.unit = unit
-        self.displayUnit = unit
     }
     
     private func fractionToDouble(fraction: String) -> Double {
@@ -136,35 +134,29 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         
     }
     
-    func getString() -> String {
-        return "\(getQuantityString()) \(getUnitString())"
+    func getString(displayUnit: String) -> String {
+        return "\(getQuantityString(displayUnit: displayUnit)) \(getUnitString(displayUnit: displayUnit))"
     }
 
     //this code just cycles through the available conversion units for a given unit
-    func changeDisplayUnit() {
-        guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return}
+    func changeDisplayUnit(displayUnit: String?) -> String {
+        guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return ""}
         
         let units: [String] = Array(conversionInfo.keys)
     
-        if (unit == displayUnit) {
-            displayUnit = units.first!
-            return
+        if (unit == displayUnit || displayUnit == nil) {
+            return units.first!
         }
         
         if (units.last == displayUnit) {
-            displayUnit = unit
-            return
+            return unit
         }
         
-        let currentIndex = units.firstIndex(of: displayUnit)
-        displayUnit = units[currentIndex! + 1]
+        let currentIndex = units.firstIndex(of: displayUnit!)
+        return units[currentIndex! + 1]
     }
     
-    func resetDisplayUnit() {
-        displayUnit = unit
-    }
-    
-    private func getUnitString() -> String {
+    private func getUnitString(displayUnit: String) -> String {
         
         let realUnit = unit == displayUnit ? unit : displayUnit
         
@@ -176,18 +168,9 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         }
     }
     
-    private func getQuantityString() -> String {
+    private func getQuantityString(displayUnit: String) -> String {
         
-        //This is some bullshit that I need to fix.
-        guard let conversions = unitConversions[unit] else {return ""}
-        
-        let realQuantity: Double
-        
-        if (conversions[displayUnit] == nil) {
-            realQuantity = quantity * conversions[unit]!
-        } else {
-            realQuantity = unit == displayUnit ? quantity : quantity * conversions[displayUnit]!
-        }
+        let realQuantity = unit == displayUnit ? quantity : quantity * unitConversions[unit]![displayUnit]!
         
         let quantityIsWhole = realQuantity.isNaN || realQuantity.isFinite && realQuantity.rounded() == realQuantity
         

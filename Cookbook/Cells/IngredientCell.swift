@@ -11,26 +11,23 @@ struct IngredientCell: View {
     
     let ingredient: Ingredient
     @State var selection: Int = 1
+    @State var displayUnit: String? = nil
     
     var body: some View {
         HStack {
             Text(ingredient.name)
                 .font(.headline)
            Spacer()
-            Text(ingredient.getString())
+            Text(ingredient.getString(displayUnit: displayUnit ?? ingredient.unit))
                 .font(.subheadline)
                 .onTapGesture {
-                    ingredient.changeDisplayUnit()
+                    displayUnit = ingredient.changeDisplayUnit(displayUnit: displayUnit)
                 }
                 .onLongPressGesture {
-                    ingredient.resetDisplayUnit()
+                    displayUnit = ingredient.unit
                 }
         }
         .padding(10)
-        .onAppear {
-            ingredient.resetDisplayUnit()
-        }
-        
     }
 }
 

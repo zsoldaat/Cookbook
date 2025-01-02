@@ -30,9 +30,6 @@ struct CreateEditIngredient: View {
                 }
                 .submitLabel(.done)
                 .focused($keyboardIsActive)
-//                .onAppear {
-//                    keyboardIsActive = true
-//                }
         }
         
         Section("Quantity") {
@@ -55,9 +52,6 @@ struct CreateEditIngredient: View {
                         Text(unit)
                     }
                 }
-                .onChange(of: ingredient.unit, { oldValue, newValue in
-                    ingredient.displayUnit = newValue
-                })
                 .pickerStyle(.wheel)
             }.frame(height: 120)
         }

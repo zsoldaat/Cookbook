@@ -19,7 +19,6 @@ struct CreateEditIngredientModal: View {
     func onCreateIngredient() {
         keyboardIsActive = true
         if (ingredient.name.isEmpty) {return}
-        ingredient.displayUnit = ingredient.unit
         ingredients.append(ingredient)
     }
     
@@ -28,7 +27,6 @@ struct CreateEditIngredientModal: View {
             Spacer()
             Button {
                 if (!ingredient.name.isEmpty) {
-                    ingredient.displayUnit = ingredient.unit
                     ingredients.append(ingredient)
                 }
                 dismiss()
