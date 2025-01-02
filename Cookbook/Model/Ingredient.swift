@@ -218,29 +218,29 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         
         var decimalsRepresentedAsFraction: String = ""
         
-        switch decimalString.count {
-        case 1:
-            if (decimalString == "5") { decimalsRepresentedAsFraction = "1/2"}
-        case 2:
-            if (decimalString == "25") {decimalsRepresentedAsFraction = "1/4"}
-            if (decimalString == "33") {decimalsRepresentedAsFraction = "1/3"}
-            if (decimalString == "66") {decimalsRepresentedAsFraction = "2/3"}
-            if (decimalString == "67") {decimalsRepresentedAsFraction = "2/3"}
-            if (decimalString == "75") {decimalsRepresentedAsFraction = "3/4"}
-            
-        case 3...:
-            if (decimalString.prefix(2) == "33") {decimalsRepresentedAsFraction = "1/3"}
-            if (decimalString.prefix(2) == "66") {decimalsRepresentedAsFraction = "2/3"}
+        switch decimalString.prefix(4) {
+        case "0.25":
+            decimalsRepresentedAsFraction = "1/4"
+        case "0.33":
+            decimalsRepresentedAsFraction = "1/3"
+        case "0.5":
+            decimalsRepresentedAsFraction = "1/2"
+        case "0.66":
+            decimalsRepresentedAsFraction = "2/3"
+        case "0.75":
+            decimalsRepresentedAsFraction = "3/4"
+        default:
             
             if ((decimals*8).rounded() == decimals*8) {
                 decimalsRepresentedAsFraction = "\(String(Int(decimals*8)))/8"
+                break
             }
             
             if ((decimals*4).rounded() == decimals*4) {
                 decimalsRepresentedAsFraction = "\(String(Int(decimals*4)))/4"
+                break
             }
             
-        default:
             decimalsRepresentedAsFraction = ""
         }
         
