@@ -13,6 +13,16 @@ struct RecipeView: View {
     
     @State private var selectedSection: String = "Recipe"
     @State private var editShowing: Bool = false
+    @State private var editIngredientShowing: Bool = false
+    
+    @EnvironmentObject var shoppingList: ShoppingList
+    
+    @State private var selections = Set<UUID>()
+    @State private var showAlert = false
+    
+    func editIngredient(ingredient: Ingredient) {
+        print(ingredient.name)
+    }
     
     var body: some View {
         
@@ -35,7 +45,29 @@ struct RecipeView: View {
             }
             
             if (selectedSection == "Ingredients") {
-                IngredientListView(ingredients: recipe.ingredients)
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button {
+                            selections.removeAll()
+                        } label: {
+                            Text("Clear selected")
+                        }
+                    }
+                    IngredientList(ingredients: recipe.ingredients, selections: $selections, onSwipeGesture: editIngredient)
+                    Spacer()
+                    Button {
+                        shoppingList.items.append(contentsOf: recipe.ingredients.filter{item in
+                            selections.contains(item.id)
+                        })
+                        showAlert = true
+                    } label: {
+                        Text("Add selections to Shopping List")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding(20)
+                    .alert("Ingredients Added", isPresented: $showAlert, actions: {})
+                }
             }
         }
         .navigationTitle(recipe.name)

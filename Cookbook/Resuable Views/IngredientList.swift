@@ -11,6 +11,7 @@ struct IngredientList: View {
     
     let ingredients: [Ingredient]
     @Binding var selections: Set<UUID>
+    var onSwipeGesture: ((Ingredient) -> Void)?
     
     var body: some View {
         List {
@@ -28,8 +29,18 @@ struct IngredientList: View {
                                     selections.insert(ingredient.id)
                                 }
                             }
+                            
 
                         IngredientCell(ingredient: ingredient)
+                    }.swipeActions {
+                        if let onSwipe = onSwipeGesture {
+                            Button {
+                                onSwipe(ingredient)
+                            } label: {
+                                Text("HEllo")
+                            }
+                        }
+                        
                     }
                 }
             }

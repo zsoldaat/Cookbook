@@ -39,7 +39,8 @@ struct CreateEditIngredientModal: View {
                     List {
                         ForEach(ingredients) {ingredient in
                             IngredientCell(ingredient: ingredient)
-                        }.onDelete { indexSet in
+                        }
+                        .onDelete { indexSet in
                             ingredients.remove(atOffsets: indexSet)
                         }
                     }
