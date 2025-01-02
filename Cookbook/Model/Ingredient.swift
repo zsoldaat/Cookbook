@@ -9,7 +9,11 @@ import Foundation
 import SwiftData
 
 var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
+    "item": [
+        "item": 1,
+    ],
     "cup": [
+        "cup": 1,
         "mL": 240,
         "L": 0.24,
         "tsp": 48,
@@ -18,6 +22,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "oz": 8,
     ],
     "quart": [
+        "quart": 1,
         "cup": 4,
         "tsp": 192,
         "tbsp": 64,
@@ -26,6 +31,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "oz": 32
     ],
     "tsp": [
+        "tsp": 1,
         "cup": 0.02,
         "quart": 0.005,
         "tbsp": 0.33,
@@ -34,6 +40,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "oz": 0.166,
     ],
     "tbsp": [
+        "tbsp": 1,
         "cup": 0.0625,
         "quart": 0.015,
         "tsp": 3,
@@ -42,6 +49,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "oz": 0.5
     ],
     "mL": [
+        "mL": 1,
         "cup": 0.004,
         "quart": 0.001,
         "tsp": 0.2,
@@ -50,6 +58,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "oz": 0.033,
     ],
     "L": [
+        "L": 1,
         "cup": 4.22,
         "quart": 1.05,
         "tsp": 202.88,
@@ -58,6 +67,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "oz": 33.8,
     ],
     "oz": [
+        "oz": 1,
         "cup": 0.125,
         "quart": 0.03,
         "tsp": 6,
@@ -69,21 +79,27 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
         "kg": 0.0283
     ],
     "lb": [
+        "lb": 1,
         "oz": 16,
         "g": 453.59,
         "kg": 0.453
     ],
     "g": [
+        "g": 1,
         "oz": 0.0353,
         "lb": 0.0022,
         "kg": 0.001,
         "mL": 1,
     ],
     "kg": [
+        "kg": 1,
         "oz": 35.274,
         "lb": 2.204,
         "g": 1000,
         
+    ],
+    "pinch": [
+        "pinch": 1
     ]
 ]
 
@@ -162,7 +178,16 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     
     private func getQuantityString() -> String {
         
-        let realQuantity = unit == displayUnit ? quantity : quantity * unitConversions[unit]![displayUnit]!
+        //This is some bullshit that I need to fix.
+        guard let conversions = unitConversions[unit] else {return ""}
+        
+        let realQuantity: Double
+        
+        if (conversions[displayUnit] == nil) {
+            realQuantity = quantity * conversions[unit]!
+        } else {
+            realQuantity = unit == displayUnit ? quantity : quantity * conversions[displayUnit]!
+        }
         
         let quantityIsWhole = realQuantity.isNaN || realQuantity.isFinite && realQuantity.rounded() == realQuantity
         
