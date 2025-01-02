@@ -91,7 +91,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
 
 @Model
 class Ingredient: Identifiable, Hashable {
-    var id = UUID()
+    @Attribute(.unique) var id = UUID()
     var name: String
     var quantityWhole: Int
     var quantityFractionString: String

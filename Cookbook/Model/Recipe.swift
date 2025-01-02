@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 class Recipe: Identifiable, Hashable, ObservableObject {
-    var id = UUID()
+    @Attribute(.unique) var id = UUID()
     var date = Date()
     var name: String
     var instructions: String
