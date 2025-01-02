@@ -93,6 +93,7 @@ var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
 class Ingredient: Identifiable, Hashable {
     @Attribute(.unique) var id = UUID()
     var name: String
+    var recipe: Recipe
     var quantityWhole: Int
     var quantityFractionString: String
     var quantityFraction: Double {fractionToDouble(fraction: quantityFractionString)}
@@ -100,8 +101,9 @@ class Ingredient: Identifiable, Hashable {
     var unit: String
     var displayUnit: String
     
-    init(name: String, quantityWhole: Int, quantityFractionString: String, unit: String) {
+    init(name: String, recipe: Recipe, quantityWhole: Int, quantityFractionString: String, unit: String) {
         self.name = name
+        self.recipe = recipe
         self.quantityWhole = quantityWhole
         self.quantityFractionString = quantityFractionString
         self.unit = unit
