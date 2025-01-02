@@ -51,7 +51,7 @@ struct RecipeView: View {
                             Text("Clear selected")
                         }
                     }
-                    IngredientList(ingredients: recipe.ingredients, selections: $selections, editable: true)
+                    IngredientList(ingredients: recipe.ingredients, selections: $selections)
                     Spacer()
                     Button {
                         shoppingList.items.append(contentsOf: recipe.ingredients.filter{item in

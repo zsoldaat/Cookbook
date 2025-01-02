@@ -9,16 +9,8 @@ import SwiftUI
 
 struct IngredientList: View {
     
-    let ingredients: [Ingredient]
+    var ingredients: [Ingredient]
     @Binding var selections: Set<UUID>
-    let editable: Bool
-    
-    @State var editIngredientShowing: Bool = false
-    @FocusState var keyboardIsActive: Bool
-    
-    func onEditIngredient() {
-        keyboardIsActive = false
-    }
     
     var body: some View {
         List {
@@ -37,21 +29,6 @@ struct IngredientList: View {
                                 }
                             }
                         IngredientCell(ingredient: ingredient)
-                    }.swipeActions {
-                        if editable {
-                            Button {
-                                print(ingredient.name)
-//                                editIngredientShowing = true
-                            } label: {
-                                Text("Edit")
-                            }
-                            .tint(.yellow)
-                        }
-                    }.sheet(isPresented: $editIngredientShowing) {
-                        @Bindable var ingredientToEdit = ingredient
-                        Form {
-                            CreateEditIngredient(ingredient: ingredientToEdit, onSubmit: onEditIngredient, keyboardIsActive: $keyboardIsActive)
-                        }
                     }
                 }
             }

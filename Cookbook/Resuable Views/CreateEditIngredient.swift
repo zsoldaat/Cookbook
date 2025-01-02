@@ -30,9 +30,9 @@ struct CreateEditIngredient: View {
                 }
                 .submitLabel(.done)
                 .focused($keyboardIsActive)
-                .onAppear {
-                    keyboardIsActive = true
-                }
+//                .onAppear {
+//                    keyboardIsActive = true
+//                }
         }
         
         Section("Quantity") {

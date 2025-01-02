@@ -14,6 +14,8 @@ struct CreateEditRecipeView: View {
     
     @Bindable var recipe: Recipe
     
+    @State var ingredientIdToEdit: UUID?
+    
     @State private var ingredientModalShowing: Bool = false
     
     var body: some View {
@@ -33,6 +35,7 @@ struct CreateEditRecipeView: View {
                 }
                 
                 Button("+ Add Ingredients") {
+                    ingredientIdToEdit = nil
                     ingredientModalShowing = true
                 }
                 
@@ -41,8 +44,23 @@ struct CreateEditRecipeView: View {
                         List {
                             ForEach(recipe.ingredients) {ingredient in
                                 IngredientCell(ingredient: ingredient)
-                            }.onDelete { indexSet in
-                                recipe.ingredients.remove(atOffsets: indexSet)
+                                    .swipeActions {
+                                        Button(role: .destructive) {
+                                            recipe.ingredients.removeAll(where: {$0.id == ingredient.id})
+                                            
+                                        } label: {
+                                            Text("Delete")
+                                        }
+                                        .tint(.red)
+                                        
+                                        Button {
+                                            ingredientIdToEdit = ingredient.id
+                                            ingredientModalShowing = true
+                                        } label: {
+                                            Text("Edit")
+                                        }
+                                        .tint(.yellow)
+                                    }
                             }
                         }
                         
@@ -59,8 +77,13 @@ struct CreateEditRecipeView: View {
                 }
             }
             .sheet(isPresented: $ingredientModalShowing) {
-                @Bindable var ingredient = Ingredient(name: "", recipe: recipe, quantityWhole: 1, quantityFractionString: "", unit: "item")
-                CreateEditIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
+                if let id = ingredientIdToEdit {
+                    @Bindable var ingredient = recipe.ingredients.filter({ $0.id == id}).first!
+                    CreateEditIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
+                } else {
+                    @Bindable var ingredient = Ingredient(name: "", recipe: recipe, quantityWhole: 1, quantityFractionString: "", unit: "item")
+                    CreateEditIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
+                }
             }
             .navigationTitle(recipe.name.isEmpty ? "New Recipe" : recipe.name)
             .scrollDismissesKeyboard(.immediately)

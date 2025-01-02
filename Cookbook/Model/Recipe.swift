@@ -16,8 +16,6 @@ class Recipe: Identifiable, Hashable, ObservableObject {
     var instructions: String
     var ingredients: [Ingredient]
     
-    @Relationship(deleteRule: .cascade, inverse: \Recipe.ingredients)
-    
     init(name: String, instructions: String, ingredients: [Ingredient]) {
         self.name = name
         self.instructions = instructions
