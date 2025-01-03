@@ -149,7 +149,6 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         }
         
         let currentIndex = units.firstIndex(of: displayUnit)
-        print(units)
         return units[currentIndex! + 1]
     }
     
@@ -226,16 +225,16 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
             decimalsRepresentedAsFraction = "3/4"
         default:
             
-            if ((decimals*8).rounded() == decimals*8) {
-                decimalsRepresentedAsFraction = "\(String(Int(decimals*8)))/8"
-                break
-            }
-            
             if ((decimals*4).rounded() == decimals*4) {
                 decimalsRepresentedAsFraction = "\(String(Int(decimals*4)))/4"
                 break
             }
             
+            if ((decimals*8).rounded() == decimals*8) {
+                decimalsRepresentedAsFraction = "\(String(Int(decimals*8)))/8"
+                break
+            }
+
             decimalsRepresentedAsFraction = ""
         }
         
