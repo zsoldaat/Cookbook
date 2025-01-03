@@ -26,6 +26,9 @@ struct IngredientCell: View {
                 .onLongPressGesture {
                     displayUnit = ingredient.unit
                 }
+                .onChange(of: ingredient.unit) { oldValue, newValue in
+                    displayUnit = newValue
+                }
         }
         .padding(10)
     }

@@ -115,7 +115,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     var quantityFraction: Double {fractionToDouble(fraction: quantityFractionString)}
     var quantity: Double {Double(quantityWhole) + quantityFraction}
     var unit: String
-
+    
     init(name: String, recipe: Recipe, quantityWhole: Int, quantityFractionString: String, unit: String) {
         self.name = name
         self.recipe = recipe
@@ -137,7 +137,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     func getString(displayUnit: String) -> String {
         return "\(getQuantityString(displayUnit: displayUnit)) \(getUnitString(displayUnit: displayUnit))"
     }
-
+    
     //this code just cycles through the available conversion units for a given unit
     func changeDisplayUnit(displayUnit: String) -> String {
         guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return unit}
@@ -147,8 +147,9 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         if (units.last == displayUnit) {
             return units.first!
         }
-
+        
         let currentIndex = units.firstIndex(of: displayUnit)
+        print(units)
         return units[currentIndex! + 1]
     }
     
@@ -164,9 +165,24 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         }
     }
     
+    private func getQuantity(displayUnit: String) -> Double {
+        
+        if (unit == displayUnit) {return quantity}
+        
+        //find the conversion in the dictionary. If there's nothing, just return the normal quantity assuming the original unit.
+        //The case where the unit cannot be found in the dictionary occurs when the user changes the unit to something that the old
+        //unit couldn't convert into.
+        if let unit = unitConversions[unit]![displayUnit] {
+            return quantity * unit
+        } else {
+            return quantity
+        }
+        
+    }
+    
     private func getQuantityString(displayUnit: String) -> String {
         
-        let realQuantity = unit == displayUnit ? quantity : quantity * unitConversions[unit]![displayUnit]!
+        let realQuantity = getQuantity(displayUnit: displayUnit)
         
         let quantityIsWhole = realQuantity.isNaN || realQuantity.isFinite && realQuantity.rounded() == realQuantity
         
@@ -229,5 +245,5 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
             return decimalsRepresentedAsFraction
         }
     }
-
+    
 }
