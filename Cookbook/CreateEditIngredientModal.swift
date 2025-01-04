@@ -23,41 +23,42 @@ struct CreateEditIngredientModal: View {
     }
     
     var body: some View {
-        HStack {
-            Spacer()
-            Button {
-                if (!ingredient.name.isEmpty) {
-                    ingredients.append(ingredient)
+        NavigationStack {
+            Form {
+                CreateEditIngredient(ingredient: ingredient, onSubmit: onCreateIngredient, keyboardIsActive: $keyboardIsActive)
+                if (!ingredients.isEmpty) {
+                    Section {
+                        List {
+                            ForEach(ingredients) {ingredient in
+                                IngredientCell(ingredient: ingredient)
+                            }
+                        }
+                        
+                    } header: {Text("Ingredients")}
                 }
-                dismiss()
-            } label: {
-                Text("Done")
-            }.padding()
+                
+            }
+            .onScrollPhaseChange { oldPhase, newPhase in
+                if (oldPhase == .interacting) {
+                    keyboardIsActive = false
+                }
+            }
+            .navigationTitle("Ingredients")
+            .toolbar{
+                ToolbarItem {
+                    Button {
+                        if (!ingredient.name.isEmpty) {
+                            ingredients.append(ingredient)
+                        }
+                        dismiss()
+                    } label: {
+                        Text("Done")
+                    }
+                }
+                
+            }
         }
         
-        Form {
-            CreateEditIngredient(ingredient: ingredient, onSubmit: onCreateIngredient, keyboardIsActive: $keyboardIsActive)
-            if (!ingredients.isEmpty) {
-                Section {
-                    List {
-                        ForEach(ingredients) {ingredient in
-                            IngredientCell(ingredient: ingredient)
-                        }
-                        .onDelete { indexSet in
-                            ingredients.remove(atOffsets: indexSet)
-                        }
-                    }
-                    
-                } header: {Text("Ingredients")}
-            }
-            
-        }
-        .navigationTitle(Text("Ingredients"))
-        .onScrollPhaseChange { oldPhase, newPhase in
-            if (oldPhase == .interacting) {
-                keyboardIsActive = false
-            }
-        }
         
     }
 }

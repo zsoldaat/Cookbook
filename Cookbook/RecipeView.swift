@@ -70,7 +70,7 @@ struct RecipeView: View {
         .navigationTitle(recipe.name)
         .fullScreenCover(isPresented: $editShowing, content: {
             @Bindable var recipe = recipe
-            CreateEditRecipeView(recipe: recipe)
+            CreateEditRecipeView(recipe: recipe, isNewRecipe: false)
         })
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

@@ -23,6 +23,7 @@ struct CreateEditIngredient: View {
     ]
     
     var body: some View {
+        
         Section("Name") {
             TextField("", text: $ingredient.name)
                 .onSubmit {

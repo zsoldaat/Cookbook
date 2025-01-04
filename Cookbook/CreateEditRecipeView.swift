@@ -15,6 +15,7 @@ struct CreateEditRecipeView: View {
     @Bindable var recipe: Recipe
     
     @State var ingredientIdToEdit: UUID?
+    var isNewRecipe: Bool
     
     @State private var ingredientModalShowing: Bool = false
     @State private var alertShowing: Bool = false
@@ -68,6 +69,19 @@ struct CreateEditRecipeView: View {
                     } header: {Text("Ingredients")}
                 }
             }.toolbar {
+                if (isNewRecipe) {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            HStack {
+                                Image(systemName: "chevron.backward")
+                                Text("Back")
+                            }
+                            
+                        }
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         if (recipe.name.isEmpty) {
@@ -77,9 +91,11 @@ struct CreateEditRecipeView: View {
                         recipe.createUpdateRecipe(context: context)
                         dismiss()
                     } label: {
+                        
                         Text("Done")
                     }
                 }
+                
             }
             .sheet(isPresented: $ingredientModalShowing) {
                 if let id = ingredientIdToEdit {
@@ -91,7 +107,7 @@ struct CreateEditRecipeView: View {
                 }
             }
             .alert("Recipes must have a name.", isPresented: $alertShowing, actions: {})
-            .navigationTitle(recipe.name.isEmpty ? "New Recipe" : recipe.name)
+            .navigationTitle(isNewRecipe ? "New Recipe" : "Edit \"\(recipe.name)\"")
             .scrollDismissesKeyboard(.immediately)
         }
     }
