@@ -33,8 +33,4 @@ class Recipe: Identifiable, Hashable, ObservableObject {
         }
     }
     
-    func deleteRecipe(context: ModelContext) {
-        
-    }
-    
 }

@@ -25,16 +25,27 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
         
     }
     
-    func getItems() -> [Ingredient] {
-        return items
-    }
-    
     func addItem(_ ingredient: Ingredient) {
         
         if let existingItem = items.first(where: { $0.name == ingredient.name }) {
             addIngredients(existingIngredient: existingItem, newIngredient: ingredient)
         } else {
             items.append(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit))
+        }
+    }
+    
+    func getItems() -> [Ingredient] {
+        return items
+    }
+    
+    func deleteItem(indexSet: IndexSet, context: ModelContext) {
+        for i in indexSet {
+            context.delete(items[i])
+        }
+        do {
+            try context.save()
+        } catch {
+            print("error")
         }
     }
     
@@ -57,6 +68,17 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
         }
         
         print("Ingredients do not share the same unit")
+    }
+    
+    func save(context: ModelContext) {
+        context.insert(self)
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch (let error) {
+                print(error)
+            }
+        }
     }
     
 }

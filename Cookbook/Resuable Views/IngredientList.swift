@@ -11,6 +11,7 @@ struct IngredientList: View {
     
     var ingredients: [Ingredient]
     @Binding var selections: Set<UUID>
+    var onDelete: ((IndexSet) -> Void)?
     
     var body: some View {
         List {
@@ -32,6 +33,10 @@ struct IngredientList: View {
                                 return .increase
                             }
                         IngredientCell(ingredient: ingredient)
+                    }
+                }.onDelete { indexSet in
+                    if let onDelete = onDelete {
+                        onDelete(indexSet)
                     }
                 }
             }

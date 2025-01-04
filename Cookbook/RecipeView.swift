@@ -10,6 +10,8 @@ import SwiftData
 
 struct RecipeView: View {
     
+    @Environment(\.modelContext) var context
+    
     let recipe: Recipe
     
     @State private var selectedSection: String = "Recipe"
@@ -63,6 +65,7 @@ struct RecipeView: View {
                         .forEach {ingredient in
                             shoppingList.addItem(ingredient)
                         }
+                        shoppingList.save(context: context)
                         showAlert = true
                     } label: {
                         Text("Add selections to Shopping List")
