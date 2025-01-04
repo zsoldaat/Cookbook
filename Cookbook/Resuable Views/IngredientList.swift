@@ -17,16 +17,19 @@ struct IngredientList: View {
             Section(header: Text("Ingredients")) {
                 ForEach(ingredients) { ingredient in
                     HStack {
-                        Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle" : "circle")
+                        Image(systemName: selections.contains(ingredient.id) ? "circle.fill" : "circle")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 20, height: 20)
+                            .frame(width: 25)
                             .onTapGesture {
                                 if (selections.contains(ingredient.id)) {
                                     selections.remove(ingredient.id)
                                 } else {
                                     selections.insert(ingredient.id)
                                 }
+                            }
+                            .sensoryFeedback(trigger: selections.contains(ingredient.id)) { oldValue, newValue in
+                                return .increase
                             }
                         IngredientCell(ingredient: ingredient)
                     }
