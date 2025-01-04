@@ -11,21 +11,20 @@ import SwiftData
 @main
 struct CookbookApp: App {
     let container: ModelContainer = {
-        let scheme = Schema([Recipe.self])
-        let container = try! ModelContainer(for: scheme, configurations: [])
+        let schema = Schema([Recipe.self, ShoppingList.self])
+        let container = try! ModelContainer(for: schema, configurations: [])
+        container.mainContext.insert(ShoppingList())
 //        container.deleteAllData()
         return container
     }()
     
     @StateObject var selectedTab: SelectedTab = SelectedTab(selectedTabTag: 0)
-    @StateObject var shoppingList: ShoppingList = ShoppingList()
     
     var body: some Scene {
         WindowGroup {
             SectionSelectView()
                 .modelContainer(container)
                 .environmentObject(selectedTab)
-                .environmentObject(shoppingList)
         }
         
         

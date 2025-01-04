@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RecipeView: View {
     
@@ -14,17 +15,17 @@ struct RecipeView: View {
     @State private var selectedSection: String = "Recipe"
     @State private var editShowing: Bool = false
     
-    @EnvironmentObject var shoppingList: ShoppingList
-    
     @State private var selections = Set<UUID>()
     @State private var showAlert = false
     
     @FocusState var keyboardisActive: Bool
     
+    @Query var shoppingLists: [ShoppingList]
+    
     var body: some View {
         
         VStack {
-            
+            @Bindable var shoppingList = shoppingLists.first!
             Picker("Section", selection: $selectedSection) {
                 Text("Recipe").tag("Recipe")
                 Text("Ingredients").tag("Ingredients")
@@ -54,7 +55,7 @@ struct RecipeView: View {
                     IngredientList(ingredients: recipe.ingredients, selections: $selections)
                     Spacer()
                     Button {
-                        shoppingList.items.append(contentsOf: recipe.ingredients.filter{item in
+                        shoppingList.items.append(contentsOf: recipe.ingredients.filter{ item in
                             selections.contains(item.id)
                         })
                         showAlert = true

@@ -6,14 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ShoppingListView: View {
-    
-    @EnvironmentObject var shoppingList: ShoppingList
+    @Query() var shoppingLists: [ShoppingList]
 
     var body: some View {
-        
         NavigationStack {
+            @Bindable var shoppingList = shoppingLists.first!
             IngredientList(ingredients: shoppingList.items, selections: $shoppingList.selections)
                 .navigationTitle("Shopping List")
                 .toolbar {
