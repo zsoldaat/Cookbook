@@ -45,7 +45,7 @@ struct RecipeListView: View {
             } label: {
                 Image(systemName: "plus")
             })
-            .sheet(isPresented: $addRecipeShowing) {
+            .fullScreenCover(isPresented: $addRecipeShowing) {
                 @Bindable var recipe: Recipe = Recipe(name: "", instructions: "", ingredients: [])
                 CreateEditRecipeView(recipe: recipe)
             }

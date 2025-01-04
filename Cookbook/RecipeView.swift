@@ -68,7 +68,7 @@ struct RecipeView: View {
             }
         }
         .navigationTitle(recipe.name)
-        .sheet(isPresented: $editShowing, content: {
+        .fullScreenCover(isPresented: $editShowing, content: {
             @Bindable var recipe = recipe
             CreateEditRecipeView(recipe: recipe)
         })
