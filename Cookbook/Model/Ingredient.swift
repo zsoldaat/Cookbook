@@ -199,9 +199,9 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     }
     
     //returns nil if the decimals cannot be cleanly represented as a string
-    private func decimalsRepresentedAsFraction(decimals: Double) -> String? {
+    func decimalsRepresentedAsFraction(decimals: Double) -> String? {
         
-        let decimalString = String(quantity - quantity.rounded(.down))
+        let decimalString = String(decimals)
         
         var decimalsRepresentedAsFraction: String = ""
         
