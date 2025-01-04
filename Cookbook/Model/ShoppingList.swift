@@ -30,17 +30,11 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     }
     
     func addItem(_ ingredient: Ingredient) {
-//        if (items.contains(ingredient)) {
-//            print("Hello")
-//            return
-//        }
-        
-        items.append(ingredient)
+        items.append(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFractionString: ingredient.quantityFractionString, unit: ingredient.unit))
     }
     
     func clear() {
         items.removeAll()
         selections.removeAll()
     }
-    
 }
