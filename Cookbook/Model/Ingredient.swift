@@ -111,18 +111,17 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     var name: String
     var recipe: Recipe?
     var quantityWhole: Int
-    var quantityFractionString: String
-    var quantityFraction: Double {fractionToDouble(fraction: quantityFractionString)}
+    var quantityFraction: Double
     var quantity: Double {Double(quantityWhole) + quantityFraction}
     var unit: String
     
-    init(name: String, recipe: Recipe? = nil, quantityWhole: Int, quantityFractionString: String, unit: String) {
+    init(name: String, recipe: Recipe? = nil, quantityWhole: Int, quantityFraction: Double, unit: String) {
         self.name = name
         if let recipe = recipe {
             self.recipe = recipe
         }
         self.quantityWhole = quantityWhole
-        self.quantityFractionString = quantityFractionString
+        self.quantityFraction = quantityFraction
         self.unit = unit
     }
     
@@ -184,7 +183,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         let wholePart = Int(realQuantity.rounded(.down))
         let decimalPart = realQuantity - realQuantity.rounded(.down)
         
-        guard let decimalsAsFraction = decimalsRepresentedAsFraction(decimals: decimalPart) else {
+        guard let decimalsAsFraction = Ingredient.decimalsRepresentedAsFraction(decimals: decimalPart) else {
             //Just round the number to 4 places if it's not a nice fraction
             let roundedToFourDecimals = (realQuantity*10000).rounded() / 10000
             return String(roundedToFourDecimals)
@@ -199,7 +198,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     }
     
     //returns nil if the decimals cannot be cleanly represented as a string
-    func decimalsRepresentedAsFraction(decimals: Double) -> String? {
+    static func decimalsRepresentedAsFraction(decimals: Double) -> String? {
         
         let decimalString = String(decimals)
         
@@ -236,16 +235,6 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         } else {
             return decimalsRepresentedAsFraction
         }
-    }
-    
-    private func fractionToDouble(fraction: String) -> Double {
-        if (fraction.isEmpty) {return Double(0)}
-        
-        let numerator = Double(String(fraction.first!))!
-        let denominator = Double(String(fraction.last!))!
-        
-        return numerator/denominator
-        
     }
     
 }

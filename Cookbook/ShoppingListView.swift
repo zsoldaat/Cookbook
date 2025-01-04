@@ -23,9 +23,6 @@ struct ShoppingListView: View {
                         Text("Clear")
                     }
                 }
-                .onAppear {
-                    print(shoppingList.getItems())
-                }
         }
         
     }

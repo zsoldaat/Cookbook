@@ -32,12 +32,10 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     func addItem(_ ingredient: Ingredient) {
         
         if let existingItem = items.first(where: { $0.name == ingredient.name }) {
-            addIngredients(ingredient1: existingItem, ingredient2: ingredient)
+            addIngredients(existingIngredient: existingItem, newIngredient: ingredient)
         } else {
-            items.append(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFractionString: ingredient.quantityFractionString, unit: ingredient.unit))
+            items.append(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit))
         }
-        
-        
     }
     
     func clear() {
@@ -45,16 +43,20 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
         selections.removeAll()
     }
     
-    func addIngredients(ingredient1: Ingredient, ingredient2: Ingredient) {
+    func addIngredients(existingIngredient: Ingredient, newIngredient: Ingredient) {
         
-        if (ingredient1.unit == ingredient2.unit) {
-            let totalQuantity = ingredient1.quantity + ingredient2.quantity
+        if (existingIngredient.unit == newIngredient.unit) {
+            let totalQuantity = existingIngredient.quantity + newIngredient.quantity
             let wholePart = Int(totalQuantity.rounded(.down))
             let decimals = totalQuantity - totalQuantity.rounded(.down)
-            print(totalQuantity, String(wholePart), ingredient1.decimalsRepresentedAsFraction(decimals: decimals))
             
+            existingIngredient.quantityWhole = wholePart
+            existingIngredient.quantityFraction = decimals
             
+            return
         }
+        
+        print("Ingredients do not share the same unit")
     }
     
 }
