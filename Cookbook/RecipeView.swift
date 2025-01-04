@@ -55,9 +55,14 @@ struct RecipeView: View {
                     IngredientList(ingredients: recipe.ingredients, selections: $selections)
                     Spacer()
                     Button {
-                        shoppingList.items.append(contentsOf: recipe.ingredients.filter{ item in
+                        
+                        recipe.ingredients
+                        .filter {item in
                             selections.contains(item.id)
-                        })
+                        }
+                        .forEach {ingredient in
+                            shoppingList.addItem(ingredient)
+                        }
                         showAlert = true
                     } label: {
                         Text("Add selections to Shopping List")

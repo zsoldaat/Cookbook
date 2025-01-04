@@ -14,7 +14,7 @@ struct ShoppingListView: View {
     var body: some View {
         NavigationStack {
             @Bindable var shoppingList = shoppingLists.first!
-            IngredientList(ingredients: shoppingList.items, selections: $shoppingList.selections)
+            IngredientList(ingredients: shoppingList.getItems(), selections: $shoppingList.selections)
                 .navigationTitle("Shopping List")
                 .toolbar {
                     Button {
@@ -22,6 +22,9 @@ struct ShoppingListView: View {
                     } label: {
                         Text("Clear")
                     }
+                }
+                .onAppear {
+                    print(shoppingList.getItems())
                 }
         }
         

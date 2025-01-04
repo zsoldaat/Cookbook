@@ -18,11 +18,24 @@ import SwiftData
 @Model
 class ShoppingList: Identifiable, Hashable, ObservableObject {
     @Attribute(.unique) var id = UUID()
-    var items: [Ingredient] = []
+    private var items: [Ingredient] = []
     var selections = Set<UUID>()
     
     init() {
         
+    }
+    
+    func getItems() -> [Ingredient] {
+        return items
+    }
+    
+    func addItem(_ ingredient: Ingredient) {
+//        if (items.contains(ingredient)) {
+//            print("Hello")
+//            return
+//        }
+        
+        items.append(ingredient)
     }
     
     func clear() {
