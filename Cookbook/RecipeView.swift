@@ -28,6 +28,9 @@ struct RecipeView: View {
         
         VStack {
             @Bindable var shoppingList = shoppingLists.first!
+            
+            ImageGeneratorView(query: recipe.name)
+            
             Picker("Section", selection: $selectedSection) {
                 Text("Recipe").tag("Recipe")
                 Text("Ingredients").tag("Ingredients")
