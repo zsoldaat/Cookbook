@@ -15,6 +15,7 @@ class Recipe: Identifiable, Hashable, ObservableObject {
     var name: String
     var instructions: String
     var ingredients: [Ingredient]
+    var imageUrl: URL?
     
     init(name: String, instructions: String, ingredients: [Ingredient]) {
         self.name = name
@@ -22,8 +23,7 @@ class Recipe: Identifiable, Hashable, ObservableObject {
         self.ingredients = ingredients
     }
     
-    func createUpdateRecipe(context: ModelContext) {
-        context.insert(self)
+    func save(context: ModelContext) {
         if context.hasChanges {
             do {
                 try context.save()
@@ -31,6 +31,16 @@ class Recipe: Identifiable, Hashable, ObservableObject {
                 print(error)
             }
         }
+    }
+    
+    func createUpdateRecipe(context: ModelContext) {
+        context.insert(self)
+        save(context: context)
+    }
+    
+    func addImage(url: URL, context: ModelContext) {
+        self.imageUrl = url
+        save(context: context)
     }
     
 }

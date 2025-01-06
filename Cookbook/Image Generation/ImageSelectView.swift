@@ -23,37 +23,50 @@ func fetchImage(query: String) async -> [URL?]? {
     
     do {
         let imageResults = try JSONDecoder().decode(ImageResults.self, from: data)
-        return imageResults.items.prefix(5).map{ item in
+        return imageResults.items.shuffled().prefix(5).map{ item in
             return URL(string: item.link)
         }
     } catch {
-        print("No results")
         return nil
     }
 }
 
 struct ImageSelectView: View {
     
+    @Environment(\.dismiss) private var dismiss
+    
     let query: String
+    let onSelect: (URL) -> Void
     
     @State var imageUrls: [URL?]? = nil
     
     var body: some View {
         VStack {
             if let imageUrls = imageUrls {
+                Text("Select an image to use for this recipe.")
                 ForEach(imageUrls, id: \.self) { imageUrl in
                     if let imageUrl = imageUrl {
-                        AsyncImage(url: imageUrl) { image in
-                            image.resizable()
-                        } placeholder: {
-                            ZStack {
+                        Button {
+                            onSelect(imageUrl)
+                            dismiss()
+                        } label: {
+                            AsyncImage(url: imageUrl) { image in
+                                image.resizable()
+                            } placeholder: {
                                 Color.gray
                             }
+                            .scaledToFit()
                         }
-                        .scaledToFit()
                     } else {
                         Text("No Image")
                     }
+                }
+            } else {
+                Text("Could not retrive any images for this recipe name.")
+                Button {
+                    dismiss()
+                } label: {
+                    Text("Ok")
                 }
             }
         }.task {
