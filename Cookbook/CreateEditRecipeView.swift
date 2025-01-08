@@ -41,10 +41,21 @@ struct CreateEditRecipeView: View {
                 } header: {
                     Text("Link")
                 }
+                .onChange(of: recipe.link ?? "") { oldValue, newValue in
+                    Task {
+                        guard let url = URL(string: newValue) else {return}
+                        
+                        let scraper = Scraper(url: url)
+                        
+                        if let instructions = await scraper.getInstructions() {
+                            recipe.instructions = instructions
+                        }
+                    }
+                }
                 
                 Section {
                     TextField("", text: $recipe.instructions, axis: .vertical)
-                        .lineLimit(5...10)
+                        .lineLimit(5...)
                 } header: {
                     Text("Instructions")
                 }

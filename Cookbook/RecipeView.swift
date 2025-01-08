@@ -46,9 +46,13 @@ struct RecipeView: View {
                     }
                     
                     if let link = recipe.link {
-                        Section(header: Text("Link")) {
-                            Link(link,destination: URL(string: link)!)
+                        if let url = URL(string:link) {
+                            Section(header: Text("Link")) {
+                                Link(link, destination: url)
+                            }
                         }
+                        
+                        
                     }
                 }
             }
