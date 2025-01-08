@@ -25,6 +25,10 @@ struct CookbookApp: App {
             SectionSelectView()
                 .modelContainer(container)
                 .environmentObject(selectedTab)
+                .task {
+                    let scraper = Scraper(url: URL(string: "https://www.halfbakedharvest.com/spicy-coconut-chicken-curry/")!)
+                    await scraper.scrapeUrl()
+                }
         }
         
         
