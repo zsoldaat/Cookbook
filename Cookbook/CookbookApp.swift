@@ -26,7 +26,10 @@ struct CookbookApp: App {
                 .modelContainer(container)
                 .environmentObject(selectedTab)
                 .task {
-//                    let scraper = Scraper(url: URL(string: "https://www.loveandlemons.com/pinto-beans-recipe/")!)
+                    let scraper = Scraper(url: URL(string: "https://www.loveandlemons.com/pinto-beans-recipe/")!)
+                    if let title = await scraper.getTitle() {
+                        print(title)
+                    }
 //                    if let instructions = await scraper.getInstructions() {
 //                        print(instructions)
 //                    }

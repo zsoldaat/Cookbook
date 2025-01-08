@@ -9,7 +9,7 @@ import Foundation
 import SwiftSoup
 
 enum InfoType {
-    case ingredients, instructions
+    case all, title, ingredients, instructions
 }
 
 struct Scraper {
@@ -41,6 +41,15 @@ struct Scraper {
         return nil
     }
     
+    func getTitle() async -> String? {
+        
+        if let title = await scrapeUrl(for: .title)?.first {
+            return title
+        }
+        
+        return nil
+    }
+    
     func scrapeUrl(for infoType: InfoType) async -> [String]? {
         
         guard let html = await fetchUrl() else {
@@ -50,6 +59,10 @@ struct Scraper {
         do {
             
             let document = try SwiftSoup.parse(html)
+            
+            if infoType == .title {
+                return try [document.select("h1").first!.text()]
+            }
             
             guard let allHeadings = await getHeadings(document: document) else {
                 print("Could not get headings")

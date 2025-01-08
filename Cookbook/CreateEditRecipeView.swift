@@ -47,6 +47,10 @@ struct CreateEditRecipeView: View {
                         
                         let scraper = Scraper(url: url)
                         
+//                        if let title = await scraper.getTitle() {
+//                            recipe.title = title
+//                        }
+                        
                         if let instructions = await scraper.getInstructions() {
                             recipe.instructions = instructions
                         }
