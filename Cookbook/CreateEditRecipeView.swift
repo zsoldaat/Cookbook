@@ -37,26 +37,28 @@ struct CreateEditRecipeView: View {
                     })
                     
                     TextField("", text: linkBinding)
-                    
+                        .submitLabel(.done)
+                        .onSubmit {
+                            Task {
+                                guard let link = recipe.link else {return}
+                                
+                                if let url = URL(string: link) {
+                                    let scraper = Scraper(url: url)
+                                    
+                                    guard let recipeData = await scraper.getRecipeData() else {return}
+                                    
+                                    if let name = recipeData.name {
+                                        recipe.name = name
+                                    }
+                                    
+                                    if let instructions = recipeData.instructions {
+                                        recipe.instructions = instructions
+                                    }
+                                }
+                            }
+                        }
                 } header: {
                     Text("Link")
-                }
-                .onChange(of: recipe.link ?? "") { oldValue, newValue in
-                    Task {
-//                        guard let url = URL(string: newValue) else {return}
-//                        
-//                        let scraper = Scraper(url: url)
-//                        
-//                        if let recipeData = scraper.getData() {
-//                            if let title = recipeData.title {
-//                                recipe.title = title
-//                            }
-//                            
-//                            if let instructions = recipeData.instructions {
-//                                recipe.instructions = instructions
-//                            }
-//                        }
-                    }
                 }
                 
                 Section {

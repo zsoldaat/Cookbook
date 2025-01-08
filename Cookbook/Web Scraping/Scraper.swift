@@ -13,12 +13,12 @@ enum InfoType {
 }
 
 struct RecipeData {
-    let title: String?
+    let name: String?
     let instructions: String?
     let ingredients: [String]?
     
-    init(title: String?, instructions: String?, ingredients: [String]?) {
-        self.title = title
+    init(name: String?, instructions: String?, ingredients: [String]?) {
+        self.name = name
         self.instructions = instructions
         self.ingredients = ingredients
     }
@@ -41,7 +41,7 @@ struct Scraper {
             
             let document = try SwiftSoup.parse(html)
             
-            let title = try document.select("h1").first!.text()
+            let name = try document.select("h1").first!.text()
             
             guard let allHeadings = getHeadings(document: document) else {
                 print("Could not get headings")
@@ -52,7 +52,7 @@ struct Scraper {
             
             let instructions = getListItemsForTitle(title: "Instructions", headings: allHeadings)
             
-            return RecipeData(title: title, instructions: instructions?.reduce("", {cur, next in cur + "\n" + "\n" + next}), ingredients: ingredients)
+            return RecipeData(name: name, instructions: instructions?.reduce("", {cur, next in cur + "\n" + "\n" + next}), ingredients: ingredients)
             
         } catch {
             print("Didn't work")
