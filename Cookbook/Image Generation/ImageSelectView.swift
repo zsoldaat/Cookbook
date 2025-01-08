@@ -16,7 +16,7 @@ struct ImageResult: Codable {
     let link: String
 }
 
-func fetchImage(query: String) async -> [URL?]? {
+func fetchImage(query: String) async -> [URL?] {
     let urlString = "https://www.googleapis.com/customsearch/v1?key=AIzaSyCMjKCwuvZ7iHo23GZQVhwvyzXz0L3n9EY&cx=14d5324c5262949d1&q=\(query)&searchType=image"
     let url = URL(string: urlString)!
     let (data, _) = try! await URLSession.shared.data(from: url)
@@ -27,7 +27,7 @@ func fetchImage(query: String) async -> [URL?]? {
             return URL(string: item.link)
         }
     } catch {
-        return nil
+        return []
     }
 }
 
@@ -42,37 +42,40 @@ struct ImageSelectView: View {
     
     var body: some View {
         VStack {
+            
             if let imageUrls = imageUrls {
-                Text("Select an image to use for this recipe.")
-                ForEach(imageUrls, id: \.self) { imageUrl in
-                    if let imageUrl = imageUrl {
-                        Button {
-                            onSelect(imageUrl)
-                            dismiss()
-                        } label: {
-                            AsyncImage(url: imageUrl) { image in
-                                image.resizable()
-                            } placeholder: {
-                                Color.gray
+                if (imageUrls.count > 0) {
+                    Text("Select an image to use for this recipe.")
+                    ForEach(imageUrls, id: \.self) { imageUrl in
+                        if let imageUrl = imageUrl {
+                            Button {
+                                onSelect(imageUrl)
+                                dismiss()
+                            } label: {
+                                AsyncImage(url: imageUrl) { image in
+                                    image.resizable()
+                                } placeholder: {
+                                    Color.gray
+                                }
+                                .scaledToFit()
                             }
-                            .scaledToFit()
+                        } else {
+                            Text("No Image")
                         }
-                    } else {
-                        Text("No Image")
+                    }
+                } else {
+                    Text("Could not retrive any images for this recipe name.")
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Ok")
                     }
                 }
             } else {
-                Text("Could not retrive any images for this recipe name.")
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Ok")
-                }
+                Text("Loading...")
             }
         }.task {
-            if let urls = await fetchImage(query: query) {
-                imageUrls = urls
-            }
+            imageUrls = await fetchImage(query: query)
         }
     }
 }
