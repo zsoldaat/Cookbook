@@ -44,6 +44,12 @@ struct RecipeView: View {
                     Section(header: Text("Instructions")) {
                         Text(recipe.instructions)
                     }
+                    
+                    if let link = recipe.link {
+                        Section(header: Text("Link")) {
+                            Link(link,destination: URL(string: link)!)
+                        }
+                    }
                 }
             }
             
@@ -62,12 +68,12 @@ struct RecipeView: View {
                     Button {
                         
                         recipe.ingredients
-                        .filter {item in
-                            selections.contains(item.id)
-                        }
-                        .forEach {ingredient in
-                            shoppingList.addItem(ingredient)
-                        }
+                            .filter {item in
+                                selections.contains(item.id)
+                            }
+                            .forEach {ingredient in
+                                shoppingList.addItem(ingredient)
+                            }
                         shoppingList.save(context: context)
                         showAlert = true
                     } label: {

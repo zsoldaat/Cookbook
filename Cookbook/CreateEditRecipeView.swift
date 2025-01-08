@@ -30,6 +30,19 @@ struct CreateEditRecipeView: View {
                 }
                 
                 Section {
+                    let linkBinding = Binding<String>(get: {
+                        recipe.link ?? ""
+                    }, set: {
+                        recipe.link = $0
+                    })
+                    
+                    TextField("", text: linkBinding)
+                    
+                } header: {
+                    Text("Link")
+                }
+                
+                Section {
                     TextField("", text: $recipe.instructions, axis: .vertical)
                         .lineLimit(5...10)
                 } header: {

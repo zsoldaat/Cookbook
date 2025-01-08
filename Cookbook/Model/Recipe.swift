@@ -15,6 +15,7 @@ class Recipe: Identifiable, Hashable, ObservableObject {
     var name: String
     var instructions: String
     var ingredients: [Ingredient]
+    var link: String?
     var imageUrl: URL?
     
     init(name: String, instructions: String, ingredients: [Ingredient]) {
