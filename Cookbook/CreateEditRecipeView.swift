@@ -43,17 +43,19 @@ struct CreateEditRecipeView: View {
                 }
                 .onChange(of: recipe.link ?? "") { oldValue, newValue in
                     Task {
-                        guard let url = URL(string: newValue) else {return}
-                        
-                        let scraper = Scraper(url: url)
-                        
-//                        if let title = await scraper.getTitle() {
-//                            recipe.title = title
+//                        guard let url = URL(string: newValue) else {return}
+//                        
+//                        let scraper = Scraper(url: url)
+//                        
+//                        if let recipeData = scraper.getData() {
+//                            if let title = recipeData.title {
+//                                recipe.title = title
+//                            }
+//                            
+//                            if let instructions = recipeData.instructions {
+//                                recipe.instructions = instructions
+//                            }
 //                        }
-                        
-                        if let instructions = await scraper.getInstructions() {
-                            recipe.instructions = instructions
-                        }
                     }
                 }
                 

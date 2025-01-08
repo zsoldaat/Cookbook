@@ -12,6 +12,18 @@ enum InfoType {
     case all, title, ingredients, instructions
 }
 
+struct RecipeData {
+    let title: String?
+    let instructions: String?
+    let ingredients: [String]?
+    
+    init(title: String?, instructions: String?, ingredients: [String]?) {
+        self.title = title
+        self.instructions = instructions
+        self.ingredients = ingredients
+    }
+}
+
 struct Scraper {
     
     let url: URL
@@ -20,38 +32,7 @@ struct Scraper {
         self.url = url
     }
     
-    func fetchUrl() async -> String? {
-        do {
-            return try String(contentsOf: url, encoding: .utf8)
-        } catch {
-            return nil
-        }
-    }
-    
-    func getIngredients() async -> [String]? {
-        return await scrapeUrl(for: .ingredients)
-    }
-    
-    func getInstructions() async -> String? {
-        
-        if let instructions = await scrapeUrl(for: .instructions) {
-            return instructions.reduce("", {cur, next in cur + "\n" + "\n" + next})
-        }
-        
-        return nil
-    }
-    
-    func getTitle() async -> String? {
-        
-        if let title = await scrapeUrl(for: .title)?.first {
-            return title
-        }
-        
-        return nil
-    }
-    
-    func scrapeUrl(for infoType: InfoType) async -> [String]? {
-        
+    func getRecipeData() async -> RecipeData? {
         guard let html = await fetchUrl() else {
             return nil
         }
@@ -60,24 +41,18 @@ struct Scraper {
             
             let document = try SwiftSoup.parse(html)
             
-            if infoType == .title {
-                return try [document.select("h1").first!.text()]
-            }
+            let title = try document.select("h1").first!.text()
             
-            guard let allHeadings = await getHeadings(document: document) else {
+            guard let allHeadings = getHeadings(document: document) else {
                 print("Could not get headings")
                 return nil
             }
             
-            if infoType == .ingredients {
-                return await getListItemsForTitle(title: "Ingredients", headings: allHeadings)
-            }
+            let ingredients = getListItemsForTitle(title: "Ingredients", headings: allHeadings)
             
-            if infoType == .instructions {
-                return await getListItemsForTitle(title: "Instructions", headings: allHeadings)
-            }
+            let instructions = getListItemsForTitle(title: "Instructions", headings: allHeadings)
             
-            return nil
+            return RecipeData(title: title, instructions: instructions?.reduce("", {cur, next in cur + "\n" + "\n" + next}), ingredients: ingredients)
             
         } catch {
             print("Didn't work")
@@ -85,7 +60,15 @@ struct Scraper {
         }
     }
     
-    func getListItemsForTitle(title: String, headings: [Element]) async -> [String]? {
+    private func fetchUrl() async -> String? {
+        do {
+            return try String(contentsOf: url, encoding: .utf8)
+        } catch {
+            return nil
+        }
+    }
+    
+    private func getListItemsForTitle(title: String, headings: [Element]) -> [String]? {
         
         do {
             let titleElement = try headings.first { element in
@@ -106,7 +89,7 @@ struct Scraper {
         return nil
     }
     
-    func getHeadings(document: Document) async -> [Element]? {
+    private func getHeadings(document: Document) -> [Element]? {
         
         do {
             let h1Headings = try document.select("h1")
