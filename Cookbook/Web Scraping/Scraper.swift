@@ -8,6 +8,10 @@
 import Foundation
 import SwiftSoup
 
+enum InfoType {
+    case ingredients, instructions
+}
+
 struct Scraper {
     
     let url: URL
@@ -24,10 +28,23 @@ struct Scraper {
         }
     }
     
-    func scrapeUrl () async {
+    func getIngredients() async -> [String]? {
+        return await scrapeUrl(for: .ingredients)
+    }
+    
+    func getInstructions() async -> String? {
+        
+        if let instructions = await scrapeUrl(for: .instructions) {
+            return instructions.reduce("", {cur, next in cur + "\n" + next})
+        }
+        
+        return nil
+    }
+    
+    func scrapeUrl(for infoType: InfoType) async -> [String]? {
         
         guard let html = await fetchUrl() else {
-            return
+            return nil
         }
         
         do {
@@ -36,19 +53,22 @@ struct Scraper {
             
             guard let allHeadings = await getHeadings(document: document) else {
                 print("Could not get headings")
-                return
+                return nil
             }
             
-            guard let instructions = await getListItemsForTitle(title: "Instructions", headings: allHeadings) else {
-                return
+            if infoType == .ingredients {
+                return await getListItemsForTitle(title: "Ingredients", headings: allHeadings)
             }
             
-            guard let ingredients = await getListItemsForTitle(title: "Ingredients", headings: allHeadings) else {
-                return
+            if infoType == .instructions {
+                return await getListItemsForTitle(title: "Instructions", headings: allHeadings)
             }
+            
+            return nil
             
         } catch {
             print("Didn't work")
+            return nil
         }
     }
     
