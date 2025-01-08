@@ -35,7 +35,7 @@ struct Scraper {
     func getInstructions() async -> String? {
         
         if let instructions = await scrapeUrl(for: .instructions) {
-            return instructions.reduce("", {cur, next in cur + "\n" + next})
+            return instructions.reduce("", {cur, next in cur + "\n" + "\n" + next})
         }
         
         return nil
