@@ -14,7 +14,7 @@ struct RecipeView: View {
     
     let recipe: Recipe
     
-    @State private var selectedSection: String = "Recipe"
+    
     @State private var editShowing: Bool = false
     
     @State private var selections = Set<UUID>()
@@ -25,71 +25,43 @@ struct RecipeView: View {
     @Query var shoppingLists: [ShoppingList]
     
     var body: some View {
-        
-        VStack {
-            @Bindable var shoppingList = shoppingLists.first!
-            
+        @Bindable var shoppingList = shoppingLists.first!
+        List {
             RecipeImageView(recipe: recipe)
             
-            Picker("Section", selection: $selectedSection) {
-                Text("Recipe").tag("Recipe")
-                Text("Ingredients").tag("Ingredients")
+            Section(header: Text("Instructions")) {
+                Text(recipe.instructions)
             }
-            .pickerStyle(.segmented)
-            .padding()
             
             
-            if (selectedSection == "Recipe") {
-                List {
-                    Section(header: Text("Instructions")) {
-                        Text(recipe.instructions)
-                    }
-                    
-                    if let link = recipe.link {
-                        if let url = URL(string:link) {
-                            Section(header: Text("Link")) {
-                                Link(link, destination: url)
-                            }
+            
+            IngredientListSection(ingredients: recipe.ingredients, selections: $selections)
+            
+            if (selections.count > 0) {
+                ListButton(text: "Add ingredients to Shoppping List", imageSystemName: "plus") {
+                    recipe.ingredients
+                        .filter {item in
+                            selections.contains(item.id)
                         }
-                        
-                        
-                    }
+                        .forEach {ingredient in
+                            shoppingList.addItem(ingredient)
+                        }
+                    shoppingList.save(context: context)
+                    selections.removeAll()
+                    showAlert = true
                 }
             }
             
-            if (selectedSection == "Ingredients") {
-                VStack {
-                    HStack {
-                        Spacer()
-                        Button {
-                            selections.removeAll()
-                        } label: {
-                            Text("Clear selected")
-                        }
+            if let link = recipe.link {
+                if let url = URL(string:link) {
+                    Section(header: Text("Link")) {
+                        Link(link, destination: url)
                     }
-                    IngredientList(ingredients: recipe.ingredients, selections: $selections)
-                    Spacer()
-                    Button {
-                        
-                        recipe.ingredients
-                            .filter {item in
-                                selections.contains(item.id)
-                            }
-                            .forEach {ingredient in
-                                shoppingList.addItem(ingredient)
-                            }
-                        shoppingList.save(context: context)
-                        showAlert = true
-                    } label: {
-                        Text("Add selections to Shopping List")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .padding(20)
-                    .alert("Ingredients Added", isPresented: $showAlert, actions: {})
                 }
             }
         }
         .navigationTitle(recipe.name)
+        .alert("Ingredients Added", isPresented: $showAlert, actions: {})
         .fullScreenCover(isPresented: $editShowing, content: {
             @Bindable var recipe = recipe
             CreateEditRecipeView(recipe: recipe, isNewRecipe: false)
@@ -102,9 +74,6 @@ struct RecipeView: View {
                     Text("Edit")
                 }
             }
-            
         }
-        
-        
     }
 }
