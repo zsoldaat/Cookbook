@@ -116,14 +116,14 @@ struct CreateEditRecipeView: View {
                         if recipe.timeCommitment != nil {
                             return recipe.timeCommitment!
                         } else {
-                            return "< 20 mins"
+                            return ""
                         }
                     }, set: {
                         recipe.timeCommitment = $0
                     })
                     
                     Picker("Time", selection: timeCommitmentBinding) {
-                        ForEach(["< 20 mins", "20-40 mins", "40+ mins"], id: \.self) { time in
+                        ForEach(["", "< 20 mins", "20-40 mins", "40+ mins"], id: \.self) { time in
                             Text(time)
                         }
                     }
