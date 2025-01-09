@@ -143,7 +143,7 @@ struct Scraper {
         
         let parsedQuantity = parseQuantityPart(string: quantity)
         
-        let ingredient = Ingredient(name: workingString, quantityWhole: parsedQuantity ?? 0, quantityFraction: 0.0, unit: unit.isEmpty ? "item" : unit)
+        let ingredient = Ingredient(name: workingString, quantityWhole: parsedQuantity ?? 1, quantityFraction: 0.0, unit: unit.isEmpty ? "item" : unit)
         
         return ingredient
     }
