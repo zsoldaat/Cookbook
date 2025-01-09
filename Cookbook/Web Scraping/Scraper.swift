@@ -16,11 +16,13 @@ struct RecipeData {
     let name: String?
     let instructions: String?
     let ingredients: [String]?
+    let imageUrls: [String]?
     
-    init(name: String?, instructions: String?, ingredients: [String]?) {
+    init(name: String?, instructions: String?, ingredients: [String]?, imageUrls: [String]?) {
         self.name = name
         self.instructions = instructions
         self.ingredients = ingredients
+        self.imageUrls = imageUrls
     }
 }
 
@@ -43,6 +45,17 @@ struct Scraper {
             
             let name = try document.select("h1").first!.text()
             
+            let images = try document.select("img")
+            
+            let imageUrls = try images
+                .sorted { first, second in
+                    let firstWidth = try Int(first.attr("width")) ?? 0
+                    let secondWidth = try Int(second.attr("width")) ?? 0
+                    return firstWidth > secondWidth
+                }
+                .map { element in try element.attr("src") }
+                .filter { url in url.contains("https") }
+            
             guard let allHeadings = getHeadings(document: document) else {
                 print("Could not get headings")
                 return nil
@@ -52,7 +65,7 @@ struct Scraper {
             
             let instructions = getListItemsForTitle(title: "Instructions", headings: allHeadings)
             
-            return RecipeData(name: name, instructions: instructions?.reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next}), ingredients: ingredients)
+            return RecipeData(name: name, instructions: instructions?.reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next}), ingredients: ingredients, imageUrls: imageUrls)
             
         } catch {
             print("Didn't work")
