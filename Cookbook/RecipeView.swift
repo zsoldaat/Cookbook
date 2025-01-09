@@ -33,8 +33,6 @@ struct RecipeView: View {
                 Text(recipe.instructions)
             }
             
-            
-            
             IngredientListSection(ingredients: recipe.ingredients, selections: $selections)
             
             if (selections.count > 0) {
