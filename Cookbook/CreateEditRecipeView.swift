@@ -23,11 +23,6 @@ struct CreateEditRecipeView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    TextField("", text: $recipe.name)
-                } header: {
-                    Text("Name")
-                }
                 
                 Section {
                     let linkBinding = Binding<String>(get: {
@@ -63,8 +58,15 @@ struct CreateEditRecipeView: View {
                         }
                 } header: {
                     Text("Link")
+                }  footer: {
+                    Text("Cookbook will pull recipe data from the link provided")
                 }
-                
+                Section {
+                    TextField("", text: $recipe.name)
+                } header: {
+                    Text("Name")
+                }
+
                 Section {
                     TextField("", text: $recipe.instructions, axis: .vertical)
                         .lineLimit(5...)
@@ -103,6 +105,26 @@ struct CreateEditRecipeView: View {
                         }
                         
                     } header: {Text("Ingredients")}
+                }
+                
+                Section {
+                    let timeCommitmentBinding = Binding<String>(get: {
+                        if recipe.timeCommitment != nil {
+                            return recipe.timeCommitment!
+                        } else {
+                            return "0-20 mins"
+                        }
+                    }, set: {
+                        recipe.timeCommitment = $0
+                    })
+                    
+                    Picker("Time", selection: timeCommitmentBinding) {
+                        ForEach(["0-20 mins", "20-40 mins", "40+ mins"], id: \.self) { time in
+                            Text(time)
+                        }
+                    }
+                } header: {
+                    Text("Details")
                 }
             }.toolbar {
                 if (isNewRecipe) {
