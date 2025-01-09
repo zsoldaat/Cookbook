@@ -70,7 +70,7 @@ struct CreateEditIngredient: View {
                     }
                 }
                 .pickerStyle(.wheel)
-            }.frame(height: 120)
+            }.frame(height: 100)
         }
         
     }
