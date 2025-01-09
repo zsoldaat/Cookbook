@@ -52,7 +52,7 @@ struct Scraper {
             
             let instructions = getListItemsForTitle(title: "Instructions", headings: allHeadings)
             
-            return RecipeData(name: name, instructions: instructions?.reduce("", {cur, next in cur + "\n" + "\n" + next}), ingredients: ingredients)
+            return RecipeData(name: name, instructions: instructions?.reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next}), ingredients: ingredients)
             
         } catch {
             print("Didn't work")
