@@ -21,29 +21,29 @@ struct RecipeImageView: View {
     }
     
     var body: some View {
-        VStack {
-            if let imageUrl = recipe.imageUrl {
-                AsyncImage(url: imageUrl) { image in
-                    image.resizable()
-                } placeholder: {
-                    Color.gray
-                }
-                .scaledToFit()
-                .frame(width: 100)
+        
+        AsyncImage(url: recipe.imageUrl) { image in
+            image.resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 200, alignment: .center)
+                .clipped()
                 .onLongPressGesture {
                     alertShowing = true
                 }
+        } placeholder: {
+            if (recipe.imageUrl !=  nil) {
+                Color.gray.frame(height: 200)
             } else {
-                Button {
-                    imageSelectShowing = true
-                } label: {
-                    Text("Generate Image")
-                        .fixedSize(horizontal: false, vertical: true)
-                        .multilineTextAlignment(.center)
-                        .frame(width: 100, height: 100)
-                        .background(Rectangle().fill(Color.gray))
+                Color.gray.frame(height: 200).overlay {
+                    Button {
+                        imageSelectShowing = true
+                    } label: {
+                        Text("Generate an image")
+                    }
                 }
             }
+        }.overlay(alignment: .bottomLeading) {
+            Text(recipe.name).font(.largeTitle).bold().padding()
         }
         .sheet(isPresented: $imageSelectShowing) {
             ImageSelectView(query: recipe.name, onSelect: onSelect)
