@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+let scaleFactors = ["1x", "2x", "3x", "4x"]
+
 struct RecipeView: View {
     
     @Environment(\.modelContext) var context
@@ -53,9 +55,18 @@ struct RecipeView: View {
     
             CardView(title: "Ingredients", actionButton: actionButton) {
                 
-                Picker("Scale", selection: $scaleFactor) {
-                    ForEach(1...4, id: \.self) { number in
-                        Text(String(number))
+                let scaleBinding = Binding<String>(get: {
+                    String(scaleFactor) + "x"
+                }, set: {
+                    scaleFactor = Int($0.prefix(1))!
+                })
+                
+                HStack {
+                    Spacer()
+                    Picker("Scale", selection: scaleBinding) {
+                        ForEach(scaleFactors, id: \.self) { factor in
+                            Text(factor)
+                        }
                     }
                 }
                 
