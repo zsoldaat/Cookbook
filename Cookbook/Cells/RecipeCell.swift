@@ -13,11 +13,11 @@ struct RecipeCell: View {
     
     let recipe: Recipe
     
-    var dateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        return formatter
-    }
+//    var dateFormatter: DateFormatter {
+//        let formatter = DateFormatter()
+//        formatter.dateStyle = .long
+//        return formatter
+//    }
     
     let imageSize: CGFloat = 75
     
@@ -39,7 +39,7 @@ struct RecipeCell: View {
                     Text(timeCommitment).lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
                 }
                 if let lastMadeDate = recipe.lastMadeDate {
-                    Text("Last made: \(dateFormatter.string(from: lastMadeDate))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
+                    Text("Last made: \(Recipe.dateFormatter.string(from: lastMadeDate))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
                 }
                 
 //                Text(recipe.instructions)

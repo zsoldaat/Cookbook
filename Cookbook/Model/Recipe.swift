@@ -46,4 +46,10 @@ class Recipe: Identifiable, Hashable, ObservableObject {
         save(context: context)
     }
     
+    static var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        return formatter
+    }
+    
 }

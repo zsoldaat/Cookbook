@@ -97,6 +97,19 @@ struct RecipeView: View {
                 actionButton.disabled = newValue == 0 ? true : false
             }
             
+            CardView(title: "Details") {
+                
+                VStack(alignment: .leading) {
+                    if let lastMadeDate = recipe.lastMadeDate {
+                        Text("Last made: \(Recipe.dateFormatter.string(from:lastMadeDate))")
+                    }
+                    
+                    if let timeCommitment = recipe.timeCommitment {
+                        Text("Time: \(timeCommitment)")
+                    }
+                }
+            }
+            
             if let link = recipe.link {
                 if let url = URL(string:link) {
                     CardView(title: "Link") {
@@ -104,6 +117,7 @@ struct RecipeView: View {
                     }
                 }
             }
+            
         }
 //        .navigationTitle(recipe.name)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
