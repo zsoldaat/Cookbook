@@ -114,13 +114,14 @@ struct RecipeView: View {
                             Text(Recipe.dateFormatter.string(from:lastMadeDate)).font(.subheadline)
                         }
                     }
-                }
-            }
-            
-            if let link = recipe.link {
-                if let url = URL(string:link) {
-                    CardView(title: "Link") {
-                        Link(link, destination: url)
+                    
+                    if let link = recipe.link {
+                        if let url = URL(string:link) {
+                            HStack {
+                                Text("Link:").font(.headline)
+                                Link(link, destination: url).lineLimit(1).font(.subheadline)
+                            }
+                        }
                     }
                 }
             }
