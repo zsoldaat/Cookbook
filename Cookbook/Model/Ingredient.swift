@@ -139,8 +139,8 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         return units[currentIndex! + 1]
     }
     
-    func getString(displayUnit: String) -> String {
-        return "\(getQuantityString(displayUnit: displayUnit)) \(getUnitString(displayUnit: displayUnit))"
+    func getString(displayUnit: String, scaleFactor: Int) -> String {
+        return "\(getQuantityString(displayUnit: displayUnit, scaleFactor: scaleFactor)) \(getUnitString(displayUnit: displayUnit))"
     }
     
     private func getUnitString(displayUnit: String) -> String {
@@ -155,24 +155,24 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         }
     }
     
-    private func getQuantity(displayUnit: String) -> Double {
+    private func getQuantity(displayUnit: String, scaleFactor: Int) -> Double {
         
-        if (unit == displayUnit) {return quantity}
+        if (unit == displayUnit) {return quantity * Double(scaleFactor)}
         
         //find the conversion in the dictionary. If there's nothing, just return the normal quantity assuming the original unit.
         //The case where the unit cannot be found in the dictionary occurs when the user changes the unit to something that the old
         //unit couldn't convert into.
         if let unit = unitConversions[unit]![displayUnit] {
-            return quantity * unit
+            return quantity * unit * Double(scaleFactor)
         } else {
-            return quantity
+            return quantity * Double(scaleFactor)
         }
         
     }
     
-    private func getQuantityString(displayUnit: String) -> String {
+    private func getQuantityString(displayUnit: String, scaleFactor: Int) -> String {
         
-        let realQuantity = getQuantity(displayUnit: displayUnit)
+        let realQuantity = getQuantity(displayUnit: displayUnit, scaleFactor: scaleFactor)
         
         let quantityIsWhole = realQuantity.isNaN || realQuantity.isFinite && realQuantity.rounded() == realQuantity
         

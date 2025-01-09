@@ -10,15 +10,26 @@ import SwiftUI
 struct IngredientCell: View {
     
     let ingredient: Ingredient
-    @State var selection: Int = 1
+    @Binding var scaleFactor: Int
     @State var displayUnit: String? = nil
+    
+    
+    init(ingredient: Ingredient, scaleFactor: Binding<Int>? = nil) {
+        self.ingredient = ingredient
+        if let scaleFactor = scaleFactor {
+            _scaleFactor = scaleFactor
+        } else {
+            _scaleFactor = .constant(1)
+        }
+    }
+    
     
     var body: some View {
         HStack {
             Text(ingredient.name)
                 .font(.headline)
            Spacer()
-            Text(ingredient.getString(displayUnit: displayUnit ?? ingredient.unit))
+            Text(ingredient.getString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor))
                 .font(.subheadline)
                 .onTapGesture {
                     displayUnit = ingredient.changeDisplayUnit(displayUnit: displayUnit ?? ingredient.unit)

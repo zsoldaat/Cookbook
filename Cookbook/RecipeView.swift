@@ -14,11 +14,11 @@ struct RecipeView: View {
     
     let recipe: Recipe
     
-    
     @State private var editShowing: Bool = false
     
     @State private var selections = Set<UUID>()
     @State private var showAlert = false
+    @State private var scaleFactor: Int = 1
     
     @FocusState var keyboardisActive: Bool
     
@@ -49,6 +49,13 @@ struct RecipeView: View {
             }
     
             CardView(title: "Ingredients", actionButton: actionButton) {
+                
+                Picker("Scale", selection: $scaleFactor) {
+                    ForEach(1...4, id: \.self) { number in
+                        Text(String(number))
+                    }
+                }
+                
                 ForEach(recipe.ingredients) { ingredient in
                     HStack {
                         Image(systemName: selections.contains(ingredient.id) ? "circle.fill" : "circle")
@@ -65,7 +72,7 @@ struct RecipeView: View {
                             .sensoryFeedback(trigger: selections.contains(ingredient.id)) { oldValue, newValue in
                                 return .increase
                             }
-                        IngredientCell(ingredient: ingredient)
+                        IngredientCell(ingredient: ingredient, scaleFactor: $scaleFactor)
                     }
                 }
             }
