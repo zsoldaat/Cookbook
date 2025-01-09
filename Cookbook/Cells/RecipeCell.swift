@@ -32,6 +32,7 @@ struct RecipeCell: View {
             } placeholder: {
                 Color.gray.frame(width: imageSize, height: imageSize)
             }
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             VStack(alignment: .leading) {
                 Text(recipe.name).font(.headline)
                 if let timeCommitment = recipe.timeCommitment {
