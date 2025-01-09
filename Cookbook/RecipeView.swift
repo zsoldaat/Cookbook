@@ -24,7 +24,6 @@ struct RecipeView: View {
     
     @Query var shoppingLists: [ShoppingList]
     
-    
     var body: some View {
         @Bindable var shoppingList = shoppingLists.first!
         
@@ -36,7 +35,7 @@ struct RecipeView: View {
                 Text(recipe.instructions)
             }
             
-            @ObservedObject var actionButton = ActionButton(icon: "plus", disabled: selections.count == 0) {
+            let actionButton = ActionButton(icon: "plus", disabled: selections.count == 0) {
                 recipe.ingredients
                     .filter {item in
                         selections.contains(item.id)
@@ -69,7 +68,10 @@ struct RecipeView: View {
                         IngredientCell(ingredient: ingredient)
                     }
                 }
-            }.onChange(of: selections.count) { oldValue, newValue in
+            }
+            //try to make it so this doesn't need to happen with the action button. Ideally bind
+            // the 'disabled' property to selections.count
+            .onChange(of: selections.count) { oldValue, newValue in
                 actionButton.disabled = newValue == 0 ? true : false
             }
             

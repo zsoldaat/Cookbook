@@ -32,11 +32,8 @@ struct CardView<Content: View>: View {
     
     
     init(title: String, actionButton: ActionButton? = nil, @ViewBuilder content: @escaping () -> Content) {
-        func hello() {
-            
-        }
         self.title = title
-        self.actionButton = actionButton != nil ? actionButton! : ActionButton(icon: "", hidden: true) { hello() }
+        self.actionButton = actionButton != nil ? actionButton! : ActionButton(icon: "", hidden: true) { () in }
         self.content = content
     }
     
@@ -59,6 +56,7 @@ struct CardView<Content: View>: View {
                         }
                         .disabled(actionButton.disabled)
                     }
+
                 }
                 
                 content()
