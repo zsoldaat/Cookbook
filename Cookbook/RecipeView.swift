@@ -34,7 +34,29 @@ struct RecipeView: View {
                 Text(recipe.instructions)
             }
             
-            IngredientListSection(ingredients: recipe.ingredients, selections: $selections)
+            CardView(title: "Ingredients") {
+                ForEach(recipe.ingredients) { ingredient in
+                    HStack {
+                        Image(systemName: selections.contains(ingredient.id) ? "circle.fill" : "circle")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25)
+                            .onTapGesture {
+                                if (selections.contains(ingredient.id)) {
+                                    selections.remove(ingredient.id)
+                                } else {
+                                    selections.insert(ingredient.id)
+                                }
+                            }
+                            .sensoryFeedback(trigger: selections.contains(ingredient.id)) { oldValue, newValue in
+                                return .increase
+                            }
+                        IngredientCell(ingredient: ingredient)
+                    }
+                }
+            }
+            
+            
             
             if (selections.count > 0) {
                 ListButton(text: "Add ingredients to Shoppping List", imageSystemName: "plus") {
@@ -53,7 +75,7 @@ struct RecipeView: View {
             
             if let link = recipe.link {
                 if let url = URL(string:link) {
-                    Section(header: Text("Link")) {
+                    CardView(title: "Link") {
                         Link(link, destination: url)
                     }
                 }

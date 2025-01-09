@@ -24,7 +24,7 @@ struct CardView<Content: View>: View {
         VStack {
             VStack(alignment: .leading) {
                 Text(title)
-                    .font(.title)
+                    .font(.title2)
                     .fontWeight(.bold)
                     .padding(.bottom)
                    

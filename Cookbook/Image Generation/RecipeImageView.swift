@@ -48,7 +48,7 @@ struct RecipeImageView: View {
                 .bold()
                 .shadow(color: .black, radius: 1)
                 .padding()
-        }
+        }.clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $imageSelectShowing) {
             ImageSelectView(query: recipe.name, onSelect: onSelect)
         }
