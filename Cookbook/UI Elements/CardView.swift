@@ -30,12 +30,13 @@ struct CardView<Content: View>: View {
     @ObservedObject var actionButton: ActionButton
     let content: () -> Content
     
+    
     init(title: String, actionButton: ActionButton? = nil, @ViewBuilder content: @escaping () -> Content) {
         func hello() {
             
         }
         self.title = title
-        self.actionButton = actionButton != nil ? actionButton! : ActionButton(icon: "", hidden: true, action: hello)
+        self.actionButton = actionButton != nil ? actionButton! : ActionButton(icon: "", hidden: true) { hello() }
         self.content = content
     }
     
