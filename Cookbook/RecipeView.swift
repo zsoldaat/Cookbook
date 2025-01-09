@@ -50,6 +50,7 @@ struct RecipeView: View {
                     }
                 shoppingList.save(context: context)
                 selections.removeAll()
+                recipe.lastMadeDate = Date()
                 showAlert = true
             }
     
