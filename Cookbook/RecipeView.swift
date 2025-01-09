@@ -127,6 +127,7 @@ struct RecipeView: View {
             }
             
         }
+        .padding(2)
 //        .navigationTitle(recipe.name)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
         .fullScreenCover(isPresented: $editShowing, content: {
