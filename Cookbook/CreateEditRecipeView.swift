@@ -53,6 +53,10 @@ struct CreateEditRecipeView: View {
                                     if let imageUrl = recipeData.imageUrls?.first {
                                         recipe.imageUrl = URL(string: imageUrl)
                                     }
+                                    
+                                    if let ingredients = recipeData.ingredients {
+                                        recipe.ingredients = ingredients
+                                    }
                                 }
                             }
                         }
