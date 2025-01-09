@@ -30,7 +30,7 @@ struct ShoppingListView: View {
                     })
                 }
                 
-                ListButton(text: "Add Ingredients", imageSystemName: "plus") {
+                ListButton(text: "Add", imageSystemName: "plus") {
                     addShowing = true
                 }
             }

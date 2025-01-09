@@ -78,7 +78,7 @@ struct CreateEditRecipeView: View {
                     Text("Instructions")
                 }
                 
-                Button("+ Add Ingredients") {
+                ListButton(text: "Add Ingredients", imageSystemName: "plus") {
                     ingredientIdToEdit = nil
                     ingredientModalShowing = true
                 }
