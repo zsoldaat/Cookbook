@@ -26,39 +26,53 @@ struct RecipeView: View {
     
     var body: some View {
         @Bindable var shoppingList = shoppingLists.first!
-        List {
-            RecipeImageView(recipe: recipe)
-            
-            Section(header: Text("Instructions")) {
-                Text(recipe.instructions)
+        
+        VStack {
+            AsyncImage(url: recipe.imageUrl) { image in
+                image.resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 200, alignment: .center)
+                    .clipped()
+            } placeholder: {
+                Color.gray.frame(height: 200)
+            }.overlay(alignment: .bottomLeading) {
+                Text(recipe.name).font(.largeTitle).bold().padding()
             }
-            
-            IngredientListSection(ingredients: recipe.ingredients, selections: $selections)
-            
-            if (selections.count > 0) {
-                ListButton(text: "Add ingredients to Shoppping List", imageSystemName: "plus") {
-                    recipe.ingredients
-                        .filter {item in
-                            selections.contains(item.id)
-                        }
-                        .forEach {ingredient in
-                            shoppingList.addItem(ingredient)
-                        }
-                    shoppingList.save(context: context)
-                    selections.removeAll()
-                    showAlert = true
+            List {
+                
+                //            RecipeImageView(recipe: recipe)
+                
+                Section(header: Text("Instructions")) {
+                    Text(recipe.instructions)
                 }
-            }
-            
-            if let link = recipe.link {
-                if let url = URL(string:link) {
-                    Section(header: Text("Link")) {
-                        Link(link, destination: url)
+                
+                IngredientListSection(ingredients: recipe.ingredients, selections: $selections)
+                
+                if (selections.count > 0) {
+                    ListButton(text: "Add ingredients to Shoppping List", imageSystemName: "plus") {
+                        recipe.ingredients
+                            .filter {item in
+                                selections.contains(item.id)
+                            }
+                            .forEach {ingredient in
+                                shoppingList.addItem(ingredient)
+                            }
+                        shoppingList.save(context: context)
+                        selections.removeAll()
+                        showAlert = true
+                    }
+                }
+                
+                if let link = recipe.link {
+                    if let url = URL(string:link) {
+                        Section(header: Text("Link")) {
+                            Link(link, destination: url)
+                        }
                     }
                 }
             }
         }
-        .navigationTitle(recipe.name)
+//        .navigationTitle(recipe.name)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
         .fullScreenCover(isPresented: $editShowing, content: {
             @Bindable var recipe = recipe
