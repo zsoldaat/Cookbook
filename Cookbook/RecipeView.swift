@@ -28,17 +28,6 @@ struct RecipeView: View {
         @Bindable var shoppingList = shoppingLists.first!
         
         ScrollView {
-//            AsyncImage(url: recipe.imageUrl) { image in
-//                image.resizable()
-//                    .aspectRatio(contentMode: .fill)
-//                    .frame(height: 200, alignment: .center)
-//                    .clipped()
-//            } placeholder: {
-//                Color.gray.frame(height: 200)
-//            }.overlay(alignment: .bottomLeading) {
-//                Text(recipe.name).font(.largeTitle).bold().padding()
-//            }
-            
             RecipeImageView(recipe: recipe)
             
             Section(header: Text("Instructions")) {

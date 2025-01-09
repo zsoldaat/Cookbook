@@ -43,7 +43,11 @@ struct RecipeImageView: View {
                 }
             }
         }.overlay(alignment: .bottomLeading) {
-            Text(recipe.name).font(.largeTitle).bold().padding()
+            Text(recipe.name)
+                .font(.largeTitle)
+                .bold()
+                .shadow(color: .black, radius: 1)
+                .padding()
         }
         .sheet(isPresented: $imageSelectShowing) {
             ImageSelectView(query: recipe.name, onSelect: onSelect)
