@@ -30,7 +30,7 @@ struct RecipeView: View {
         ScrollView {
             RecipeImageView(recipe: recipe)
             
-            Section(header: Text("Instructions")) {
+            CardView(title: "Instructions") {
                 Text(recipe.instructions)
             }
             

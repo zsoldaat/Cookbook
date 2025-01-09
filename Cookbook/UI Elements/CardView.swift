@@ -7,12 +7,35 @@
 
 import SwiftUI
 
-struct CardView: View {
+struct CardView<Content: View>: View {
+    
+    @Environment(\.colorScheme) var colorScheme
+    
+    let title: String
+    let content: () -> Content
+    
+    init(title: String, @ViewBuilder content: @escaping () -> Content) {
+            self.title = title
+            self.content = content
+        }
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        
+        VStack {
+            VStack(alignment: .leading) {
+                Text(title)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.bottom)
+                   
+                content()
+            }.padding()
+        }
+        .background(Color.gray.opacity(0.2))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
-#Preview {
-    CardView()
-}
+//#Preview {
+//    CardView()
+//}
