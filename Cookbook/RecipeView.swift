@@ -34,7 +34,18 @@ struct RecipeView: View {
                 Text(recipe.instructions)
             }
             
-            CardView(title: "Ingredients") {
+            CardView(title: "Ingredients", actionButton: ActionButton(icon: "plus", disabled: selections.count == 0, action: {
+                recipe.ingredients
+                    .filter {item in
+                        selections.contains(item.id)
+                    }
+                    .forEach {ingredient in
+                        shoppingList.addItem(ingredient)
+                    }
+                shoppingList.save(context: context)
+                selections.removeAll()
+                showAlert = true
+            })) {
                 ForEach(recipe.ingredients) { ingredient in
                     HStack {
                         Image(systemName: selections.contains(ingredient.id) ? "circle.fill" : "circle")
@@ -58,20 +69,20 @@ struct RecipeView: View {
             
             
             
-            if (selections.count > 0) {
-                ListButton(text: "Add ingredients to Shoppping List", imageSystemName: "plus") {
-                    recipe.ingredients
-                        .filter {item in
-                            selections.contains(item.id)
-                        }
-                        .forEach {ingredient in
-                            shoppingList.addItem(ingredient)
-                        }
-                    shoppingList.save(context: context)
-                    selections.removeAll()
-                    showAlert = true
-                }
-            }
+//            if (selections.count > 0) {
+//                ListButton(text: "Add ingredients to Shoppping List", imageSystemName: "plus") {
+//                    recipe.ingredients
+//                        .filter {item in
+//                            selections.contains(item.id)
+//                        }
+//                        .forEach {ingredient in
+//                            shoppingList.addItem(ingredient)
+//                        }
+//                    shoppingList.save(context: context)
+//                    selections.removeAll()
+//                    showAlert = true
+//                }
+//            }
             
             if let link = recipe.link {
                 if let url = URL(string:link) {
