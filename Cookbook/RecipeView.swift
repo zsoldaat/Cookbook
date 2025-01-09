@@ -100,12 +100,19 @@ struct RecipeView: View {
             CardView(title: "Details") {
                 
                 VStack(alignment: .leading) {
-                    if let lastMadeDate = recipe.lastMadeDate {
-                        Text("Last made: \(Recipe.dateFormatter.string(from:lastMadeDate))")
-                    }
                     
                     if let timeCommitment = recipe.timeCommitment {
-                        Text("Time: \(timeCommitment)")
+                        HStack {
+                            Text("Time:").font(.headline)
+                            Text(timeCommitment).font(.subheadline)
+                        }
+                    }
+                    
+                    if let lastMadeDate = recipe.lastMadeDate {
+                        HStack {
+                            Text("Last Made:").font(.headline)
+                            Text(Recipe.dateFormatter.string(from:lastMadeDate)).font(.subheadline)
+                        }
                     }
                 }
             }
