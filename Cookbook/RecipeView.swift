@@ -40,8 +40,11 @@ struct RecipeView: View {
                     .filter {item in
                         selections.contains(item.id)
                     }
-                    .forEach {ingredient in
-                        shoppingList.addItem(ingredient)
+                    .forEach { ingredient in
+                        //add ingredients multiple times if scaling up the recipe
+                        for _ in 1...scaleFactor {
+                            shoppingList.addItem(ingredient)
+                        }
                     }
                 shoppingList.save(context: context)
                 selections.removeAll()
