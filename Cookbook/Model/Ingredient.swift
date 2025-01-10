@@ -237,4 +237,14 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         }
     }
     
+    static func fractionToDouble(fraction: String) -> Double {
+        if (fraction.isEmpty) {return Double(0)}
+        
+        let numerator = Double(String(fraction.first!))!
+        let denominator = Double(String(fraction.last!))!
+        
+        return numerator/denominator
+        
+    }
+    
 }

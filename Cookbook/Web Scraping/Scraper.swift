@@ -26,6 +26,11 @@ struct RecipeData {
     }
 }
 
+struct IngredientQuantity {
+    let whole: Int
+    let fraction: String?
+}
+
 func findUnit(in string: String) -> String? {
     
     if string.contains("cup") || string.contains("cups") {
@@ -145,7 +150,7 @@ struct Scraper {
         
         let parsedQuantity = parseQuantityPart(string: quantity)
         
-        let ingredient = Ingredient(name: workingString, quantityWhole: parsedQuantity ?? 1, quantityFraction: 0.0, unit: unit.isEmpty ? "item" : unit)
+        let ingredient = Ingredient(name: workingString, quantityWhole: parsedQuantity?.whole ?? 1, quantityFraction: Ingredient.fractionToDouble(fraction: parsedQuantity?.fraction ?? ""), unit: unit.isEmpty ? "item" : unit)
         
         return ingredient
     }
@@ -158,6 +163,7 @@ struct Scraper {
             .map { substring in "\(substring)" }
         
         if words.count > 0 {
+            print(words.first!)
             if let unit = findUnit(in: words.first!) {
                 return [unit, words[1...].joined(separator: " ")]
             }
@@ -185,14 +191,40 @@ struct Scraper {
     
     
 // TODO: implement parsing of quantity
-    private func parseQuantityPart(string: String) -> Int? {
-        let numbers = String(string.unicodeScalars.filter {char in CharacterSet.decimalDigits.contains(char)})
+    private func parseQuantityPart(string: String) -> IngredientQuantity? {
+        //Handles the situation where recipes will write "1 1/2 - 2 tablespoons...", we split based on the dash and then carry out operations going forward on both of the numbers
+        let quantityValues = string.components(separatedBy: CharacterSet(charactersIn: "-–"))
         
-        if let first = numbers.first {
-            return Int(String(first))
+        let ingredientQuantities: [IngredientQuantity] = quantityValues.map { quantity in
+            
+            var whole = 1
+            var fraction = ""
+            
+            //find fractions if there are any
+            if let indexOfSplit = quantity.firstIndex(of: "/") {
+                let firstHalfOfFraction = quantity.prefix(upTo: indexOfSplit).last!
+                let lastHalfOfFraction = quantity.suffix(from: indexOfSplit)
+                fraction = "\(firstHalfOfFraction)\(lastHalfOfFraction)".trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            
+            //remove occurences of the fraction (if any), leaving the whole part remaining
+            let wholePart = String(quantity.replacingOccurrences(of: fraction, with: "").unicodeScalars.filter {CharacterSet.decimalDigits.contains($0)}).trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            if Int(wholePart) != nil {
+                whole = Int(wholePart)!
+            } else {
+                if fraction.isEmpty {
+                    whole = 1
+                } else {
+                    whole = 0
+                }
+            }
+            
+            return IngredientQuantity(whole: whole, fraction: fraction)
         }
         
-        return nil
+        //Just return the first of the quantities if there are multiple, i.e. if the quantity of the ingredient in the recipe is "1 1/2 - 2 tablespoons...", we just return the "1 1/2"
+        return ingredientQuantities.first
     }
     
     private func fetchUrl() async -> String? {

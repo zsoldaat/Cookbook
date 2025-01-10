@@ -26,13 +26,16 @@ struct CookbookApp: App {
                 .modelContainer(container)
                 .environmentObject(selectedTab)
                 .task {
-                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
+                    let scraper = Scraper(url: URL(string: "https://www.saltandlavender.com/chicken-piccata/#wprm-recipe-container-7708")!)
                     let data = await scraper.getRecipeData()
                     
                     if let data = data {
                         if let ingredients = data.ingredients {
                             ingredients.forEach {ingredient in
-                                print(ingredient.quantityWhole, ingredient.unit, ingredient.name)
+                                if (ingredient.name.contains("tomato")) {
+                                    print(ingredient.quantityWhole, ingredient.unit, ingredient.name)
+                                }
+                                
                             }
                         }
                     }

@@ -22,22 +22,12 @@ struct CreateEditIngredient: View {
         "", "1/8", "1/4", "1/3", "3/8", "1/2", "5/8", "2/3", "3/4", "7/8"
     ]
     
-    private func fractionToDouble(fraction: String) -> Double {
-        if (fraction.isEmpty) {return Double(0)}
-        
-        let numerator = Double(String(fraction.first!))!
-        let denominator = Double(String(fraction.last!))!
-        
-        return numerator/denominator
-        
-    }
-    
     var body: some View {
         
         let quantityFractionBinding = Binding<String>(get: {
             Ingredient.decimalsRepresentedAsFraction(decimals: ingredient.quantityFraction) ?? String(ingredient.quantityFraction)
         }, set: {
-            ingredient.quantityFraction = fractionToDouble(fraction: $0)
+            ingredient.quantityFraction = Ingredient.fractionToDouble(fraction: $0)
         })
         
         Section("Name") {
