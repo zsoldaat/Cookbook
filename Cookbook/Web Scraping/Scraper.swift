@@ -111,12 +111,14 @@ struct Scraper {
                 return nil
             }
             
-            let instructions = getListItemsForTitle(title: "Instructions", headings: allHeadings)
+            //Sometimes sites use the term "instructions", sometimes "preparations", so look for both
+            let instructions = getListItemsForTitle(title: "Instructions", headings: allHeadings)?.reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next})
+            let preparation = getListItemsForTitle(title: "Preparation", headings: allHeadings)?.reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next})
             
             let ingredients = getListItemsForTitle(title: "Ingredients", headings: allHeadings)
             let ingredientObjects: [Ingredient]? = ingredients != nil ? ingredients!.map{parseIngredient(ingredient: $0)} : nil
 
-            return RecipeData(name: name, instructions: instructions?.reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next}), ingredients: ingredientObjects, imageUrls: imageUrls)
+            return RecipeData(name: name, instructions: instructions ?? preparation, ingredients: ingredientObjects, imageUrls: imageUrls)
             
         } catch {
             print("Didn't work")
