@@ -15,7 +15,7 @@ struct IngredientListSection: View {
     
     var body: some View {
         Section(header: Text("Ingredients")) {
-            ForEach(ingredients) { ingredient in
+            ForEach(ingredients.sorted {$0.index < $1.index}) { ingredient in
                 HStack {
                     Image(systemName: selections.contains(ingredient.id) ? "circle.fill" : "circle")
                         .resizable()
@@ -33,7 +33,8 @@ struct IngredientListSection: View {
                         }
                     IngredientCell(ingredient: ingredient)
                 }
-            }.onDelete { indexSet in
+            }
+            .onDelete { indexSet in
                 if let onDelete = onDelete {
                     onDelete(indexSet)
                 }

@@ -86,7 +86,7 @@ struct CreateEditRecipeView: View {
                 if (!recipe.ingredients.isEmpty) {
                     Section {
                         List {
-                            ForEach(recipe.ingredients) {ingredient in
+                            ForEach(recipe.ingredients.sorted {$0.index < $1.index}) {ingredient in
                                 IngredientCell(ingredient: ingredient)
                                     .swipeActions {
                                         Button(role: .destructive) {

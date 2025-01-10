@@ -40,6 +40,7 @@ struct RecipeView: View {
             CardView(title: "Ingredients") {
                 Button {
                     recipe.ingredients
+                        
                         .filter {item in
                             selections.contains(item.id)
                         }
@@ -72,7 +73,7 @@ struct RecipeView: View {
                     }
                 }
                 
-                ForEach(recipe.ingredients) { ingredient in
+                ForEach(recipe.ingredients.sorted {$0.index < $1.index}) { ingredient in
                     HStack {
                         Image(systemName: selections.contains(ingredient.id) ? "circle.fill" : "circle")
                             .resizable()
