@@ -168,20 +168,19 @@ struct Scraper {
     }
     
     private func getQuantityPart(string: String) -> [String]? {
-//        var highestNumberIndex: String.Index?
         
-        let index = string.lastIndex { char in
-            char.isNumber
+        let firstLetter = string.firstIndex { char in
+            char.isLetter
         }
         
-        if let index = index {
-            let numberPart = string.prefix(through: index)
-            var rest = string.suffix(from: index)
-            rest.removeFirst()
+        if let firstLetter = firstLetter {
+            let numberPart = string.prefix(upTo: firstLetter)
+            let rest = string.suffix(from: firstLetter)
             return ["\(numberPart)".trimmingCharacters(in: .whitespacesAndNewlines), "\(rest)".trimmingCharacters(in: .whitespacesAndNewlines)]
         }
         
         return nil
+
     }
     
     
