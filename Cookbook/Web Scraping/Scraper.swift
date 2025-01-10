@@ -183,25 +183,24 @@ struct Scraper {
     private func parseIngredient(ingredient: String) -> Ingredient {
         
         var workingString = ingredient
-        print(workingString)
         var quantity: String = ""
         var unit: String = ""
         
         if let foundQuantity = getQuantityPart(string: workingString) {
             quantity = foundQuantity[0]
             workingString = foundQuantity[1]
-            print(workingString)
         }
         
         if let foundUnit = getUnitPart(string: workingString) {
             unit = foundUnit[0]
             workingString = foundUnit[1]
-            print(workingString)
         }
         
         let parsedQuantity = parseQuantityPart(string: quantity)
         
-        let ingredient = Ingredient(name: workingString, quantityWhole: parsedQuantity?.whole ?? 1, quantityFraction: Ingredient.fractionToDouble(fraction: parsedQuantity?.fraction ?? ""), unit: unit.isEmpty ? "item" : unit)
+        let name = workingString.prefix(1).uppercased() + workingString.dropFirst()
+        
+        let ingredient = Ingredient(name: name, quantityWhole: parsedQuantity?.whole ?? 1, quantityFraction: Ingredient.fractionToDouble(fraction: parsedQuantity?.fraction ?? ""), unit: unit.isEmpty ? "item" : unit)
         
         return ingredient
     }
