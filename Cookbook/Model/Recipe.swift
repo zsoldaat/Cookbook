@@ -52,4 +52,8 @@ class Recipe: Identifiable, Hashable, ObservableObject {
         return formatter
     }
     
+    func getNextIngredientIndex() -> Int {
+        return (ingredients.map { $0.index }.max() ?? 0) + 1
+    }
+    
 }

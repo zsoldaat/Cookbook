@@ -114,8 +114,9 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     var quantityFraction: Double
     var quantity: Double {Double(quantityWhole) + quantityFraction}
     var unit: String
+    var index: Int
     
-    init(name: String, recipe: Recipe? = nil, quantityWhole: Int, quantityFraction: Double, unit: String) {
+    init(name: String, recipe: Recipe? = nil, quantityWhole: Int, quantityFraction: Double, unit: String, index: Int) {
         self.name = name
         if let recipe = recipe {
             self.recipe = recipe
@@ -123,6 +124,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         self.quantityWhole = quantityWhole
         self.quantityFraction = quantityFraction
         self.unit = unit
+        self.index = index
     }
     
     //this code just cycles through the available conversion units for a given unit

@@ -16,7 +16,7 @@ struct ShoppingListView: View {
     @State var addShowing: Bool = false
     
     @FocusState var keyboardIsActive: Bool
-    @StateObject var ingredient: Ingredient = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: "item")
+    @StateObject var ingredient: Ingredient = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: "item", index: 1)
     
     var body: some View {
         NavigationStack {
@@ -43,6 +43,7 @@ struct ShoppingListView: View {
                 NavigationStack {
                     Form {
                         CreateEditIngredient(ingredient: ingredient, onSubmit: {
+                            ingredient.index = shoppingList.getNextIngredientIndex()
                             shoppingList.addItem(ingredient)
                             ingredient.name = ""
                             ingredient.quantityWhole = 1

@@ -30,7 +30,7 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
         if let existingItem = items.first(where: { $0.name == ingredient.name }) {
             addIngredients(existingIngredient: existingItem, newIngredient: ingredient)
         } else {
-            items.append(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit))
+            items.append(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit, index: getNextIngredientIndex()))
         }
     }
     
@@ -79,6 +79,10 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
                 print(error)
             }
         }
+    }
+    
+    func getNextIngredientIndex() -> Int {
+        return (items.map { $0.index }.max() ?? 0) + 1
     }
     
 }
