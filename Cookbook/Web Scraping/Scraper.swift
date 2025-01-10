@@ -31,49 +31,98 @@ struct IngredientQuantity {
     let fraction: String?
 }
 
+//func findUnit(in string: String) -> String? {
+//    
+//    if string.contains("cup") || string.contains("cups") {
+//        return "cup"
+//    }
+//    
+//    if string.contains("quart") || string.contains("quarts") {
+//        return "quart"
+//    }
+//    
+//    if string.contains("tsp") || string.contains("tsps") || string.contains("teaspoon") || string.contains("teaspoons") {
+//        return "tsp"
+//    }
+//    
+//    if string.contains("tbsp") || string.contains( "tbsps") || string.contains("tablespoon") || string.contains("tablespoons") {
+//        return "tbsp"
+//    }
+//    
+//    if string.contains("mL") || string.contains("mls") || string.contains("milliliter") || string.contains("milliliters") {
+//        return "mL"
+//    }
+//    
+//    if string.contains("L") || string.contains("ls") || string.contains("liter") || string.contains("liters") {
+//        return "L"
+//    }
+//    
+//    if string.contains("oz") || string.contains("ounce") || string.contains("ounces") {
+//        return "oz"
+//    }
+//    
+//    if string.contains("lb") || string.contains("lbs") || string.contains("pound") || string.contains("pounds") {
+//        return "lb"
+//    }
+//    
+//    if string.contains( "g") || string.contains("gram") || string.contains("grams") {
+//        return "g"
+//    }
+//    
+//    if string.contains("kg") || string.contains("kilogram") || string.contains("kilograms") {
+//        return "kg"
+//    }
+//    
+//    if string.contains("pinch") || string.contains("pinches") {
+//        return "pinch"
+//    }
+//    
+//    return nil
+//}
+
 func findUnit(in string: String) -> String? {
     
-    if string.contains("cup") || string.contains("cups") {
+    if string == "cup" || string == "cups" {
         return "cup"
     }
     
-    if string.contains("quart") || string.contains("quarts") {
+    if string == "quart" || string == "quarts" {
         return "quart"
     }
     
-    if string.contains("tsp") || string.contains("tsps") || string.contains("teaspoon") || string.contains("teaspoons") {
+    if string == "tsp" || string == "tsps" || string == "teaspoon" || string == "teaspoons"{
         return "tsp"
     }
     
-    if string.contains("tbsp") || string.contains( "tbsps") || string.contains("tablespoon") || string.contains("tablespoons") {
+    if string == "tbsp" || string == "tbsps" || string == "tablespoon" || string == "tablespoons" {
         return "tbsp"
     }
     
-    if string.contains("mL") || string.contains("mls") || string.contains("milliliter") || string.contains("milliliters") {
+    if string == "mL" || string == "mLs" || string == "milliliter" || string == "milliliters" {
         return "mL"
     }
     
-    if string.contains("L") || string.contains("ls") || string.contains("liter") || string.contains("liters") {
+    if string == "L" || string == "Ls" || string == "liter" || string == "liters" {
         return "L"
     }
     
-    if string.contains("oz") || string.contains("ounce") || string.contains("ounces") {
+    if string == "oz" || string == "ounce" || string == "ounces" {
         return "oz"
     }
     
-    if string.contains("lb") || string.contains("lbs") || string.contains("pound") || string.contains("pounds") {
+    if string == "lb" || string == "lbs" || string == "pound" || string == "pounds" {
         return "lb"
     }
     
-    if string.contains( "g") || string.contains("gram") || string.contains("grams") {
+    if string == "g" || string == "gram" || string == "grams" {
         return "g"
     }
     
-    if string.contains("kg") || string.contains("kilogram") || string.contains("kilograms") {
+    if string == "kg" || string == "kilogram" || string == "kilograms" {
         return "kg"
     }
     
-    if string.contains("pinch") || string.contains("pinches") {
+    if string == "pinch" || string == "pinches" {
         return "pinch"
     }
     
