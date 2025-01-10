@@ -183,18 +183,20 @@ struct Scraper {
     private func parseIngredient(ingredient: String) -> Ingredient {
         
         var workingString = ingredient
-        
+        print(workingString)
         var quantity: String = ""
         var unit: String = ""
         
         if let foundQuantity = getQuantityPart(string: workingString) {
             quantity = foundQuantity[0]
             workingString = foundQuantity[1]
+            print(workingString)
         }
         
         if let foundUnit = getUnitPart(string: workingString) {
             unit = foundUnit[0]
             workingString = foundUnit[1]
+            print(workingString)
         }
         
         let parsedQuantity = parseQuantityPart(string: quantity)
@@ -207,12 +209,11 @@ struct Scraper {
     private func getUnitPart(string: String) -> [String]? {
         //keep only alphanumerics and spaced, split into array
         let words = String(string.unicodeScalars
-            .filter {char in CharacterSet.alphanumerics.contains(char) || CharacterSet.whitespaces.contains(char)})
+            .filter {char in CharacterSet.alphanumerics.contains(char) || CharacterSet.whitespaces.contains(char) || char == "-" || char == "/"})
             .split(separator: " ")
             .map { substring in "\(substring)" }
         
         if words.count > 0 {
-            print(words.first!)
             if let unit = findUnit(in: words.first!) {
                 return [unit, words[1...].joined(separator: " ")]
             }
@@ -235,11 +236,9 @@ struct Scraper {
         }
         
         return nil
-
     }
     
     
-// TODO: implement parsing of quantity
     private func parseQuantityPart(string: String) -> IngredientQuantity? {
         //Handles the situation where recipes will write "1 1/2 - 2 tablespoons...", we split based on the dash and then carry out operations going forward on both of the numbers
         let quantityValues = string.components(separatedBy: CharacterSet(charactersIn: "-–"))

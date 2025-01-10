@@ -33,7 +33,7 @@ struct CookbookApp: App {
                         if let ingredients = data.ingredients {
                             ingredients.forEach {ingredient in
                                 if (ingredient.name.contains("tomato")) {
-                                    print(ingredient.quantityWhole, ingredient.unit, ingredient.name)
+//                                    print(ingredient.quantityWhole, ingredient.unit, ingredient.name)
                                 }
                                 
                             }
