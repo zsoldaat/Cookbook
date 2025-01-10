@@ -150,6 +150,8 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         switch realUnit {
         case "items":
             return "item"
+        case "item":
+            return ""
         default:
             return realUnit
         }
