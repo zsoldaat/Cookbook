@@ -7,33 +7,18 @@
 
 import SwiftUI
 
-class ActionButton: ObservableObject {
-    let icon: String
-    @Published var hidden: Bool
-    @Published var disabled: Bool
-    let action: () -> Void
-    
-    
-    init(icon: String, hidden: Bool? = nil, disabled: Bool? = nil, action: @escaping () -> Void) {
-        self.icon = icon
-        self.hidden = hidden == nil ? false : true
-        self.disabled = disabled == nil ? false : true
-        self.action = action
-    }
-}
-
-struct CardView<Content: View>: View {
+struct CardView<Content: View, ButtonContent: View>: View {
     
     @Environment(\.colorScheme) var colorScheme
     
     let title: String
-    @ObservedObject var actionButton: ActionButton
+    let button: () -> ButtonContent?
     let content: () -> Content
     
     
-    init(title: String, actionButton: ActionButton? = nil, @ViewBuilder content: @escaping () -> Content) {
+    init(title: String, @ViewBuilder button: @escaping () -> ButtonContent? = { EmptyView() }, @ViewBuilder content: @escaping () -> Content) {
         self.title = title
-        self.actionButton = actionButton != nil ? actionButton! : ActionButton(icon: "", hidden: true) { () in }
+        self.button = button
         self.content = content
     }
     
@@ -47,18 +32,8 @@ struct CardView<Content: View>: View {
                         .fontWeight(.bold)
                         .padding(.bottom)
                     Spacer()
-                    
-                    if (!actionButton.hidden) {
-                        Button {
-                            actionButton.action()
-                        } label: {
-                            Image(systemName: actionButton.icon)
-                        }
-                        .disabled(actionButton.disabled)
-                    }
-
+                    button()
                 }
-                
                 content()
             }.padding()
         }

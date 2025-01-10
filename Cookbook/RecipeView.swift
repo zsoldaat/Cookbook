@@ -37,25 +37,26 @@ struct RecipeView: View {
                 Text(recipe.instructions)
             }
             
-            let actionButton = ActionButton(icon: "plus", disabled: selections.count == 0) {
-                recipe.ingredients
-                    .filter {item in
-                        selections.contains(item.id)
-                    }
-                    .forEach { ingredient in
-                        //add ingredients multiple times if scaling up the recipe
-                        for _ in 1...scaleFactor {
-                            shoppingList.addItem(ingredient)
+            CardView(title: "Ingredients") {
+                Button {
+                    recipe.ingredients
+                        .filter {item in
+                            selections.contains(item.id)
                         }
-                    }
-                shoppingList.save(context: context)
-                selections.removeAll()
-                recipe.lastMadeDate = Date()
-                showAlert = true
-            }
-    
-            CardView(title: "Ingredients", actionButton: actionButton) {
-                
+                        .forEach { ingredient in
+                            //add ingredients multiple times if scaling up the recipe
+                            for _ in 1...scaleFactor {
+                                shoppingList.addItem(ingredient)
+                            }
+                        }
+                    shoppingList.save(context: context)
+                    selections.removeAll()
+                    recipe.lastMadeDate = Date()
+                    showAlert = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            } content: {
                 let scaleBinding = Binding<String>(get: {
                     String(scaleFactor) + "x"
                 }, set: {
@@ -91,23 +92,16 @@ struct RecipeView: View {
                     }
                 }
             }
-            //try to make it so this doesn't need to happen with the action button. Ideally bind
-            // the 'disabled' property to selections.count
-            .onChange(of: selections.count) { oldValue, newValue in
-                actionButton.disabled = newValue == 0 ? true : false
-            }
             
             CardView(title: "Details") {
-                
                 VStack(alignment: .leading) {
-                    
                     if let timeCommitment = recipe.timeCommitment {
                         HStack {
                             Text("Time:").font(.headline)
                             Text(timeCommitment).font(.subheadline)
                         }
                     }
-                    
+
                     if let lastMadeDate = recipe.lastMadeDate {
                         HStack {
                             Text("Last Made:").font(.headline)
@@ -128,7 +122,6 @@ struct RecipeView: View {
             
         }
         .padding(2)
-//        .navigationTitle(recipe.name)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
         .fullScreenCover(isPresented: $editShowing, content: {
             @Bindable var recipe = recipe
