@@ -14,10 +14,6 @@ struct CreateEditIngredient: View {
     
     @FocusState.Binding var keyboardIsActive: Bool
     
-    private let units: [String] = [
-        "item", "cup", "quart", "tsp", "tbsp", "mL", "L", "oz", "lb", "g", "kg", "pinch"
-    ]
-    
     private let fractions: [String] = [
         "", "1/8", "1/4", "1/3", "3/8", "1/2", "5/8", "2/3", "3/4", "7/8"
     ]
@@ -55,8 +51,8 @@ struct CreateEditIngredient: View {
                 }.pickerStyle(.wheel)
                 
                 Picker("Unit", selection: $ingredient.unit) {
-                    ForEach(units, id: \.self) { unit in
-                        Text(unit)
+                    ForEach(Unit.allCases) { unit in
+                        Text(unit.rawValue)
                     }
                 }
                 .pickerStyle(.wheel)
