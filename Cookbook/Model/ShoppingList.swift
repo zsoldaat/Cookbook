@@ -67,7 +67,19 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
             return
         }
         
-        print("Ingredients do not share the same unit")
+        let possibleConversions = Array(existingIngredient.unit.getConversions().keys)
+        
+        if (possibleConversions.contains(newIngredient.unit)) {
+            let convertedQuantity = newIngredient.quantity * newIngredient.unit.conversion(to: existingIngredient.unit)
+            let totalQuantity = existingIngredient.quantity + convertedQuantity
+            
+            existingIngredient.quantityWhole = Int(totalQuantity.rounded(.down))
+            existingIngredient.quantityFraction = totalQuantity - totalQuantity.rounded(.down)
+            
+            return
+        }
+        
+        print("\(newIngredient.unit.rawValue) cannot be converter to \(existingIngredient.unit.rawValue)")
     }
     
     func save(context: ModelContext) {
