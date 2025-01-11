@@ -201,7 +201,7 @@ struct Scraper {
     private func getUnitPart(string: String) -> [Unit: String]? {
         //keep only alphanumerics and spaced, split into array
         let words = String(string.unicodeScalars
-            .filter {char in CharacterSet.alphanumerics.contains(char) || CharacterSet.whitespaces.contains(char) || char == "-" || char == "/"})
+            .filter {char in CharacterSet.alphanumerics.contains(char) || CharacterSet.whitespaces.contains(char) || char == "-" || char == "/" || char == "(" || char == ")"})
             .split(separator: " ")
             .map { substring in "\(substring)" }
         
