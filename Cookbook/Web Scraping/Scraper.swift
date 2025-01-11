@@ -178,6 +178,22 @@ struct Scraper {
         return ingredient
     }
     
+    private func getQuantityPart(string: String) -> [String]? {
+        
+        let firstLetter = string.firstIndex { char in
+            char.isLetter
+        }
+        
+        if let firstLetter = firstLetter {
+            let numberPart = string.prefix(upTo: firstLetter)
+            let rest = string.suffix(from: firstLetter)
+            return ["\(numberPart)".trimmingCharacters(in: .whitespacesAndNewlines), "\(rest)".trimmingCharacters(in: .whitespacesAndNewlines)]
+        }
+        
+        return nil
+    }
+    
+    
     private func getUnitPart(string: String) -> [Unit: String]? {
         //keep only alphanumerics and spaced, split into array
         let words = String(string.unicodeScalars
@@ -194,22 +210,6 @@ struct Scraper {
         return nil
         
     }
-    
-    private func getQuantityPart(string: String) -> [String]? {
-        
-        let firstLetter = string.firstIndex { char in
-            char.isLetter
-        }
-        
-        if let firstLetter = firstLetter {
-            let numberPart = string.prefix(upTo: firstLetter)
-            let rest = string.suffix(from: firstLetter)
-            return ["\(numberPart)".trimmingCharacters(in: .whitespacesAndNewlines), "\(rest)".trimmingCharacters(in: .whitespacesAndNewlines)]
-        }
-        
-        return nil
-    }
-    
     
     private func parseQuantityPart(string: String) -> IngredientQuantity? {
         //Handles the situation where recipes will write "1 1/2 - 2 tablespoons...", we split based on the dash and then carry out operations going forward on both of the numbers
