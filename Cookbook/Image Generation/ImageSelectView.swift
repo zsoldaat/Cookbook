@@ -36,7 +36,8 @@ struct ImageSelectView: View {
     @Environment(\.dismiss) private var dismiss
     
     let query: String
-    let onSelect: (URL) -> Void
+    let onSelect: (URL?) -> Void
+    @State var textFieldValue: String = ""
     
     @State var imageUrls: [URL?]? = nil
     
@@ -74,6 +75,13 @@ struct ImageSelectView: View {
             } else {
                 Text("Loading...")
             }
+            
+            TextField("URL", text: $textFieldValue).onSubmit {
+                let url = URL(string: textFieldValue)
+                onSelect(url)
+                dismiss()
+            }
+            
         }.task {
             imageUrls = await fetchImage(query: query)
         }

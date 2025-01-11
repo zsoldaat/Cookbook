@@ -16,8 +16,11 @@ struct RecipeImageView: View {
     @State var imageSelectShowing: Bool = false
     @State var alertShowing: Bool = false
     
-    func onSelect(url: URL) -> Void {
-        recipe.addImage(url: url, context: context)
+    func onSelect(url: URL?) -> Void {
+        
+        if let url = url {
+            recipe.addImage(url: url, context: context)
+        }
     }
     
     var body: some View {
