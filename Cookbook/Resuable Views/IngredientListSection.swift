@@ -33,9 +33,13 @@ struct IngredientListSection: View {
                         }
                     IngredientCell(ingredient: ingredient)
                 }
-                .draggable(ingredient) {
-                    Text(ingredient.name)
-                }
+//                .draggable(ingredient) {
+//                    Text(ingredient.name)
+//                }
+//                .dropDestination(for: Ingredient.self, action: { ingredient, location in
+//                    print(ingredient)
+//                    return false
+//                })
             }
             .onDelete { indexSet in
                 if let onDelete = onDelete {

@@ -16,17 +16,17 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     @Attribute(.unique) var id = UUID()
     var name: String
     var recipe: Recipe?
+    var shoppingList: ShoppingList?
     var quantityWhole: Int
     var quantityFraction: Double
     var quantity: Double {Double(quantityWhole) + quantityFraction}
     var unit: Unit
     var index: Int
     
-    init(name: String, recipe: Recipe? = nil, quantityWhole: Int, quantityFraction: Double, unit: Unit, index: Int) {
+    init(name: String, recipe: Recipe? = nil, shoppingList: ShoppingList? = nil, quantityWhole: Int, quantityFraction: Double, unit: Unit, index: Int) {
         self.name = name
-        if let recipe = recipe {
-            self.recipe = recipe
-        }
+        self.recipe = recipe
+        self.shoppingList = shoppingList
         self.quantityWhole = quantityWhole
         self.quantityFraction = quantityFraction
         self.unit = unit

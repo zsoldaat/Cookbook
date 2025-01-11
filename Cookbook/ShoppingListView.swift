@@ -44,12 +44,13 @@ struct ShoppingListView: View {
                     Form {
                         CreateEditIngredient(ingredient: ingredient, onSubmit: {
                             //make copy
-                            shoppingList.addItem(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit, index: shoppingList.getNextIngredientIndex()))
+                            shoppingList.addItem(Ingredient(name: ingredient.name, shoppingList: shoppingList, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit, index: shoppingList.getNextIngredientIndex()))
                             ingredient.name = ""
                             ingredient.quantityWhole = 1
                             ingredient.quantityFraction = 0
                             ingredient.unit = .item
                             keyboardIsActive = true
+                            shoppingList.save(context: context)
                         }, keyboardIsActive: $keyboardIsActive)
                         
                         IngredientListSection(ingredients: shoppingList.getItems(), selections: $shoppingList.selections, onDelete: { indexSet in
