@@ -31,101 +31,52 @@ struct IngredientQuantity {
     let fraction: String?
 }
 
-//func findUnit(in string: String) -> String? {
-//
-//    if string.contains("cup") || string.contains("cups") {
-//        return "cup"
-//    }
-//
-//    if string.contains("quart") || string.contains("quarts") {
-//        return "quart"
-//    }
-//
-//    if string.contains("tsp") || string.contains("tsps") || string.contains("teaspoon") || string.contains("teaspoons") {
-//        return "tsp"
-//    }
-//
-//    if string.contains("tbsp") || string.contains( "tbsps") || string.contains("tablespoon") || string.contains("tablespoons") {
-//        return "tbsp"
-//    }
-//
-//    if string.contains("mL") || string.contains("mls") || string.contains("milliliter") || string.contains("milliliters") {
-//        return "mL"
-//    }
-//
-//    if string.contains("L") || string.contains("ls") || string.contains("liter") || string.contains("liters") {
-//        return "L"
-//    }
-//
-//    if string.contains("oz") || string.contains("ounce") || string.contains("ounces") {
-//        return "oz"
-//    }
-//
-//    if string.contains("lb") || string.contains("lbs") || string.contains("pound") || string.contains("pounds") {
-//        return "lb"
-//    }
-//
-//    if string.contains( "g") || string.contains("gram") || string.contains("grams") {
-//        return "g"
-//    }
-//
-//    if string.contains("kg") || string.contains("kilogram") || string.contains("kilograms") {
-//        return "kg"
-//    }
-//
-//    if string.contains("pinch") || string.contains("pinches") {
-//        return "pinch"
-//    }
-//
-//    return nil
-//}
-
-func findUnit(in string: String) -> String? {
+func findUnit(in string: String) -> Unit? {
     
     let lowerString = string.lowercased()
     
     if lowerString == "cup" || lowerString == "cups" {
-        return "cup"
+        return .cup
     }
     
     if lowerString == "quart" || lowerString == "quarts" {
-        return "quart"
+        return .quart
     }
     
     if lowerString == "tsp" || lowerString == "tsps" || lowerString == "teaspoon" || lowerString == "teaspoons"{
-        return "tsp"
+        return .tsp
     }
     
     if lowerString == "tbsp" || lowerString == "tbsps" || lowerString == "tablespoon" || lowerString == "tablespoons" {
-        return "tbsp"
+        return .tbsp
     }
     
     if lowerString == "mL" || lowerString == "mLs" || lowerString == "milliliter" || lowerString == "milliliters" {
-        return "mL"
+        return .mL
     }
     
     if lowerString == "L" || lowerString == "Ls" || lowerString == "liter" || lowerString == "liters" {
-        return "L"
+        return .L
     }
     
     if lowerString == "oz" || lowerString == "ounce" || lowerString == "ounces" {
-        return "oz"
+        return .oz
     }
     
     if lowerString == "lb" || lowerString == "lbs" || lowerString == "pound" || lowerString == "pounds" {
-        return "lb"
+        return .lb
     }
     
     if lowerString == "g" || lowerString == "gram" || lowerString == "grams" {
-        return "g"
+        return .g
     }
     
     if lowerString == "kg" || lowerString == "kilogram" || lowerString == "kilograms" {
-        return "kg"
+        return .kg
     }
     
     if lowerString == "pinch" || lowerString == "pinches" {
-        return "pinch"
+        return .pinch
     }
     
     return nil
@@ -206,7 +157,7 @@ struct Scraper {
         }
         
         var quantity: String = ""
-        var unit: String = ""
+        var unit: Unit? = nil
         
         if let foundQuantity = getQuantityPart(string: remainingStringToParse) {
             quantity = foundQuantity[0]
@@ -214,20 +165,20 @@ struct Scraper {
         }
         
         if let foundUnit = getUnitPart(string: remainingStringToParse) {
-            unit = foundUnit[0]
-            remainingStringToParse = foundUnit[1]
+            unit = foundUnit.keys.first!
+            remainingStringToParse = foundUnit.values.first!
         }
         
         let parsedQuantity = parseQuantityPart(string: quantity)
         
         let name = remainingStringToParse.prefix(1).uppercased() + remainingStringToParse.dropFirst()
         
-        let ingredient = Ingredient(name: name, quantityWhole: parsedQuantity?.whole ?? 1, quantityFraction: Ingredient.fractionToDouble(fraction: parsedQuantity?.fraction ?? ""), unit: unit.isEmpty ? "item" : unit, index: index)
+        let ingredient = Ingredient(name: name, quantityWhole: parsedQuantity?.whole ?? 1, quantityFraction: Ingredient.fractionToDouble(fraction: parsedQuantity?.fraction ?? ""), unit: unit ?? .item, index: index)
         
         return ingredient
     }
     
-    private func getUnitPart(string: String) -> [String]? {
+    private func getUnitPart(string: String) -> [Unit: String]? {
         //keep only alphanumerics and spaced, split into array
         let words = String(string.unicodeScalars
             .filter {char in CharacterSet.alphanumerics.contains(char) || CharacterSet.whitespaces.contains(char) || char == "-" || char == "/"})
@@ -236,7 +187,7 @@ struct Scraper {
         
         if words.count > 0 {
             if let unit = findUnit(in: words.first!) {
-                return [unit, words[1...].joined(separator: " ")]
+                return [unit: words[1...].joined(separator: " ")]
             }
         }
         

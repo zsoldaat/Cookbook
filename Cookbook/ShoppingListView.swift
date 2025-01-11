@@ -16,7 +16,7 @@ struct ShoppingListView: View {
     @State var addShowing: Bool = false
     
     @FocusState var keyboardIsActive: Bool
-    @StateObject var ingredient: Ingredient = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: "item", index: 1)
+    @StateObject var ingredient: Ingredient = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: .item, index: 1)
     
     var body: some View {
         NavigationStack {
@@ -48,7 +48,7 @@ struct ShoppingListView: View {
                             ingredient.name = ""
                             ingredient.quantityWhole = 1
                             ingredient.quantityFraction = 0
-                            ingredient.unit = "item"
+                            ingredient.unit = .item
                             keyboardIsActive = true
                         }, keyboardIsActive: $keyboardIsActive)
                         

@@ -11,7 +11,7 @@ struct IngredientCell: View {
     
     let ingredient: Ingredient
     @Binding var scaleFactor: Int
-    @State var displayUnit: String? = nil
+    @State var displayUnit: Unit? = nil
     
     
     init(ingredient: Ingredient, scaleFactor: Binding<Int>? = nil) {
@@ -45,6 +45,6 @@ struct IngredientCell: View {
     }
 }
 
-#Preview {
-    RecipeCell(recipe: Recipe(name: "Hello", instructions: "", ingredients: []))
-}
+//#Preview {
+//    RecipeCell(recipe: Recipe(name: "Hello", instructions: "", ingredients: []))
+//}

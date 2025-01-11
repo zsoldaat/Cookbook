@@ -14,7 +14,7 @@ struct CookbookApp: App {
         let schema = Schema([Recipe.self, ShoppingList.self])
         let container = try! ModelContainer(for: schema, configurations: [])
         container.mainContext.insert(ShoppingList())
-        //        container.deleteAllData()
+//                container.deleteAllData()
         return container
     }()
     

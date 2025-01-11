@@ -13,180 +13,44 @@ enum Unit: String, Codable, Identifiable {
     
     case item, cup, quart, tsp, tbsp, mL, L, oz, lb, g, kg, pinch
     
-    func conversion(to unit: Unit) -> Double {
+    func getConversions() -> [Unit: Double] {
         switch self {
-            
         case .item:
-            return 1
+            return [.item: 1]
         case .cup:
-            let conversions: [Unit: Double] = [.cup: 1, .mL: 240, .L: 0.24, .tsp: 48, .tbsp: 16, .quart: 0.25, .oz: 8]
-            
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [.cup: 1, .mL: 240, .L: 0.24, .tsp: 48, .tbsp: 16, .quart: 0.25, .oz: 8]
         case .quart:
-            let conversions: [Unit: Double] =  [.quart: 1, .cup: 4, .tsp: 192, .tbsp: 64, .mL: 960, .L: 0.96, .oz: 32]
-            
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [.quart: 1, .cup: 4, .tsp: 192, .tbsp: 64, .mL: 960, .L: 0.96, .oz: 32]
         case .tsp:
-            let conversions: [Unit: Double] = [.tsp: 1, .cup: 0.02, .quart: 0.005, .tbsp: 0.33, .mL: 5, .L: 0.005, .oz: 0.166]
-            
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [.tsp: 1, .cup: 0.02, .quart: 0.005, .tbsp: 0.33, .mL: 5, .L: 0.005, .oz: 0.166]
         case .tbsp:
-            let conversions: [Unit: Double] = [.tbsp: 1, .cup: 0.0625, .quart: 0.015, .tsp: 3, .mL: 15, .L: 0.015, .oz: 0.5]
-            
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [.tbsp: 1, .cup: 0.0625, .quart: 0.015, .tsp: 3, .mL: 15, .L: 0.015, .oz: 0.5]
         case .mL:
-            let conversions: [Unit: Double] = [.mL: 1, .cup: 0.04, .quart: 0.001, .tsp: 0.2, .tbsp: 0.067, .L: 0.001, .oz: 0.033]
-            
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [.mL: 1, .cup: 0.04, .quart: 0.001, .tsp: 0.2, .tbsp: 0.067, .L: 0.001, .oz: 0.033]
         case .L:
-            let conversions: [Unit: Double] = [.L: 1, .cup: 4.22, .quart: 1.05, .tsp: 202.88, .tbsp: 67.6, .mL: 1000, .oz: 33.8 ]
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [.L: 1, .cup: 4.22, .quart: 1.05, .tsp: 202.88, .tbsp: 67.6, .mL: 1000, .oz: 33.8 ]
         case .oz:
-            let conversions: [Unit: Double] = [.oz: 1, .cup: 0.125, .quart: 0.03, .tsp: 6, .tbsp: 2, .mL: 29.57, .L: 0.03, .lb: 0.0625, .g: 28.34, .kg: 0.0283 ]
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [.oz: 1, .cup: 0.125, .quart: 0.03, .tsp: 6, .tbsp: 2, .mL: 29.57, .L: 0.03, .lb: 0.0625, .g: 28.34, .kg: 0.0283 ]
         case .lb:
-            let conversions: [Unit:Double] = [.lb: 1, .oz: 16, .g: 453.59, .kg: 0.453 ]
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [.lb: 1, .oz: 16, .g: 453.59, .kg: 0.453 ]
         case .g:
-            let conversions: [Unit:Double] = [ .g: 1, .oz: 0.0353, .lb: 0.0022, .kg: 0.001, .mL: 1 ]
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
+            return [ .g: 1, .oz: 0.0353, .lb: 0.0022, .kg: 0.001, .mL: 1 ]
         case .kg:
-            let conversions: [Unit: Double] = [ .kg: 1, .oz: 35.274, .lb: 2.204, .g: 1000]
-            if (conversions.keys.contains(unit)) {
-                return conversions[unit]!
-            }
-            fallthrough
-        case .pinch:
-            return 1
+            return [ .kg: 1, .oz: 35.274, .lb: 2.204, .g: 1000]
         default:
+            return [self: 1]
+        }
+    }
+    
+    func conversion(to unit: Unit) -> Double {
+        let conversions = self.getConversions()
+        if (conversions.keys.contains(unit)) {
+            return conversions[unit]!
+        } else {
             return 1
         }
     }
 }
-
-var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
-    "item": [
-        "item": 1,
-    ],
-    "cup": [
-        "cup": 1,
-        "mL": 240,
-        "L": 0.24,
-        "tsp": 48,
-        "tbsp": 16,
-        "quart": 0.25,
-        "oz": 8,
-    ],
-    "quart": [
-        "quart": 1,
-        "cup": 4,
-        "tsp": 192,
-        "tbsp": 64,
-        "mL": 960,
-        "L": 0.96,
-        "oz": 32
-    ],
-    "tsp": [
-        "tsp": 1,
-        "cup": 0.02,
-        "quart": 0.005,
-        "tbsp": 0.33,
-        "mL": 5,
-        "L": 0.005,
-        "oz": 0.166,
-    ],
-    "tbsp": [
-        "tbsp": 1,
-        "cup": 0.0625,
-        "quart": 0.015,
-        "tsp": 3,
-        "mL": 14.7,
-        "L": 0.015,
-        "oz": 0.5
-    ],
-    "mL": [
-        "mL": 1,
-        "cup": 0.004,
-        "quart": 0.001,
-        "tsp": 0.2,
-        "tbsp": 0.067,
-        "L": 0.001,
-        "oz": 0.033,
-    ],
-    "L": [
-        "L": 1,
-        "cup": 4.22,
-        "quart": 1.05,
-        "tsp": 202.88,
-        "tbsp": 67.6,
-        "mL": 1000,
-        "oz": 33.8,
-    ],
-    "oz": [
-        "oz": 1,
-        "cup": 0.125,
-        "quart": 0.03,
-        "tsp": 6,
-        "tbsp": 2,
-        "mL": 29.57,
-        "L": 0.03,
-        "lb": 0.0625,
-        "g": 28.34,
-        "kg": 0.0283
-    ],
-    "lb": [
-        "lb": 1,
-        "oz": 16,
-        "g": 453.59,
-        "kg": 0.453
-    ],
-    "g": [
-        "g": 1,
-        "oz": 0.0353,
-        "lb": 0.0022,
-        "kg": 0.001,
-        "mL": 1,
-    ],
-    "kg": [
-        "kg": 1,
-        "oz": 35.274,
-        "lb": 2.204,
-        "g": 1000,
-        
-    ],
-    "pinch": [
-        "pinch": 1
-    ]
-]
-
-
 
 @Model
 class Ingredient: Identifiable, Hashable, ObservableObject {
@@ -196,10 +60,10 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     var quantityWhole: Int
     var quantityFraction: Double
     var quantity: Double {Double(quantityWhole) + quantityFraction}
-    var unit: String
+    var unit: Unit
     var index: Int
     
-    init(name: String, recipe: Recipe? = nil, quantityWhole: Int, quantityFraction: Double, unit: String, index: Int) {
+    init(name: String, recipe: Recipe? = nil, quantityWhole: Int, quantityFraction: Double, unit: Unit, index: Int) {
         self.name = name
         if let recipe = recipe {
             self.recipe = recipe
@@ -211,10 +75,11 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     }
     
     //this code just cycles through the available conversion units for a given unit
-    func changeDisplayUnit(displayUnit: String) -> String {
-        guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return unit}
+    func changeDisplayUnit(displayUnit: Unit) -> Unit {
+        //        guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return unit}
+        let conversionInfo = unit.getConversions()
         
-        let units: [String] = Array(conversionInfo.keys).sorted()
+        let units: [Unit] = Array(conversionInfo.keys)
         
         if (units.last == displayUnit) {
             return units.first!
@@ -224,49 +89,38 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         return units[currentIndex! + 1]
     }
     
-    func getString(displayUnit: String, scaleFactor: Int) -> String {
+    func getString(displayUnit: Unit, scaleFactor: Int) -> String {
         
         let quantityString = getQuantityString(displayUnit: displayUnit, scaleFactor: scaleFactor)
         let unitString = getUnitString(displayUnit: displayUnit)
         
-        if displayUnit == "item" && quantityString == "1" {
+        if displayUnit == .item && quantityString == "1" {
             return ""
         }
         
         return "\(quantityString) \(unitString)"
     }
     
-    private func getUnitString(displayUnit: String) -> String {
+    private func getUnitString(displayUnit: Unit) -> String {
         
         let realUnit = unit == displayUnit ? unit : displayUnit
         
         switch realUnit {
-        case "items":
-            return "item"
-        case "item":
+        case .item:
             return ""
         default:
-            return realUnit
+            return realUnit.rawValue
         }
     }
     
-    private func getQuantity(displayUnit: String, scaleFactor: Int) -> Double {
+    private func getQuantity(displayUnit: Unit, scaleFactor: Int) -> Double {
         
         if (unit == displayUnit) {return quantity * Double(scaleFactor)}
         
-        //find the conversion in the dictionary. If there's nothing, just return the normal quantity assuming the original unit.
-        //The case where the unit cannot be found in the dictionary occurs when the user changes the unit to something that the old
-        //unit couldn't convert into.
-        
-        if let unit = unitConversions[unit]![displayUnit] {
-            return quantity * unit * Double(scaleFactor)
-        } else {
-            return quantity * Double(scaleFactor)
-        }
-        
+        return quantity * unit.conversion(to: displayUnit) * Double(scaleFactor)
     }
     
-    private func getQuantityString(displayUnit: String, scaleFactor: Int) -> String {
+    private func getQuantityString(displayUnit: Unit, scaleFactor: Int) -> String {
         
         let realQuantity = getQuantity(displayUnit: displayUnit, scaleFactor: scaleFactor)
         
