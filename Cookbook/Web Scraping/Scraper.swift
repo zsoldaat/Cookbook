@@ -32,51 +32,51 @@ struct IngredientQuantity {
 }
 
 //func findUnit(in string: String) -> String? {
-//    
+//
 //    if string.contains("cup") || string.contains("cups") {
 //        return "cup"
 //    }
-//    
+//
 //    if string.contains("quart") || string.contains("quarts") {
 //        return "quart"
 //    }
-//    
+//
 //    if string.contains("tsp") || string.contains("tsps") || string.contains("teaspoon") || string.contains("teaspoons") {
 //        return "tsp"
 //    }
-//    
+//
 //    if string.contains("tbsp") || string.contains( "tbsps") || string.contains("tablespoon") || string.contains("tablespoons") {
 //        return "tbsp"
 //    }
-//    
+//
 //    if string.contains("mL") || string.contains("mls") || string.contains("milliliter") || string.contains("milliliters") {
 //        return "mL"
 //    }
-//    
+//
 //    if string.contains("L") || string.contains("ls") || string.contains("liter") || string.contains("liters") {
 //        return "L"
 //    }
-//    
+//
 //    if string.contains("oz") || string.contains("ounce") || string.contains("ounces") {
 //        return "oz"
 //    }
-//    
+//
 //    if string.contains("lb") || string.contains("lbs") || string.contains("pound") || string.contains("pounds") {
 //        return "lb"
 //    }
-//    
+//
 //    if string.contains( "g") || string.contains("gram") || string.contains("grams") {
 //        return "g"
 //    }
-//    
+//
 //    if string.contains("kg") || string.contains("kilogram") || string.contains("kilograms") {
 //        return "kg"
 //    }
-//    
+//
 //    if string.contains("pinch") || string.contains("pinches") {
 //        return "pinch"
 //    }
-//    
+//
 //    return nil
 //}
 
@@ -128,7 +128,7 @@ func findUnit(in string: String) -> String? {
     
     return nil
 }
-    
+
 
 struct Scraper {
     
@@ -171,7 +171,7 @@ struct Scraper {
             
             let ingredients = getListItemsForTitle(title: "Ingredients", headings: allHeadings)
             let ingredientObjects: [Ingredient]? = ingredients != nil ? ingredients!.map{ parseIngredient(ingredient: $0, index: (ingredients?.firstIndex(of: $0))!) } : nil
-
+            
             return RecipeData(name: name, instructions: instructions ?? preparation, ingredients: ingredientObjects, imageUrls: imageUrls)
             
         } catch {
@@ -182,23 +182,43 @@ struct Scraper {
     
     private func parseIngredient(ingredient: String, index: Int) -> Ingredient {
         
-        var workingString = ingredient
+        
+        var remainingStringToParse = ingredient
+        
+        //This replace helps down the chain. Basically the rest of this chain assumed that an ingredient will be in the following format: "1 - 2 tablespoons olive oil", where the first letter marks the end of the "quantity" portion of the recipe.
+        //When recipes write "1 to 2 tablespoons olive oil, my assumption is not true, so we replace " to " before we continue. However, we only replace instances of " to " until the last number in the string,
+        //so we don't turn things like "salt, to taste" into "salt, - taste".
+        let lastNumber = remainingStringToParse.lastIndex { char in
+            char.isNumber
+        }
+        
+        if let lastNumber = lastNumber {
+            var stringUpToLastNumber = String(remainingStringToParse.prefix(upTo: lastNumber))
+            let stringFromLastNumber = remainingStringToParse.suffix(from: lastNumber)
+            
+            if let range = stringUpToLastNumber.range(of:" to ") {
+                stringUpToLastNumber = stringUpToLastNumber.replacingCharacters(in: range, with:" - ")
+            }
+            //combine them back together once the replacement is made
+            remainingStringToParse = "\(stringUpToLastNumber)\(stringFromLastNumber)"
+        }
+        
         var quantity: String = ""
         var unit: String = ""
         
-        if let foundQuantity = getQuantityPart(string: workingString) {
+        if let foundQuantity = getQuantityPart(string: remainingStringToParse) {
             quantity = foundQuantity[0]
-            workingString = foundQuantity[1]
+            remainingStringToParse = foundQuantity[1]
         }
         
-        if let foundUnit = getUnitPart(string: workingString) {
+        if let foundUnit = getUnitPart(string: remainingStringToParse) {
             unit = foundUnit[0]
-            workingString = foundUnit[1]
+            remainingStringToParse = foundUnit[1]
         }
         
         let parsedQuantity = parseQuantityPart(string: quantity)
         
-        let name = workingString.prefix(1).uppercased() + workingString.dropFirst()
+        let name = remainingStringToParse.prefix(1).uppercased() + remainingStringToParse.dropFirst()
         
         let ingredient = Ingredient(name: name, quantityWhole: parsedQuantity?.whole ?? 1, quantityFraction: Ingredient.fractionToDouble(fraction: parsedQuantity?.fraction ?? ""), unit: unit.isEmpty ? "item" : unit, index: index)
         
