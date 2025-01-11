@@ -240,7 +240,7 @@ struct Scraper {
     
     private func parseQuantityPart(string: String) -> IngredientQuantity? {
         //Handles the situation where recipes will write "1 1/2 - 2 tablespoons...", we split based on the dash and then carry out operations going forward on both of the numbers
-        let quantityValues = string.components(separatedBy: CharacterSet(charactersIn: "-–"))
+        let quantityValues = string.split { $0 == "-" || $0 == "–"}
         
         let ingredientQuantities: [IngredientQuantity] = quantityValues.map { quantity in
             
