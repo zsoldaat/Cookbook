@@ -33,6 +33,9 @@ struct IngredientListSection: View {
                         }
                     IngredientCell(ingredient: ingredient)
                 }
+                .draggable(ingredient) {
+                    Text(ingredient.name)
+                }
             }
             .onDelete { indexSet in
                 if let onDelete = onDelete {

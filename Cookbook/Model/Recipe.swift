@@ -7,11 +7,11 @@
 
 import Foundation
 import SwiftData
+import CoreTransferable
+import UniformTypeIdentifiers
 
 @Model
 class Recipe: Identifiable, Hashable, ObservableObject, Codable {
-    
-    
     
     @Attribute(.unique) var id = UUID()
     var date = Date()
@@ -94,4 +94,14 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(lastMadeDate, forKey: .lastMadeDate)
     }
     
+}
+
+extension Recipe: Transferable {
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .recipe)
+    }
+}
+
+extension UTType {
+    static var recipe = UTType(exportedAs: "com.zacsoldaat.Cookbook.recipe")
 }

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 import CoreTransferable
+import UniformTypeIdentifiers
 
 @Model
 class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
@@ -183,4 +184,14 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(index, forKey: .index)
     }
     
+}
+
+extension Ingredient: Transferable {
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .ingredient)
+    }
+}
+
+extension UTType {
+    static var ingredient = UTType(exportedAs: "com.zacsoldaat.Cookbook.ingredient")
 }
