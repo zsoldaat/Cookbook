@@ -9,7 +9,10 @@ import Foundation
 import SwiftData
 
 @Model
-class Recipe: Identifiable, Hashable, ObservableObject {
+class Recipe: Identifiable, Hashable, ObservableObject, Codable {
+    
+    
+    
     @Attribute(.unique) var id = UUID()
     var date = Date()
     var name: String
@@ -56,6 +59,39 @@ class Recipe: Identifiable, Hashable, ObservableObject {
     
     func getNextIngredientIndex() -> Int {
         return (ingredients.map { $0.index }.max() ?? 0) + 1
+    }
+    
+    //Codable conformance
+    
+    enum CodingKeys: CodingKey {
+        case id, date, name, instructions, ingredients, ingredientStrings, link, imageUrl, timeCommitment, lastMadeDate
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        date = try container.decode(Date.self, forKey: .date)
+        name = try container.decode(String.self, forKey: .name)
+        instructions = try container.decode(String.self, forKey: .instructions)
+        ingredients = try container.decode([Ingredient].self, forKey: .ingredients)
+        ingredientStrings = try container.decode([String].self, forKey: .ingredientStrings)
+        link = try container.decode(String.self, forKey: .link)
+        imageUrl = try container.decode(URL.self, forKey: .imageUrl)
+        timeCommitment = try container.decode(String.self, forKey: .timeCommitment)
+        lastMadeDate = try container.decode(Date.self, forKey: .lastMadeDate)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(instructions, forKey: .instructions)
+        try container.encode(ingredients, forKey: .ingredients)
+        try container.encode(ingredientStrings, forKey: .ingredientStrings)
+        try container.encode(link, forKey: .link)
+        try container.encode(imageUrl, forKey: .imageUrl)
+        try container.encode(timeCommitment, forKey: .timeCommitment)
+        try container.encode(lastMadeDate, forKey: .lastMadeDate)
     }
     
 }
