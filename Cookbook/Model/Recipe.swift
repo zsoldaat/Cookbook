@@ -14,7 +14,7 @@ class Recipe: Identifiable, Hashable, ObservableObject {
     var date = Date()
     var name: String
     var instructions: String
-    var ingredients: [Ingredient]
+    @Relationship(deleteRule: .cascade, inverse: \Ingredient.recipe) var ingredients: [Ingredient]
     var ingredientStrings: [String]?
     var link: String?
     var imageUrl: URL?
