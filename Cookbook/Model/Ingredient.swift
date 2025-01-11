@@ -142,7 +142,15 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     }
     
     func getString(displayUnit: String, scaleFactor: Int) -> String {
-        return "\(getQuantityString(displayUnit: displayUnit, scaleFactor: scaleFactor)) \(getUnitString(displayUnit: displayUnit))"
+        
+        let quantityString = getQuantityString(displayUnit: displayUnit, scaleFactor: scaleFactor)
+        let unitString = getUnitString(displayUnit: displayUnit)
+        
+        if displayUnit == "item" && quantityString == "1" {
+            return ""
+        }
+        
+        return "\(quantityString) \(unitString)"
     }
     
     private func getUnitString(displayUnit: String) -> String {
