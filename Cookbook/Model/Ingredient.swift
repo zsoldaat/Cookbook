@@ -8,6 +8,89 @@
 import Foundation
 import SwiftData
 
+enum Unit: String, Codable, Identifiable {
+    var id: Self { self }
+    
+    case item, cup, quart, tsp, tbsp, mL, L, oz, lb, g, kg, pinch
+    
+    func conversion(to unit: Unit) -> Double {
+        switch self {
+            
+        case .item:
+            return 1
+        case .cup:
+            let conversions: [Unit: Double] = [.cup: 1, .mL: 240, .L: 0.24, .tsp: 48, .tbsp: 16, .quart: 0.25, .oz: 8]
+            
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .quart:
+            let conversions: [Unit: Double] =  [.quart: 1, .cup: 4, .tsp: 192, .tbsp: 64, .mL: 960, .L: 0.96, .oz: 32]
+            
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .tsp:
+            let conversions: [Unit: Double] = [.tsp: 1, .cup: 0.02, .quart: 0.005, .tbsp: 0.33, .mL: 5, .L: 0.005, .oz: 0.166]
+            
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .tbsp:
+            let conversions: [Unit: Double] = [.tbsp: 1, .cup: 0.0625, .quart: 0.015, .tsp: 3, .mL: 15, .L: 0.015, .oz: 0.5]
+            
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .mL:
+            let conversions: [Unit: Double] = [.mL: 1, .cup: 0.04, .quart: 0.001, .tsp: 0.2, .tbsp: 0.067, .L: 0.001, .oz: 0.033]
+            
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .L:
+            let conversions: [Unit: Double] = [.L: 1, .cup: 4.22, .quart: 1.05, .tsp: 202.88, .tbsp: 67.6, .mL: 1000, .oz: 33.8 ]
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .oz:
+            let conversions: [Unit: Double] = [.oz: 1, .cup: 0.125, .quart: 0.03, .tsp: 6, .tbsp: 2, .mL: 29.57, .L: 0.03, .lb: 0.0625, .g: 28.34, .kg: 0.0283 ]
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .lb:
+            let conversions: [Unit:Double] = [.lb: 1, .oz: 16, .g: 453.59, .kg: 0.453 ]
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .g:
+            let conversions: [Unit:Double] = [ .g: 1, .oz: 0.0353, .lb: 0.0022, .kg: 0.001, .mL: 1 ]
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .kg:
+            let conversions: [Unit: Double] = [ .kg: 1, .oz: 35.274, .lb: 2.204, .g: 1000]
+            if (conversions.keys.contains(unit)) {
+                return conversions[unit]!
+            }
+            fallthrough
+        case .pinch:
+            return 1
+        default:
+            return 1
+        }
+    }
+}
+
 var unitConversions: Dictionary<String, Dictionary<String, Double>> = [
     "item": [
         "item": 1,
@@ -174,6 +257,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
         //find the conversion in the dictionary. If there's nothing, just return the normal quantity assuming the original unit.
         //The case where the unit cannot be found in the dictionary occurs when the user changes the unit to something that the old
         //unit couldn't convert into.
+        
         if let unit = unitConversions[unit]![displayUnit] {
             return quantity * unit * Double(scaleFactor)
         } else {
@@ -238,7 +322,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
                 decimalsRepresentedAsFraction = "\(String(Int(decimals*8)))/8"
                 break
             }
-
+            
             decimalsRepresentedAsFraction = ""
         }
         
