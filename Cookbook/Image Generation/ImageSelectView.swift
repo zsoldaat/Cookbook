@@ -19,7 +19,11 @@ struct ImageResult: Codable {
 func fetchImage(query: String) async -> [URL?] {
     
     // 👀👀
-    let s = "AIza[][]SyC_8lE[[][RohtzPC4t[][][_LPt-A::::_RORQ++++AvEE_VC4::".replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]", with: "").replacingOccurrences(of: ":", with: "").replacingOccurrences(of: "+", with: "")
+    let s = "AIza[][]SyC_8lE[[][RohtzPC4t[][][_LPt-A::::_RORQ++++AvEE_VC4::"
+        .replacingOccurrences(of: "[", with: "")
+        .replacingOccurrences(of: "]", with: "")
+        .replacingOccurrences(of: ":", with: "")
+        .replacingOccurrences(of: "+", with: "")
     let urlString = "https://www.googleapis.com/customsearch/v1?key=\(s)&cx=14d5324c5262949d1&q=\(query)&searchType=image"
     let url = URL(string: urlString)!
     let (data, _) = try! await URLSession.shared.data(from: url)
