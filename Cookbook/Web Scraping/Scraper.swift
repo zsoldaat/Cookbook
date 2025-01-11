@@ -82,47 +82,49 @@ struct IngredientQuantity {
 
 func findUnit(in string: String) -> String? {
     
-    if string == "cup" || string == "cups" {
+    let lowerString = string.lowercased()
+    
+    if lowerString == "cup" || lowerString == "cups" {
         return "cup"
     }
     
-    if string == "quart" || string == "quarts" {
+    if lowerString == "quart" || lowerString == "quarts" {
         return "quart"
     }
     
-    if string == "tsp" || string == "tsps" || string == "teaspoon" || string == "teaspoons"{
+    if lowerString == "tsp" || lowerString == "tsps" || lowerString == "teaspoon" || lowerString == "teaspoons"{
         return "tsp"
     }
     
-    if string == "tbsp" || string == "tbsps" || string == "tablespoon" || string == "tablespoons" {
+    if lowerString == "tbsp" || lowerString == "tbsps" || lowerString == "tablespoon" || lowerString == "tablespoons" {
         return "tbsp"
     }
     
-    if string == "mL" || string == "mLs" || string == "milliliter" || string == "milliliters" {
+    if lowerString == "mL" || lowerString == "mLs" || lowerString == "milliliter" || lowerString == "milliliters" {
         return "mL"
     }
     
-    if string == "L" || string == "Ls" || string == "liter" || string == "liters" {
+    if lowerString == "L" || lowerString == "Ls" || lowerString == "liter" || lowerString == "liters" {
         return "L"
     }
     
-    if string == "oz" || string == "ounce" || string == "ounces" {
+    if lowerString == "oz" || lowerString == "ounce" || lowerString == "ounces" {
         return "oz"
     }
     
-    if string == "lb" || string == "lbs" || string == "pound" || string == "pounds" {
+    if lowerString == "lb" || lowerString == "lbs" || lowerString == "pound" || lowerString == "pounds" {
         return "lb"
     }
     
-    if string == "g" || string == "gram" || string == "grams" {
+    if lowerString == "g" || lowerString == "gram" || lowerString == "grams" {
         return "g"
     }
     
-    if string == "kg" || string == "kilogram" || string == "kilograms" {
+    if lowerString == "kg" || lowerString == "kilogram" || lowerString == "kilograms" {
         return "kg"
     }
     
-    if string == "pinch" || string == "pinches" {
+    if lowerString == "pinch" || lowerString == "pinches" {
         return "pinch"
     }
     
