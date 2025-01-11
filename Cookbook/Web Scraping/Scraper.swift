@@ -193,7 +193,7 @@ struct Scraper {
         return nil
     }
     
-    
+    //return somethign different here
     private func getUnitPart(string: String) -> [Unit: String]? {
         //keep only alphanumerics and spaced, split into array
         let words = String(string.unicodeScalars
