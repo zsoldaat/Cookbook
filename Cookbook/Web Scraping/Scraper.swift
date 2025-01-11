@@ -79,6 +79,10 @@ func findUnit(in string: String) -> Unit? {
         return .pinch
     }
     
+    if lowerString == "can" || lowerString == "cans" {
+        return .can
+    }
+    
     return nil
 }
 

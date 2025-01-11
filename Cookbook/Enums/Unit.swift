@@ -8,7 +8,7 @@
 enum Unit: String, Codable, Identifiable, CaseIterable {
     var id: Self { self }
     
-    case item, cup, quart, tsp, tbsp, mL, L, oz, lb, g, kg, pinch
+    case item, cup, quart, tsp, tbsp, mL, L, oz, lb, g, kg, pinch, can
     
     func getConversions() -> [Unit: Double] {
         switch self {
