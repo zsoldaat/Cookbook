@@ -76,10 +76,10 @@ class Ingredient: Identifiable, Hashable, ObservableObject {
     
     //this code just cycles through the available conversion units for a given unit
     func changeDisplayUnit(displayUnit: Unit) -> Unit {
-        //        guard let conversionInfo: Dictionary<String, Double> = unitConversions[unit] else {return unit}
+        
         let conversionInfo = unit.getConversions()
         
-        let units: [Unit] = Array(conversionInfo.keys)
+        let units: [Unit] = Array(conversionInfo.keys).sorted { $0.rawValue < $1.rawValue }
         
         if (units.last == displayUnit) {
             return units.first!
