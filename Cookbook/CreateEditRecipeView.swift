@@ -57,6 +57,10 @@ struct CreateEditRecipeView: View {
                                     if let ingredients = recipeData.ingredients {
                                         recipe.ingredients = ingredients
                                     }
+                                    
+                                    if let ingredientStrings = recipeData.ingredientStrings {
+                                        recipe.ingredientStrings = ingredientStrings
+                                    }
                                 }
                             }
                         }

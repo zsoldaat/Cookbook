@@ -15,15 +15,17 @@ class Recipe: Identifiable, Hashable, ObservableObject {
     var name: String
     var instructions: String
     var ingredients: [Ingredient]
+    var ingredientStrings: [String]?
     var link: String?
     var imageUrl: URL?
     var timeCommitment: String?
     var lastMadeDate: Date?
     
-    init(name: String, instructions: String, ingredients: [Ingredient]) {
+    init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
         self.name = name
         self.instructions = instructions
         self.ingredients = ingredients
+        self.ingredientStrings = ingredientStrings
     }
     
     func save(context: ModelContext) {

@@ -16,12 +16,14 @@ struct RecipeData {
     let name: String?
     let instructions: String?
     let ingredients: [Ingredient]?
+    let ingredientStrings: [String]?
     let imageUrls: [String]?
     
-    init(name: String?, instructions: String?, ingredients: [Ingredient]?, imageUrls: [String]?) {
+    init(name: String?, instructions: String?, ingredients: [Ingredient]?, ingredientStrings: [String]? = nil, imageUrls: [String]?) {
         self.name = name
         self.instructions = instructions
         self.ingredients = ingredients
+        self.ingredientStrings = ingredientStrings
         self.imageUrls = imageUrls
     }
 }
@@ -129,7 +131,7 @@ struct Scraper {
             let ingredients = getListItemsForTitle(title: "Ingredients", headings: allHeadings)
             let ingredientObjects: [Ingredient]? = ingredients != nil ? ingredients!.map{ parseIngredient(ingredient: $0, index: (ingredients?.firstIndex(of: $0))!) } : nil
             
-            return RecipeData(name: name, instructions: instructions ?? preparation, ingredients: ingredientObjects, imageUrls: imageUrls)
+            return RecipeData(name: name, instructions: instructions ?? preparation, ingredients: ingredientObjects, ingredientStrings: ingredients, imageUrls: imageUrls)
             
         } catch {
             print("Didn't work")

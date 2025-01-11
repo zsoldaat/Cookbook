@@ -94,6 +94,16 @@ struct RecipeView: View {
                 }
             }
             
+            CardView(title: "Ingredient Strings") {
+                
+                if let ingredientStrings = recipe.ingredientStrings {
+                    ForEach(ingredientStrings, id: \.self) { ingredientString in
+                        Text(ingredientString).font(.subheadline)
+                    }
+                    
+                }
+            }
+            
             CardView(title: "Details") {
                 VStack(alignment: .leading) {
                     if let timeCommitment = recipe.timeCommitment {
