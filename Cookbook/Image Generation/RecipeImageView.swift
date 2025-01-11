@@ -25,7 +25,7 @@ struct RecipeImageView: View {
         AsyncImage(url: recipe.imageUrl) { image in
             image.resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(height: 200, alignment: .center)
+                .frame(width: UIScreen.main.bounds.width, height: 200, alignment: .center)
                 .clipped()
                 .onLongPressGesture {
                     alertShowing = true
@@ -42,7 +42,8 @@ struct RecipeImageView: View {
                     }
                 }
             }
-        }.overlay(alignment: .bottomLeading) {
+        }
+        .overlay(alignment: .bottomLeading) {
             Text(recipe.name)
                 
                 .font(.largeTitle)
@@ -50,7 +51,8 @@ struct RecipeImageView: View {
                 .shadow(color: .black, radius: 1)
                 .foregroundStyle(.white)
                 .padding()
-        }.clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $imageSelectShowing) {
             ImageSelectView(query: recipe.name, onSelect: onSelect)
         }
