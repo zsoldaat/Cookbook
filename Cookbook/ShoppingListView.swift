@@ -43,8 +43,8 @@ struct ShoppingListView: View {
                 NavigationStack {
                     Form {
                         CreateEditIngredient(ingredient: ingredient, onSubmit: {
-                            ingredient.index = shoppingList.getNextIngredientIndex()
-                            shoppingList.addItem(ingredient)
+                            //make copy
+                            shoppingList.addItem(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit, index: shoppingList.getNextIngredientIndex()))
                             ingredient.name = ""
                             ingredient.quantityWhole = 1
                             ingredient.quantityFraction = 0
