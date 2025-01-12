@@ -29,7 +29,8 @@ struct IngredientCell: View {
             Text(ingredient.name)
                 .font(.headline)
            Spacer()
-            Text(ingredient.getString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor))
+            
+            Text("\(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor)) \(ingredient.getUnitString(displayUnit: displayUnit ?? ingredient.unit))")
                 .font(.subheadline)
                 .onTapGesture {
                     displayUnit = ingredient.changeDisplayUnit(displayUnit: displayUnit ?? ingredient.unit)

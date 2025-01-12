@@ -48,19 +48,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         return units[currentIndex! + 1]
     }
     
-    func getString(displayUnit: Unit, scaleFactor: Int) -> String {
-        
-        let quantityString = getQuantityString(displayUnit: displayUnit, scaleFactor: scaleFactor)
-        let unitString = getUnitString(displayUnit: displayUnit)
-        
-        if displayUnit == .item && quantityString == "1" {
-            return ""
-        }
-        
-        return "\(quantityString) \(unitString)"
-    }
-    
-    private func getUnitString(displayUnit: Unit) -> String {
+    func getUnitString(displayUnit: Unit) -> String {
         
         let realUnit = unit == displayUnit ? unit : displayUnit
         
@@ -72,20 +60,18 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         }
     }
     
-    private func getQuantity(displayUnit: Unit, scaleFactor: Int) -> Double {
-        
-        if (unit == displayUnit) {return quantity * Double(scaleFactor)}
-        
-        return quantity * unit.conversion(to: displayUnit) * Double(scaleFactor)
-    }
-    
-    private func getQuantityString(displayUnit: Unit, scaleFactor: Int) -> String {
+    func getQuantityString(displayUnit: Unit, scaleFactor: Int) -> String {
         
         let realQuantity = getQuantity(displayUnit: displayUnit, scaleFactor: scaleFactor)
         
         let quantityIsWhole = realQuantity.isNaN || realQuantity.isFinite && realQuantity.rounded() == realQuantity
         
         if (quantityIsWhole) {
+            
+            if realQuantity.rounded() == 1 && displayUnit == .item {
+                return ""
+            }
+            
             return String(Int(realQuantity))
         }
         
@@ -104,6 +90,13 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         
         return "\(String(wholePart)) \(decimalsAsFraction)"
         
+    }
+    
+    private func getQuantity(displayUnit: Unit, scaleFactor: Int) -> Double {
+        
+        if (unit == displayUnit) {return quantity * Double(scaleFactor)}
+        
+        return quantity * unit.conversion(to: displayUnit) * Double(scaleFactor)
     }
     
     //returns nil if the decimals cannot be cleanly represented as a string
