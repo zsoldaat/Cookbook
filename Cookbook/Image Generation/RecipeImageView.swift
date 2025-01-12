@@ -48,14 +48,13 @@ struct RecipeImageView: View {
         }
         .overlay(alignment: .bottomLeading) {
             Text(recipe.name)
-                
+            
                 .font(.largeTitle)
                 .bold()
                 .shadow(color: .black, radius: 1)
                 .foregroundStyle(.white)
                 .padding()
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $imageSelectShowing) {
             ImageSelectView(query: recipe.name, onSelect: onSelect)
         }

@@ -25,8 +25,10 @@ struct RecipeView: View {
             CardView(title: "Instructions") {
                 Text(recipe.instructions)
             }
+            .padding(.horizontal, 5)
             
             IngredientsCard(recipe: recipe)
+                .padding(.horizontal, 5)
             
             CardView(title: "Difficulty") {
                 let difficultyBinding = Binding<String>(get: {
@@ -45,6 +47,7 @@ struct RecipeView: View {
                     }
                 }
             }
+            .padding(.horizontal, 5)
             
             CardView(title: "Rating") {
                 HStack {
@@ -76,6 +79,7 @@ struct RecipeView: View {
                     Spacer()
                 }
             }
+            .padding(.horizontal, 5)
             
             CardView(title: "Details") {
                 VStack(alignment: .leading) {
@@ -96,9 +100,8 @@ struct RecipeView: View {
                     }
                 }
             }
+            .padding(.horizontal, 5)
         }
-        .padding(2)
-//        .alert("Ingredients Added", isPresented: $showAlert, actions: {})
         .fullScreenCover(isPresented: $editShowing, content: {
             @Bindable var recipe = recipe
             CreateEditRecipeView(recipe: recipe, isNewRecipe: false)

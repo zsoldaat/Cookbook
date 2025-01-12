@@ -25,9 +25,6 @@ struct IngredientsCard: View {
     var body: some View {
         @Bindable var shoppingList = shoppingLists.first!
         
-        //fix little gap at the bottom
-        //https://medium.com/@jenya.dev/a-guide-to-horizontal-scrollview-with-page-control-in-swiftui-59a0a1cb889d
-        
         ScrollView(.horizontal) {
             HStack(alignment: .top) {
                 Group {
