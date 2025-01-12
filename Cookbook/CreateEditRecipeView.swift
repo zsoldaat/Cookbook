@@ -137,11 +137,9 @@ struct CreateEditRecipeView: View {
                         recipe.createUpdateRecipe(context: context)
                         dismiss()
                     } label: {
-                        
                         Text("Done")
                     }
                 }
-                
             }
             .sheet(isPresented: $ingredientModalShowing) {
                 if let id = ingredientIdToEdit {
