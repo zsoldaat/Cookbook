@@ -87,15 +87,19 @@ struct IngredientsCard: View {
                                     }
                                 IngredientCell(ingredient: ingredient, scaleFactor: $scaleFactor)
                             }
+                            //Specify height to help the scrollview become the right size, maybe fix later to something dynamic?
+                            .frame(height: 50)
                         }
-                    }.id(0)
+                    }
+                    .id(0)
                     
                     if let ingredientStrings = recipe.ingredientStrings {
                         CardView(title: "Ingredients (text)") {
                             ForEach(ingredientStrings, id: \.self) { ingredientString in
                                 Text(ingredientString)
                             }
-                        }.id(1)
+                        }
+                        .id(1)
                     }
                 }
                 .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
