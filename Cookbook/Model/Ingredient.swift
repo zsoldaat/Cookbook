@@ -32,19 +32,6 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         self.unit = unit
         self.index = index
     }
-
-    //this code just cycles through the available conversion units for a given unit
-    func changeDisplayUnit(displayUnit: Unit) -> Unit {
-        
-        let units: [Unit] = unit.possibleConversions().sorted { $0.rawValue < $1.rawValue }
-        
-        if (units.last == displayUnit) {
-            return units.first!
-        }
-        
-        let currentIndex = units.firstIndex(of: displayUnit)
-        return units[currentIndex! + 1]
-    }
     
     func getUnitString(displayUnit: Unit) -> String {
         

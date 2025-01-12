@@ -26,14 +26,18 @@ struct IngredientCell: View {
     
     var body: some View {
         HStack {
-            Text(ingredient.name)
-                .font(.headline)
+            VStack(alignment: .leading) {
+                Text(ingredient.name)
+                if (!Unit.unconvertibleUnits().contains(ingredient.unit)) {
+                    Text("\(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor)) \(ingredient.getUnitString(displayUnit: displayUnit ?? ingredient.unit))")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            
            Spacer()
-            
-            Text(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor))
-            
-            
-            
+
+            //only show picker if units can actually be converted
             if (!Unit.unconvertibleUnits().contains(ingredient.unit)) {
                 
                 let unitBinding = Binding<Unit>(get: {
@@ -43,7 +47,11 @@ struct IngredientCell: View {
                 })
                 
                 Picker("", selection: unitBinding) {
-                    ForEach(Unit.allCases) { unit in
+                    ForEach(ingredient.unit.possibleConversions().sorted(by: { unit1, unit2 in
+                        //put original unit on top
+                        if unit1 == ingredient.unit { return true }
+                        return unit1.rawValue < unit2.rawValue
+                    })) { unit in
                         Text(unit.rawValue).tag(unit)
                     }
                 }
@@ -51,23 +59,7 @@ struct IngredientCell: View {
                     displayUnit = newValue
                 }
             }
-            
-            
-            
-            
-//            Text("\(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor)) \(ingredient.getUnitString(displayUnit: displayUnit ?? ingredient.unit))")
-//                .font(.subheadline)
-//                .onTapGesture {
-//                    displayUnit = ingredient.changeDisplayUnit(displayUnit: displayUnit ?? ingredient.unit)
-//                }
-//                .onLongPressGesture {
-//                    displayUnit = ingredient.unit
-//                }
-//                .onChange(of: ingredient.unit) { oldValue, newValue in
-//                    displayUnit = newValue
-//                }
         }
-        .padding(10)
     }
 }
 

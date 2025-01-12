@@ -40,7 +40,7 @@ enum Unit: String, Codable, Identifiable, CaseIterable {
     }
     
     func possibleConversions() -> [Unit] {
-        return Array(self.getConversions().keys)
+        return Array(self.getConversions().keys).sorted { $0.rawValue < $1.rawValue }
     }
     
     func conversion(to unit: Unit, quantity: Double) -> Double {
