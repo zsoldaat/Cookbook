@@ -30,17 +30,42 @@ struct IngredientCell: View {
                 .font(.headline)
            Spacer()
             
-            Text("\(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor)) \(ingredient.getUnitString(displayUnit: displayUnit ?? ingredient.unit))")
-                .font(.subheadline)
-                .onTapGesture {
-                    displayUnit = ingredient.changeDisplayUnit(displayUnit: displayUnit ?? ingredient.unit)
-                }
-                .onLongPressGesture {
-                    displayUnit = ingredient.unit
+            Text(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor))
+            
+            
+            
+            if (!Unit.unconvertibleUnits().contains(ingredient.unit)) {
+                
+                let unitBinding = Binding<Unit>(get: {
+                    displayUnit ?? ingredient.unit
+                }, set: {
+                    displayUnit = $0
+                })
+                
+                Picker("", selection: unitBinding) {
+                    ForEach(Unit.allCases) { unit in
+                        Text(unit.rawValue).tag(unit)
+                    }
                 }
                 .onChange(of: ingredient.unit) { oldValue, newValue in
                     displayUnit = newValue
                 }
+            }
+            
+            
+            
+            
+//            Text("\(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor)) \(ingredient.getUnitString(displayUnit: displayUnit ?? ingredient.unit))")
+//                .font(.subheadline)
+//                .onTapGesture {
+//                    displayUnit = ingredient.changeDisplayUnit(displayUnit: displayUnit ?? ingredient.unit)
+//                }
+//                .onLongPressGesture {
+//                    displayUnit = ingredient.unit
+//                }
+//                .onChange(of: ingredient.unit) { oldValue, newValue in
+//                    displayUnit = newValue
+//                }
         }
         .padding(10)
     }

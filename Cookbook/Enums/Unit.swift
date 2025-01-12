@@ -39,6 +39,10 @@ enum Unit: String, Codable, Identifiable, CaseIterable {
         }
     }
     
+    func possibleConversions() -> [Unit] {
+        return Array(self.getConversions().keys)
+    }
+    
     func conversion(to unit: Unit) -> Double {
         let conversions = self.getConversions()
         if (conversions.keys.contains(unit)) {
@@ -46,5 +50,9 @@ enum Unit: String, Codable, Identifiable, CaseIterable {
         } else {
             return 1
         }
+    }
+    
+    static func unconvertibleUnits() -> [Unit] {
+        return [.item, .pinch, .can]
     }
 }

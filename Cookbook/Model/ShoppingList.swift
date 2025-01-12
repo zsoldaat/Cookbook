@@ -67,9 +67,7 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
             return
         }
         
-        let possibleConversions = Array(existingIngredient.unit.getConversions().keys)
-        
-        if (possibleConversions.contains(newIngredient.unit)) {
+        if (existingIngredient.unit.possibleConversions().contains(newIngredient.unit)) {
             let convertedQuantity = newIngredient.quantity * newIngredient.unit.conversion(to: existingIngredient.unit)
             let totalQuantity = existingIngredient.quantity + convertedQuantity
             
