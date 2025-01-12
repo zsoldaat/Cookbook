@@ -22,7 +22,8 @@ struct IngredientsCard: View {
     
     var body: some View {
         @Bindable var shoppingList = shoppingLists.first!
-        CardView(title: "Ingredients") {
+        
+        CardView(title: "Ingredients", button: {
             Button {
                 recipe.ingredients
                     
@@ -42,8 +43,8 @@ struct IngredientsCard: View {
             } label: {
                 Image(systemName: "plus")
             }
-        } content: {
-            
+            .disabled(selections.isEmpty)
+        }) {
             if (parsedIngredientsShowing == false) {
                 
                 let scaleBinding = Binding<String>(get: {
