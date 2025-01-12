@@ -26,14 +26,14 @@ struct CookbookApp: App {
                 .modelContainer(container)
                 .environmentObject(selectedTab)
                 .task {
-                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
-                    let data = await scraper.getRecipeData()
-                    
-                    if let data = data {
-                        
+//                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
+//                    let data = await scraper.getRecipeData()
+//                    
+//                    if let data = data {
+//                        
 //                        print(data.ingredients)
-
-                    }
+//
+//                    }
                 }
         }
         
