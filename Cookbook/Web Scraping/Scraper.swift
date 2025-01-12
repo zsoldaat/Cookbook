@@ -233,6 +233,14 @@ struct Scraper {
                 fraction = "\(firstHalfOfFraction)\(lastHalfOfFraction)".trimmingCharacters(in: .whitespacesAndNewlines)
             }
             
+            let fractionSymbols = ["¼", "⅓", "½", "⅔", "¾"]
+            
+            fractionSymbols.forEach { symbol in
+                if (quantity.contains(symbol)) {
+                    fraction = symbol
+                }
+            }
+            
             //remove occurences of the fraction (if any), leaving the whole part remaining
             let wholePart = String(quantity.replacingOccurrences(of: fraction, with: "").unicodeScalars.filter {CharacterSet.decimalDigits.contains($0)}).trimmingCharacters(in: .whitespacesAndNewlines)
             
@@ -243,6 +251,17 @@ struct Scraper {
                     whole = 1
                 } else {
                     whole = 0
+                }
+            }
+            
+            if fractionSymbols.contains(fraction) {
+                switch fraction {
+                case "¼": fraction = "1/4"
+                case "⅓": fraction = "1/3"
+                case "½": fraction = "1/2"
+                case "⅔": fraction = "2/3"
+                case "¾": fraction = "3/4"
+                default: break
                 }
             }
             
