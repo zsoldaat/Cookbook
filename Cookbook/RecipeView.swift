@@ -116,10 +116,17 @@ struct RecipeView: View {
             
             CardView(title: "Details") {
                 VStack(alignment: .leading) {
-                    if let timeCommitment = recipe.timeCommitment {
+                    if let difficulty = recipe.difficulty {
                         HStack {
-                            Text("Time:").font(.headline)
-                            Text(timeCommitment).font(.subheadline)
+                            Text("Difficulty:").font(.headline)
+                            Text(difficulty).font(.subheadline)
+                        }
+                    }
+                    
+                    if let rating = recipe.rating {
+                        HStack {
+                            Text("Rating:").font(.headline)
+                            Text(rating).font(.subheadline)
                         }
                     }
 

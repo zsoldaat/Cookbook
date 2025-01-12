@@ -21,8 +21,9 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var ingredientStrings: [String]?
     var link: String?
     var imageUrl: URL?
-    var timeCommitment: String?
+    var difficulty: String?
     var lastMadeDate: Date?
+    var rating: String?
     
     init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
         self.name = name
@@ -64,7 +65,7 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     //Codable conformance
     
     enum CodingKeys: CodingKey {
-        case id, date, name, instructions, ingredients, ingredientStrings, link, imageUrl, timeCommitment, lastMadeDate
+        case id, date, name, instructions, ingredients, ingredientStrings, link, imageUrl, difficulty, lastMadeDate, rating
     }
     
     required init(from decoder: Decoder) throws {
@@ -77,8 +78,9 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         ingredientStrings = try container.decode([String].self, forKey: .ingredientStrings)
         link = try container.decode(String.self, forKey: .link)
         imageUrl = try container.decode(URL.self, forKey: .imageUrl)
-        timeCommitment = try container.decode(String.self, forKey: .timeCommitment)
+        difficulty = try container.decode(String.self, forKey: .difficulty)
         lastMadeDate = try container.decode(Date.self, forKey: .lastMadeDate)
+        rating = try container.decode(String.self, forKey: .rating)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -90,8 +92,9 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(ingredientStrings, forKey: .ingredientStrings)
         try container.encode(link, forKey: .link)
         try container.encode(imageUrl, forKey: .imageUrl)
-        try container.encode(timeCommitment, forKey: .timeCommitment)
+        try container.encode(difficulty, forKey: .difficulty)
         try container.encode(lastMadeDate, forKey: .lastMadeDate)
+        try container.encode(rating, forKey: .rating)
     }
     
 }

@@ -116,21 +116,39 @@ struct CreateEditRecipeView: View {
                 }
                 
                 Section {
-                    let timeCommitmentBinding = Binding<String>(get: {
-                        if recipe.timeCommitment != nil {
-                            return recipe.timeCommitment!
+                    let difficultyBinding = Binding<String>(get: {
+                        if recipe.difficulty != nil {
+                            return recipe.difficulty!
                         } else {
                             return ""
                         }
                     }, set: {
-                        recipe.timeCommitment = $0
+                        recipe.difficulty = $0
                     })
                     
-                    Picker("Time", selection: timeCommitmentBinding) {
-                        ForEach(["", "< 20 mins", "20-40 mins", "40+ mins"], id: \.self) { time in
-                            Text(time)
+                    Picker("Time", selection: difficultyBinding) {
+                        ForEach(["", "Easy", "Medium", "Hard"], id: \.self) { difficulty in
+                            Text(difficulty)
                         }
                     }
+                    
+                    let ratingBinding = Binding<String>(get: {
+                        if recipe.rating != nil {
+                            return recipe.rating!
+                        } else {
+                            return ""
+                        }
+                    }, set: {
+                        recipe.rating = $0
+                    })
+                    
+                    Picker("Rating", selection: ratingBinding) {
+                        ForEach(["", "Good", "Great"], id: \.self) { rating in
+                            Text(rating)
+                        }
+                    }
+                    
+                    
                 } header: {
                     Text("Details")
                 }

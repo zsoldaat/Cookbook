@@ -13,12 +13,6 @@ struct RecipeCell: View {
     
     let recipe: Recipe
     
-//    var dateFormatter: DateFormatter {
-//        let formatter = DateFormatter()
-//        formatter.dateStyle = .long
-//        return formatter
-//    }
-    
     let imageSize: CGFloat = 75
     
     var body: some View {
@@ -35,14 +29,15 @@ struct RecipeCell: View {
             .clipShape(RoundedRectangle(cornerRadius: 10))
             VStack(alignment: .leading) {
                 Text(recipe.name).font(.headline)
-                if let timeCommitment = recipe.timeCommitment {
-                    Text(timeCommitment).lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
-                }
-                if let lastMadeDate = recipe.lastMadeDate {
-                    Text("Last made: \(Recipe.dateFormatter.string(from: lastMadeDate))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
+                if let difficulty = recipe.difficulty {
+                    Text("Difficulty: \(difficulty)").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
                 }
                 
-//                Text(recipe.instructions)
+                if let lastMadeDate = recipe.lastMadeDate {
+                    Text("Last made on \(Recipe.dateFormatter.string(from: lastMadeDate))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
+                } else {
+                    Text("Added \(Recipe.dateFormatter.string(from: recipe.date))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
+                }
             }
             
         }
