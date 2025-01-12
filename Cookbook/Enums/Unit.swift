@@ -10,7 +10,7 @@ enum Unit: String, Codable, Identifiable, CaseIterable {
     
     case item, cup, quart, tsp, tbsp, mL, L, oz, lb, g, kg, pinch, can
     
-    func getConversions() -> [Unit: Double] {
+    private func getConversions() -> [Unit: Double] {
         switch self {
         case .item:
             return [.item: 1]
@@ -43,12 +43,12 @@ enum Unit: String, Codable, Identifiable, CaseIterable {
         return Array(self.getConversions().keys)
     }
     
-    func conversion(to unit: Unit) -> Double {
+    func conversion(to unit: Unit, quantity: Double) -> Double {
         let conversions = self.getConversions()
         if (conversions.keys.contains(unit)) {
-            return conversions[unit]!
+            return conversions[unit]! * quantity
         } else {
-            return 1
+            return quantity
         }
     }
     

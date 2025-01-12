@@ -94,7 +94,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         
         if (unit == displayUnit) {return quantity * Double(scaleFactor)}
         
-        return quantity * unit.conversion(to: displayUnit) * Double(scaleFactor)
+        return unit.conversion(to: displayUnit, quantity: quantity) * Double(scaleFactor)
     }
     
     //returns nil if the decimals cannot be cleanly represented as a string

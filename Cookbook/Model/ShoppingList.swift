@@ -68,7 +68,7 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
         }
         
         if (existingIngredient.unit.possibleConversions().contains(newIngredient.unit)) {
-            let convertedQuantity = newIngredient.quantity * newIngredient.unit.conversion(to: existingIngredient.unit)
+            let convertedQuantity =  newIngredient.unit.conversion(to: existingIngredient.unit, quantity: newIngredient.quantity)
             let totalQuantity = existingIngredient.quantity + convertedQuantity
             
             existingIngredient.quantityWhole = Int(totalQuantity.rounded(.down))
