@@ -98,6 +98,8 @@ struct IngredientsCard: View {
                             ForEach(ingredientStrings, id: \.self) { ingredientString in
                                 Text(ingredientString)
                             }
+                            
+                            Spacer()
                         }
                         .id(1)
                     }
