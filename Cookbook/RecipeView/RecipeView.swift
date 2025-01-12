@@ -51,21 +51,22 @@ struct RecipeView: View {
                     Spacer()
                     ForEach(["🤕", "☹️", "😐", "🙂", "😍"], id:\.self) {rating in
                         if let image = rating.emojiToImage() {
-                            
-                            ZStack {
-                                if (recipe.rating == rating) {
-                                    Circle()
-                                        .fill(colorScheme == .dark ? Color.white : Color.black)
-                                }
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
-                                    
-                            }
-                            .frame(width: 50, height: 50)
-                            .onTapGesture {
+                            Button {
                                 recipe.rating = rating
+                            } label: {
+                                ZStack {
+                                    if (recipe.rating == rating) {
+                                        Circle()
+                                            .fill(colorScheme == .dark ? Color.white : Color.black)
+                                    }
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 40, height: 40)
+                                        
+                                }
+                                .frame(width: 50, height: 50)
+                                
                             }
                             .sensoryFeedback(trigger: recipe.rating == rating) { oldValue, newValue in
                                 return SensoryFeedback.selection
