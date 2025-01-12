@@ -26,22 +26,46 @@ struct RecipeView: View {
             
             IngredientsCard(recipe: recipe)
             
+            
+            
+            CardView(title: "Difficulty") {
+                let difficultyBinding = Binding<String>(get: {
+                    if recipe.difficulty != nil {
+                        return recipe.difficulty!
+                    } else {
+                        return ""
+                    }
+                }, set: {
+                    recipe.difficulty = $0
+                })
+                
+                Picker("Difficulty", selection: difficultyBinding) {
+                    ForEach(["", "Easy", "Medium", "Hard"], id: \.self) { difficulty in
+                        Text(difficulty)
+                    }
+                }
+            }
+            
+            CardView(title: "Rating") {
+                let ratingBinding = Binding<String>(get: {
+                    if recipe.rating != nil {
+                        return recipe.rating!
+                    } else {
+                        return ""
+                    }
+                }, set: {
+                    recipe.rating = $0
+                })
+                
+                Picker("Rating", selection: ratingBinding) {
+                    ForEach(["", "Good", "Great"], id: \.self) { rating in
+                        Text(rating)
+                    }
+                }
+            }
+            
             CardView(title: "Details") {
                 VStack(alignment: .leading) {
-                    if let difficulty = recipe.difficulty {
-                        HStack {
-                            Text("Difficulty:").font(.headline)
-                            Text(difficulty).font(.subheadline)
-                        }
-                    }
-                    
-                    if let rating = recipe.rating {
-                        HStack {
-                            Text("Rating:").font(.headline)
-                            Text(rating).font(.subheadline)
-                        }
-                    }
-
                     if let lastMadeDate = recipe.lastMadeDate {
                         HStack {
                             Text("Last Made:").font(.headline)
@@ -59,7 +83,6 @@ struct RecipeView: View {
                     }
                 }
             }
-            
         }
         .padding(2)
 //        .alert("Ingredients Added", isPresented: $showAlert, actions: {})

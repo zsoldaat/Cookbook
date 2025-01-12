@@ -114,44 +114,6 @@ struct CreateEditRecipeView: View {
                         
                     } header: {Text("Ingredients")}
                 }
-                
-                Section {
-                    let difficultyBinding = Binding<String>(get: {
-                        if recipe.difficulty != nil {
-                            return recipe.difficulty!
-                        } else {
-                            return ""
-                        }
-                    }, set: {
-                        recipe.difficulty = $0
-                    })
-                    
-                    Picker("Time", selection: difficultyBinding) {
-                        ForEach(["", "Easy", "Medium", "Hard"], id: \.self) { difficulty in
-                            Text(difficulty)
-                        }
-                    }
-                    
-                    let ratingBinding = Binding<String>(get: {
-                        if recipe.rating != nil {
-                            return recipe.rating!
-                        } else {
-                            return ""
-                        }
-                    }, set: {
-                        recipe.rating = $0
-                    })
-                    
-                    Picker("Rating", selection: ratingBinding) {
-                        ForEach(["", "Good", "Great"], id: \.self) { rating in
-                            Text(rating)
-                        }
-                    }
-                    
-                    
-                } header: {
-                    Text("Details")
-                }
             }.toolbar {
                 if (isNewRecipe) {
                     ToolbarItem(placement: .topBarLeading) {
