@@ -80,10 +80,10 @@ struct RecipeView: View {
                     
                     ForEach(recipe.ingredients.sorted {$0.index < $1.index}) { ingredient in
                         HStack {
-                            Image(systemName: selections.contains(ingredient.id) ? "circle.fill" : "circle")
+                            Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle.fill" : "circle")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 25)
+                                .frame(width: 20)
                                 .onTapGesture {
                                     if (selections.contains(ingredient.id)) {
                                         selections.remove(ingredient.id)
@@ -102,7 +102,7 @@ struct RecipeView: View {
                 if (parsedIngredientsShowing == true) {
                     if let ingredientStrings = recipe.ingredientStrings {
                         ForEach(ingredientStrings, id: \.self) { ingredientString in
-                            Text(ingredientString).font(.subheadline)
+                            Text(ingredientString)
                         }
                     }
                 }
