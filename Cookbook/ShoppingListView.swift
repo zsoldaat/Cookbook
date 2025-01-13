@@ -22,23 +22,66 @@ struct ShoppingListView: View {
         NavigationStack {
             @Bindable var shoppingList = shoppingLists.first!
             
-            Form {
-                
-                if shoppingList.getItems().count > 0 {
-                    IngredientListSection(ingredients: shoppingList.getItems(), selections: $shoppingList.selections, onDelete: { indexSet in
-                        shoppingList.deleteItem(indexSet: indexSet, context: context)
-                    })
-                }
-                
-                ListButton(text: "Add", imageSystemName: "plus") {
-                    addShowing = true
+            GeometryReader { geo in
+                VStack {
+                    CardView(title: "Items", button: {Button {
+                        shoppingList.clear()
+                    } label: {
+                        Text("Clear")
+                    }}) {
+                        ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
+                            HStack {
+                                Image(systemName: shoppingList.selections.contains(ingredient.id) ? "circle.fill" : "circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25)
+                                    .onTapGesture {
+                                        if (shoppingList.selections.contains(ingredient.id)) {
+                                            shoppingList.selections.remove(ingredient.id)
+                                        } else {
+                                            shoppingList.selections.insert(ingredient.id)
+                                        }
+                                    }
+                                    .sensoryFeedback(trigger: shoppingList.selections.contains(ingredient.id)) { oldValue, newValue in
+                                        return .increase
+                                    }
+                                IngredientCell(ingredient: ingredient)
+                            }
+                            .draggable(ingredient.id.uuidString) {
+                                Text(ingredient.name)
+                            }
+                            .dropDestination(for: String.self) { uuids, location in
+                                let uuid = uuids.first!
+                                let draggedIngredient = shoppingList.getItems().first(where: { item in
+                                    item.id.uuidString == uuid
+                                })!.name
+                                let droppedIngredient = ingredient.name
+                                return true
+                            }
+
+                        }
+                        .onDelete { indexSet in
+                            shoppingList.deleteItem(indexSet: indexSet, context: context)
+                        }
+                        .onScrollPhaseChange({ oldPhase, newPhase in
+                            if (oldPhase == .interacting) {
+                                keyboardIsActive = false
+                            }
+                        })
+                        Spacer()
+                    }
+                    .padding(.horizontal, 5)
+                    
+                    CardView(title: "Add") {
+                        Button {
+                            addShowing = true
+                        } label: {
+                            Text("Add")
+                        }
+                    }.padding(.horizontal, 5)
                 }
             }
-            .onScrollPhaseChange({ oldPhase, newPhase in
-                if (oldPhase == .interacting) {
-                    keyboardIsActive = false
-                }
-            })
+            .navigationTitle("Shopping List")
             .sheet(isPresented: $addShowing, content: {
                 NavigationStack {
                     Form {
@@ -57,24 +100,9 @@ struct ShoppingListView: View {
                             shoppingList.deleteItem(indexSet: indexSet, context: context)
                         })
                     }
-                    .toolbar {
-                        Button {
-                            addShowing = false
-                        } label: {
-                            Text("Done")
-                        }
-                    }
                 }
                 
             })
-            .navigationTitle("Shopping List")
-            .toolbar {
-                Button {
-                    shoppingList.clear()
-                } label: {
-                    Text("Clear")
-                }
-            }
         }
     }
 }
