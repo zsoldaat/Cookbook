@@ -110,6 +110,18 @@ struct IngredientsCard: View {
         .scrollPosition(id: $activeCardIndex)
         .scrollIndicators(.hidden)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
+        
+        HStack {
+            Spacer()
+            ForEach(0...1, id: \.self) {id in
+                Image(systemName: "circle.fill")
+                    .frame(width: 10, height: 10)
+                    .padding(4)
+                    .foregroundStyle(.gray)
+                    .opacity(activeCardIndex == id ? 1 : 0.5)
+            }
+            Spacer()
+        }
     }
 }
 //
