@@ -28,11 +28,13 @@ struct IngredientCell: View {
         HStack {
             VStack(alignment: .leading) {
                 Text(ingredient.name)
-                if (!Unit.unconvertibleUnits().contains(ingredient.unit)) {
-                    Text("\(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor)) \(ingredient.getUnitString(displayUnit: displayUnit ?? ingredient.unit))")
+                let string = "\(ingredient.getQuantityString(displayUnit: displayUnit ?? ingredient.unit, scaleFactor: scaleFactor)) \(ingredient.getUnitString(displayUnit: displayUnit ?? ingredient.unit))"
+                if (!string.trimmingCharacters(in: .whitespaces).isEmpty) {
+                    Text(string)
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
+                
             }
             
            Spacer()
