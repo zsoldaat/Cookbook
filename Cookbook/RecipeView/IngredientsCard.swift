@@ -111,16 +111,19 @@ struct IngredientsCard: View {
         .scrollIndicators(.hidden)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
         
-        HStack {
-            Spacer()
-            ForEach(0...1, id: \.self) {id in
-                Image(systemName: "circle.fill")
-                    .frame(width: 10, height: 10)
-                    .padding(4)
-                    .foregroundStyle(.gray)
-                    .opacity(activeCardIndex == id ? 1 : 0.5)
+        if recipe.ingredientStrings != nil {
+            HStack {
+                Spacer()
+                ForEach(0...1, id: \.self) {id in
+                    Image(systemName: "circle.fill")
+                        .resizable()
+                        .frame(width: 10, height: 10)
+                        .padding(2)
+                        .foregroundStyle(.gray)
+                        .opacity(activeCardIndex == id ? 1 : 0.5)
+                }
+                Spacer()
             }
-            Spacer()
         }
     }
 }
