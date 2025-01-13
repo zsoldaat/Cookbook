@@ -33,13 +33,14 @@ struct IngredientListSection: View {
                         }
                     IngredientCell(ingredient: ingredient)
                 }
-//                .draggable(ingredient) {
-//                    Text(ingredient.name)
-//                }
-//                .dropDestination(for: Ingredient.self, action: { ingredient, location in
-//                    print(ingredient)
-//                    return false
-//                })
+                .draggable("Hello") {
+                    Text(ingredient.name)
+                }
+                .dropDestination(for: String.self) { hello, location in
+                    print(hello)
+                    return true
+                }
+                
             }
             .onDelete { indexSet in
                 if let onDelete = onDelete {
@@ -47,6 +48,13 @@ struct IngredientListSection: View {
                 }
             }
         }
+        
+        //apparently dragging and dropping doesn't work for items in the same list at the moment
+        //https://forums.developer.apple.com/forums/thread/730367
+        
+        //drag and drop tutorial
+        //https://www.youtube.com/watch?v=lsXqJKm4l-U
+            
     }
 }
 //
