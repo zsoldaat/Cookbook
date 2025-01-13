@@ -85,6 +85,10 @@ func findUnit(in string: String) -> Unit? {
         return .can
     }
     
+    if lowerString == "squeeze" || lowerString == "squeezes" {
+        return .squeeze
+    }
+    
     return nil
 }
 
