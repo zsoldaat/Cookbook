@@ -14,6 +14,7 @@ struct ShoppingListView: View {
     @Query() var shoppingLists: [ShoppingList]
     
     @State var addShowing: Bool = false
+    @State var errorShowing: Bool = false
     
     @FocusState var keyboardIsActive: Bool
     @StateObject var ingredient: Ingredient = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: .item, index: 1)
@@ -54,8 +55,18 @@ struct ShoppingListView: View {
                                 let uuid = uuids.first!
                                 let draggedIngredient = shoppingList.getItems().first(where: { item in
                                     item.id.uuidString == uuid
-                                })!.name
-                                let droppedIngredient = ingredient.name
+                                })!
+                                let targetIngredient = ingredient
+                                
+                                if (targetIngredient.unit.possibleConversions().contains(draggedIngredient.unit)) {
+                                    let newIngredient = Ingredient(name: targetIngredient.name, quantityWhole: draggedIngredient.quantityWhole, quantityFraction: draggedIngredient.quantityFraction, unit: draggedIngredient.unit, index: shoppingList.getNextIngredientIndex())
+                                    shoppingList.addItem(newIngredient)
+                                    shoppingList.removeById(id: draggedIngredient.id)
+                                } else {
+                                    print("Hello")
+                                    errorShowing = true
+                                }
+                                
                                 return true
                             }
 
@@ -81,6 +92,7 @@ struct ShoppingListView: View {
                     }.padding(.horizontal, 5)
                 }
             }
+            .alert("These units of these ingredients can't be added together.", isPresented: $errorShowing, actions: {})
             .navigationTitle("Shopping List")
             .sheet(isPresented: $addShowing, content: {
                 NavigationStack {

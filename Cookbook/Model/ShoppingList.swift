@@ -38,6 +38,12 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
         return items
     }
     
+    func removeById(id: UUID) {
+        items.removeAll { ingredient in
+            ingredient.id.uuidString == id.uuidString
+        }
+    }
+    
     func deleteItem(indexSet: IndexSet, context: ModelContext) {
         for i in indexSet {
             context.delete(items[i])
