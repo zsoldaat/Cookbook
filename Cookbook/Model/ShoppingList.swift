@@ -26,7 +26,7 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     }
     
     func addItem(_ ingredient: Ingredient) {
-        
+        // fix situation where you're adding two units with the same name, but where the types can't be converted. Right now it just appears as if nothing happens
         if let existingItem = items.first(where: { $0.name == ingredient.name }) {
             addIngredients(existingIngredient: existingItem, newIngredient: ingredient)
         } else {

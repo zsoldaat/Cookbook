@@ -63,7 +63,6 @@ struct ShoppingListView: View {
                                     shoppingList.addItem(newIngredient)
                                     shoppingList.removeById(id: draggedIngredient.id)
                                 } else {
-                                    print("Hello")
                                     errorShowing = true
                                 }
                                 
