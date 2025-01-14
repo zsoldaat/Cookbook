@@ -28,16 +28,16 @@ struct RecipeImageView: View {
         AsyncImage(url: recipe.imageUrl) { image in
             image.resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: UIScreen.main.bounds.width, height: 200, alignment: .center)
+                .frame(width: UIScreen.main.bounds.width, height: 250, alignment: .center)
                 .clipped()
                 .onLongPressGesture {
                     alertShowing = true
                 }
         } placeholder: {
             if (recipe.imageUrl !=  nil) {
-                Color.gray.frame(height: 200)
+                Color.gray.frame(height: 250)
             } else {
-                Color.gray.frame(height: 200).overlay {
+                Color.gray.frame(height: 250).overlay {
                     Button {
                         imageSelectShowing = true
                     } label: {
