@@ -53,6 +53,7 @@ struct ShoppingListView: View {
                                 }
                             IngredientCell(ingredient: ingredient)
                         }
+                        .contentShape(Rectangle())
                         .draggable(ingredient.id.uuidString) {
                             Text(ingredient.name)
                         }
@@ -62,6 +63,8 @@ struct ShoppingListView: View {
                                 item.id.uuidString == uuid
                             })!
                             let targetIngredient = ingredient
+                            
+                            if (draggedIngredient.id == targetIngredient.id) { return false }
                             
                             if (targetIngredient.unit.possibleConversions().contains(draggedIngredient.unit)) {
                                 let newIngredient = Ingredient(name: targetIngredient.name, quantityWhole: draggedIngredient.quantityWhole, quantityFraction: draggedIngredient.quantityFraction, unit: draggedIngredient.unit, index: shoppingList.getNextIngredientIndex())
