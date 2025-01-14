@@ -18,17 +18,19 @@ class Rating: ObservableObject {
 }
 
 struct RatingView: View {
-    
-    @Environment(\.colorScheme) var colorScheme
-    
+
     let recipe: Recipe
-    @Binding var ratings: [Rating]
+    let ratings: [Rating]
     
     init(recipe: Recipe) {
         self.recipe = recipe
-        _ratings = .constant(["🤕", "☹️", "😐", "🙂", "😍"].map { value in
+        self.ratings = ["🤕", "☹️", "😐", "🙂", "😍"].map { value in
             return Rating(rating: value, opacity: recipe.rating == value ? 1 : 0)
-        })
+        }
+    }
+    
+    func onClick(rating: String) {
+        recipe.rating = rating
     }
     
     var body: some View {
@@ -37,31 +39,40 @@ struct RatingView: View {
             HStack {
                 Spacer()
                 ForEach(["🤕", "☹️", "😐", "🙂", "😍"], id:\.self) {rating in
-                    if let image = rating.emojiToImage() {
-                        Button {
-                            recipe.rating = rating
-                        } label: {
-                            ZStack {
-                                if (recipe.rating == rating) {
-                                    Circle()
-                                        .fill(colorScheme == .dark ? Color.white : Color.black)
-                                }
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
-                                    
-                            }
-                            .frame(width: 50, height: 50)
-                            
-                        }
-                        .sensoryFeedback(trigger: recipe.rating == rating) { oldValue, newValue in
-                            return SensoryFeedback.selection
-                        }
-                    }
+                    @ObservedObject var ratingObject = Rating(rating: rating, opacity: recipe.rating == rating ? 1 : 0)
+                    RatingItem(rating: ratingObject.rating, opacity: $ratingObject.opacity, onClick: onClick)
                 }
                 Spacer()
             }
+        }
+    }
+}
+
+struct RatingItem: View {
+    
+    @Environment(\.colorScheme) var colorScheme
+    
+    let rating: String
+    @Binding var opacity: Double
+    let onClick: (String) -> Void
+
+    var body: some View {
+        if let image = rating.emojiToImage() {
+            Button {
+                onClick(rating)
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(colorScheme == .dark ? Color.white : Color.black)
+                        .opacity(opacity)
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 40, height: 40)
+                }
+                .frame(width: 50, height: 50)
+            }
+            
         }
     }
 }
