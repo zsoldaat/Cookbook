@@ -23,76 +23,86 @@ struct ShoppingListView: View {
         NavigationStack {
             @Bindable var shoppingList = shoppingLists.first!
             
-            GeometryReader { geo in
-                VStack {
-                    CardView(title: "Items", button: {Button {
-                        shoppingList.clear()
-                    } label: {
-                        Text("Clear")
-                    }}) {
-                        ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
-                            HStack {
-                                Image(systemName: shoppingList.selections.contains(ingredient.id) ? "circle.fill" : "circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25)
-                                    .onTapGesture {
-                                        if (shoppingList.selections.contains(ingredient.id)) {
-                                            shoppingList.selections.remove(ingredient.id)
-                                        } else {
-                                            shoppingList.selections.insert(ingredient.id)
-                                        }
-                                    }
-                                    .sensoryFeedback(trigger: shoppingList.selections.contains(ingredient.id)) { oldValue, newValue in
-                                        return .increase
-                                    }
-                                IngredientCell(ingredient: ingredient)
-                            }
-                            .draggable(ingredient.id.uuidString) {
-                                Text(ingredient.name)
-                            }
-                            .dropDestination(for: String.self) { uuids, location in
-                                let uuid = uuids.first!
-                                let draggedIngredient = shoppingList.getItems().first(where: { item in
-                                    item.id.uuidString == uuid
-                                })!
-                                let targetIngredient = ingredient
-                                
-                                if (targetIngredient.unit.possibleConversions().contains(draggedIngredient.unit)) {
-                                    let newIngredient = Ingredient(name: targetIngredient.name, quantityWhole: draggedIngredient.quantityWhole, quantityFraction: draggedIngredient.quantityFraction, unit: draggedIngredient.unit, index: shoppingList.getNextIngredientIndex())
-                                    shoppingList.addItem(newIngredient)
-                                    shoppingList.removeById(id: draggedIngredient.id)
-                                } else {
-                                    errorShowing = true
-                                }
-                                
-                                return true
-                            }
-
-                        }
-                        .onDelete { indexSet in
-                            shoppingList.deleteItem(indexSet: indexSet, context: context)
-                        }
-                        .onScrollPhaseChange({ oldPhase, newPhase in
-                            if (oldPhase == .interacting) {
-                                keyboardIsActive = false
-                            }
-                        })
-                        Spacer()
-                    }
-                    .padding(.horizontal, 5)
-                    
-                    CardView(title: "Add") {
-                        Button {
-                            addShowing = true
+            VStack {
+                CardView(title: "Items", button: {
+                    if (!shoppingList.selections.isEmpty) {
+                        Button(role: .destructive) {
+                            shoppingList.removeById(ids: Array(shoppingList.selections))
+                            shoppingList.selections.removeAll()
                         } label: {
-                            Text("Add")
+                            Label("Remove", systemImage: "trash")
+                                .labelStyle(.iconOnly)
                         }
-                    }.padding(.horizontal, 5)
+                    }
+                }) {
+                    ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
+                        HStack {
+                            Image(systemName: shoppingList.selections.contains(ingredient.id) ? "circle.fill" : "circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 25)
+                                .onTapGesture {
+                                    if (shoppingList.selections.contains(ingredient.id)) {
+                                        shoppingList.selections.remove(ingredient.id)
+                                    } else {
+                                        shoppingList.selections.insert(ingredient.id)
+                                    }
+                                }
+                                .sensoryFeedback(trigger: shoppingList.selections.contains(ingredient.id)) { oldValue, newValue in
+                                    return .increase
+                                }
+                            IngredientCell(ingredient: ingredient)
+                        }
+                        .draggable(ingredient.id.uuidString) {
+                            Text(ingredient.name)
+                        }
+                        .dropDestination(for: String.self) { uuids, location in
+                            let uuid = uuids.first!
+                            let draggedIngredient = shoppingList.getItems().first(where: { item in
+                                item.id.uuidString == uuid
+                            })!
+                            let targetIngredient = ingredient
+                            
+                            if (targetIngredient.unit.possibleConversions().contains(draggedIngredient.unit)) {
+                                let newIngredient = Ingredient(name: targetIngredient.name, quantityWhole: draggedIngredient.quantityWhole, quantityFraction: draggedIngredient.quantityFraction, unit: draggedIngredient.unit, index: shoppingList.getNextIngredientIndex())
+                                shoppingList.addItem(newIngredient)
+                                shoppingList.removeById(ids: [draggedIngredient.id])
+                            } else {
+                                errorShowing = true
+                            }
+                            
+                            return true
+                        }
+                    }
+                    //                    .onDelete { indexSet in
+                    //                        shoppingList.deleteItem(indexSet: indexSet, context: context)
+                    //                    }
+                    .onScrollPhaseChange({ oldPhase, newPhase in
+                        if (oldPhase == .interacting) {
+                            keyboardIsActive = false
+                        }
+                    })
+                    Spacer()
                 }
+                .padding(.horizontal, 5)
+                
+                CardView(title: "Add") {
+                    Button {
+                        addShowing = true
+                    } label: {
+                        Text("Add")
+                    }
+                }.padding(.horizontal, 5)
             }
             .alert("These units of these ingredients can't be added together.", isPresented: $errorShowing, actions: {})
             .navigationTitle("Shopping List")
+            .toolbar {
+                Button {
+                    shoppingList.clear()
+                } label: {
+                    Text("Clear")
+                }
+            }
             .sheet(isPresented: $addShowing, content: {
                 NavigationStack {
                     Form {

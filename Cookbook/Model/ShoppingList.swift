@@ -37,9 +37,9 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
         return items
     }
     
-    func removeById(id: UUID) {
+    func removeById(ids: [UUID]) {
         items.removeAll { ingredient in
-            ingredient.id.uuidString == id.uuidString
+            ids.map{$0.uuidString}.contains(ingredient.id.uuidString)
         }
     }
     
