@@ -128,14 +128,18 @@ struct Scraper {
                 return nil
             }
             
-            //Sometimes sites use the term "instructions", sometimes "preparations", so look for both
-            let instructions = getListItemsForTitle(title: "Instructions", headings: allHeadings)?.reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next})
-            let preparation = getListItemsForTitle(title: "Preparation", headings: allHeadings)?.reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next})
+            //These are the terms websites use to mark the instructions sections, might add more in the future but this seems to cover most
+            let instructionTerms = ["Instructions", "Preparation", "Directions"]
+            
+            let instructions = instructionTerms
+                .map {getListItemsForTitle(title: $0, headings: allHeadings)?
+                .reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next})}
+                .compactMap {$0}
             
             let ingredients = getListItemsForTitle(title: "Ingredients", headings: allHeadings)
             let ingredientObjects: [Ingredient]? = ingredients != nil ? ingredients!.map{ parseIngredient(ingredient: $0, index: (ingredients?.firstIndex(of: $0))!) } : nil
             
-            return RecipeData(name: name, instructions: instructions ?? preparation, ingredients: ingredientObjects, ingredientStrings: ingredients, imageUrls: imageUrls)
+            return RecipeData(name: name, instructions: instructions.first ?? "", ingredients: ingredientObjects, ingredientStrings: ingredients, imageUrls: imageUrls)
             
         } catch {
             print("Didn't work")
