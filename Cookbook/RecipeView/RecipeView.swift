@@ -77,7 +77,7 @@ struct RecipeView: View {
             @Bindable var recipe = recipe
             CreateEditRecipeView(recipe: recipe, isNewRecipe: false)
         })
-        .edgesIgnoringSafeArea(.all)
+        .edgesIgnoringSafeArea(.top)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
