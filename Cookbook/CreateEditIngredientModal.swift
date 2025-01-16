@@ -52,7 +52,7 @@ struct CreateEditIngredientModal: View {
                         }
                         dismiss()
                     } label: {
-                        Text("Done")
+                        Label("Done", systemImage: "return.left").labelStyle(.titleOnly)
                     }
                 }
                 

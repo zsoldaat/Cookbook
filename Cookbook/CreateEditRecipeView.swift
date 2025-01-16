@@ -97,7 +97,8 @@ struct CreateEditRecipeView: View {
                                             recipe.ingredients.removeAll(where: {$0.id == ingredient.id})
                                             
                                         } label: {
-                                            Text("Delete")
+                                            Label("Edit", systemImage: "trash")
+                                                .labelStyle(.iconOnly)
                                         }
                                         .tint(.red)
                                         
@@ -105,7 +106,8 @@ struct CreateEditRecipeView: View {
                                             ingredientIdToEdit = ingredient.id
                                             ingredientModalShowing = true
                                         } label: {
-                                            Text("Edit")
+                                            Label("Edit", systemImage: "square.and.pencil")
+                                                .labelStyle(.iconOnly)
                                         }
                                         .tint(.yellow)
                                     }
@@ -120,11 +122,7 @@ struct CreateEditRecipeView: View {
                         Button {
                             dismiss()
                         } label: {
-                            HStack {
-                                Image(systemName: "chevron.backward")
-                                Text("Back")
-                            }
-                            
+                            Label("Back", systemImage: "chevron.backward").labelStyle(.titleAndIcon)
                         }
                     }
                 }
@@ -137,7 +135,8 @@ struct CreateEditRecipeView: View {
                         recipe.createUpdateRecipe(context: context)
                         dismiss()
                     } label: {
-                        Text("Done")
+                        Label("Done", systemImage: "return")
+                            .labelStyle(.titleOnly)
                     }
                 }
             }

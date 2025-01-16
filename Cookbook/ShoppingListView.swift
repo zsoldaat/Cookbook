@@ -87,20 +87,20 @@ struct ShoppingListView: View {
                         shoppingList.removeById(ids: Array(shoppingList.selections))
                         shoppingList.selections.removeAll()
                     } label: {
-                        Label("Remove", systemImage: "trash")
+                        Label("Remove", systemImage: "text.badge.xmark")
                             .labelStyle(.iconOnly)
                     }
                 }
                 Button {
                     shoppingList.clear()
                 } label: {
-                    Label("Clear", systemImage: "tray")
+                    Label("Clear", systemImage: "text.page.slash")
                 }
                 
                 Button {
                     addShowing = true
                 } label: {
-                    Label("Add", systemImage: "plus")
+                    Label("Add", systemImage: "text.badge.plus")
                         .labelStyle(.iconOnly)
                 }
             }

@@ -79,13 +79,15 @@ struct RecipeView: View {
         })
         .edgesIgnoringSafeArea(.top)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 Button {
                     editShowing = true
                 } label: {
-                    Text("Edit")
+                    Label("Edit", systemImage: "square.and.pencil")
+                        .labelStyle(.iconOnly)
                 }
             }
+            
         }
     }
 }

@@ -28,28 +28,7 @@ struct IngredientsCard: View {
         ScrollView(.horizontal) {
             HStack(alignment: .top) {
                 Group {
-                    CardView(title: "Ingredients", button: {
-                        Button {
-                            recipe.ingredients
-                            
-                                .filter {item in
-                                    selections.contains(item.id)
-                                }
-                                .forEach { ingredient in
-                                    //add ingredients multiple times if scaling up the recipe
-                                    for _ in 1...scaleFactor {
-                                        shoppingList.addItem(ingredient)
-                                    }
-                                }
-                            shoppingList.save(context: context)
-                            selections.removeAll()
-                            recipe.lastMadeDate = Date()
-                            showAlert = true
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                        .disabled(selections.isEmpty)
-                    }) {
+                    CardView(title: "Ingredients") {
                         
                         let scaleBinding = Binding<String>(get: {
                             String(scaleFactor) + "x"
@@ -110,6 +89,31 @@ struct IngredientsCard: View {
         .scrollPosition(id: $activeCardIndex)
         .scrollIndicators(.hidden)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
+        .toolbar {
+            if !selections.isEmpty {
+                ToolbarItem {
+                    Button {
+                        recipe.ingredients
+                        
+                            .filter {item in
+                                selections.contains(item.id)
+                            }
+                            .forEach { ingredient in
+                                //add ingredients multiple times if scaling up the recipe
+                                for _ in 1...scaleFactor {
+                                    shoppingList.addItem(ingredient)
+                                }
+                            }
+                        shoppingList.save(context: context)
+                        selections.removeAll()
+                        recipe.lastMadeDate = Date()
+                        showAlert = true
+                    } label: {
+                        Label("Add to Grocery List", systemImage: "text.badge.plus")
+                    }
+                }
+            }
+        }
         
         if recipe.ingredientStrings != nil {
             HStack {

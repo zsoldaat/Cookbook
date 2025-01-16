@@ -41,7 +41,7 @@ struct RecipeImageView: View {
                     Button {
                         imageSelectShowing = true
                     } label: {
-                        Text("Generate an image")
+                        Label("Generate an image", systemImage: "photo.badge.plus")
                     }
                 }
             }

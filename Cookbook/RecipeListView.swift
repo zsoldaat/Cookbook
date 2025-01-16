@@ -63,7 +63,8 @@ struct RecipeListView: View {
             .navigationBarItems(trailing: Button {
                 addRecipeShowing = true
             } label: {
-                Image(systemName: "plus")
+                Label("Add Recipe", systemImage: "plus")
+                    .labelStyle(.iconOnly)
             })
             .fullScreenCover(isPresented: $addRecipeShowing) {
                 @Bindable var recipe: Recipe = Recipe(name: "", instructions: "", ingredients: [])

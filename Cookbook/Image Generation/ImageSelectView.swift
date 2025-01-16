@@ -76,7 +76,7 @@ struct ImageSelectView: View {
                     Button {
                         dismiss()
                     } label: {
-                        Text("Ok")
+                        Label("Ok", systemImage: "checkmark").labelStyle(.titleOnly)
                     }
                 }
             } else {
