@@ -48,9 +48,9 @@ struct RecipeView: View {
                 }
             }
             .padding(.horizontal, 5)
-//            
-//            RatingView(recipe: recipe)
-//                .padding(.horizontal, 5)
+            
+            RatingView(recipe: recipe)
+                .padding(.horizontal, 5)
             
             CardView(title: "Details") {
                 VStack(alignment: .leading) {
