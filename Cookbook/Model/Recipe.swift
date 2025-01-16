@@ -23,7 +23,7 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var imageUrl: URL?
     var difficulty: String?
     var lastMadeDate: Date?
-    var rating: String?
+    var rating: Rating?
     
     init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
         self.name = name
@@ -80,7 +80,7 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         imageUrl = try container.decode(URL.self, forKey: .imageUrl)
         difficulty = try container.decode(String.self, forKey: .difficulty)
         lastMadeDate = try container.decode(Date.self, forKey: .lastMadeDate)
-        rating = try container.decode(String.self, forKey: .rating)
+        rating = try container.decode(Rating.self, forKey: .rating)
     }
     
     func encode(to encoder: Encoder) throws {
