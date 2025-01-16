@@ -6,13 +6,14 @@
 //
 import SwiftUI
 
-enum Rating: Codable, CaseIterable, Identifiable {
+enum Rating: String, Codable, CaseIterable, Identifiable {
     var id: Self { self }
     
-    case worst, bad, medium, good, great
+    case none, worst, bad, medium, good, great
     
     func emoji() -> String {
         switch self {
+        case .none: return ""
         case .worst: return "🤕"
         case .bad: return "☹️"
         case .medium: return "😐"

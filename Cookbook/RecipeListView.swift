@@ -16,26 +16,43 @@ struct RecipeListView: View {
     @State private var recipeToEdit: Recipe?
     @State private var addRecipeShowing: Bool = false
     @State private var searchValue: String = ""
+    @State private var ratingFilterValue: Rating = .none
+    @State private var difficultyFilterValue: String = ""
+    @State private var filterViewShowing: Bool = false
     
     @Query(sort: \Recipe.name) var recipes: [Recipe]
     
     func filterSearch(recipe: Recipe) -> Bool {
-        if searchValue.isEmpty {return true}
+        var shouldFilter: Bool = true
         
-        print(recipe.ingredients
-            .map{$0.name.lowercased()}
-            .reduce("", {"\($0) \($1)"}))
-        
-        if (
-            recipe.ingredients
-                .map{$0.name.lowercased()}
-                .reduce("", {"\($0) \($1)"})
-                .contains(searchValue.lowercased())
-        ) {
-            return true
+        if (!searchValue.isEmpty) {
+            if (
+                !recipe.ingredients
+                    .map{$0.name.lowercased()}
+                    .reduce("", {"\($0) \($1)"})
+                    .contains(searchValue.lowercased())
+            ) {
+                shouldFilter = false
+            }
+            
+            if (!recipe.name.lowercased().contains(searchValue.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())) {
+                shouldFilter = false
+            }
         }
         
-        return recipe.name.lowercased().contains(searchValue.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
+        if (ratingFilterValue != .none) {
+            if (recipe.rating != ratingFilterValue) {
+                shouldFilter = false
+            }
+        }
+        
+        if (!difficultyFilterValue.isEmpty) {
+            if (recipe.difficulty != difficultyFilterValue) {
+                shouldFilter = false
+            }
+        }
+        
+        return shouldFilter
     }
     
     var body: some View {
@@ -60,7 +77,12 @@ struct RecipeListView: View {
                 }
             }
             .navigationTitle("Recipes")
-            .navigationBarItems(trailing: Button {
+            .navigationBarItems(leading: Button {
+                filterViewShowing = true
+            } label: {
+                Label("Show Filters", systemImage: "line.3.horizontal.decrease.circle")
+                    .labelStyle(.iconOnly)
+            }, trailing: Button {
                 addRecipeShowing = true
             } label: {
                 Label("Add Recipe", systemImage: "plus")
@@ -72,6 +94,27 @@ struct RecipeListView: View {
             }
         }
         .searchable(text: $searchValue, prompt: "Search...")
+        .sheet(isPresented: $filterViewShowing) {
+            NavigationStack {
+                Picker(selection: $ratingFilterValue) {
+                    ForEach(Rating.allCases) { rating in
+                        Text(rating.emoji()).tag(rating)
+                    }
+                } label: {
+                    Label("Rating:", systemImage: "star.leadinghalf.filled")
+                        .labelStyle(.titleOnly)
+                }
+                
+                Picker(selection: $difficultyFilterValue) {
+                    ForEach(["", "Easy", "Medium", "Hard"], id: \.self) { difficulty in
+                        Text(difficulty).tag(difficulty)
+                    }
+                } label: {
+                    Label("Difficulty", systemImage: "chart.bar.xaxis.ascending")
+                        .labelStyle(.titleOnly)
+                }
+            }
+        }
         
     }
     
