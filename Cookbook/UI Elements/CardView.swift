@@ -40,7 +40,7 @@ struct CardView<Content: View, ButtonContent: View>: View {
                 content()
             }.padding()
         }
-        .background(Color.gray.opacity(0.2))
+        .background(Color.gray.opacity(colorScheme == .dark ? 0.3 : 0.1))
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
