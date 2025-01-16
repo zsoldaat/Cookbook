@@ -77,17 +77,19 @@ struct RecipeListView: View {
                 }
             }
             .navigationTitle("Recipes")
-            .navigationBarItems(leading: Button {
-                filterViewShowing = true
-            } label: {
-                Label("Show Filters", systemImage: "line.3.horizontal.decrease.circle")
-                    .labelStyle(.iconOnly)
-            }, trailing: Button {
-                addRecipeShowing = true
-            } label: {
-                Label("Add Recipe", systemImage: "plus")
-                    .labelStyle(.iconOnly)
-            })
+            .navigationBarItems(
+                leading: Button {
+                    filterViewShowing = true
+                } label: {
+                    Label("Show Filters", systemImage: "line.3.horizontal.decrease.circle")
+                        .labelStyle(.iconOnly)
+                },
+                trailing: Button {
+                    addRecipeShowing = true
+                } label: {
+                    Label("Add Recipe", systemImage: "plus")
+                        .labelStyle(.iconOnly)
+                })
             .fullScreenCover(isPresented: $addRecipeShowing) {
                 @Bindable var recipe: Recipe = Recipe(name: "", instructions: "", ingredients: [])
                 CreateEditRecipeView(recipe: recipe, isNewRecipe: true)

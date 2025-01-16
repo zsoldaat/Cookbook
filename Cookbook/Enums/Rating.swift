@@ -13,7 +13,7 @@ enum Rating: String, Codable, CaseIterable, Identifiable {
     
     func emoji() -> String {
         switch self {
-        case .none: return ""
+        case .none: return " "
         case .worst: return "🤕"
         case .bad: return "☹️"
         case .medium: return "😐"

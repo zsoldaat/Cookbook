@@ -15,7 +15,7 @@ struct RatingView: View {
         CardView(title: "Rating") {
             HStack {
                 Spacer()
-                ForEach(Rating.allCases) { rating in
+                ForEach(Rating.allCases.filter{$0 != .none}) { rating in
                     RatingItem(rating: rating, isSelected: recipe.rating == rating, onSelect: {recipe.rating = $0})
                 }
                 Spacer()
