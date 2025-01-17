@@ -15,10 +15,13 @@ struct RecipeListView: View {
     @State private var isShowingItemSheet = false
     @State private var recipeToEdit: Recipe?
     @State private var addRecipeShowing: Bool = false
+    
     @State private var searchValue: String = ""
     @State private var ratingFilterValue: Rating = .none
     @State private var difficultyFilterValue: String = ""
     @State private var filterViewShowing: Bool = false
+    @State private var startDate: Date = Date()
+    @State private var endDate: Date = Date()
     
     @Query(sort: \Recipe.name) var recipes: [Recipe]
     
@@ -51,6 +54,21 @@ struct RecipeListView: View {
                 shouldFilter = false
             }
         }
+        
+        let calendar = Calendar.current
+        
+        //if user has selected a date
+        if (!calendar.isDate(startDate, inSameDayAs: Date()) || !calendar.isDate(endDate, inSameDayAs: Date())) {
+            
+            if recipe.date < startDate && !calendar.isDate(recipe.date, inSameDayAs: startDate) {
+                shouldFilter = false
+            }
+            
+            if recipe.date > endDate && !calendar.isDate(recipe.date, inSameDayAs: endDate) {
+                shouldFilter = false
+            }
+        }
+        
         
         return shouldFilter
     }
@@ -97,25 +115,7 @@ struct RecipeListView: View {
         }
         .searchable(text: $searchValue, prompt: "Search...")
         .sheet(isPresented: $filterViewShowing) {
-            NavigationStack {
-                Picker(selection: $ratingFilterValue) {
-                    ForEach(Rating.allCases) { rating in
-                        Text(rating.emoji()).tag(rating)
-                    }
-                } label: {
-                    Label("Rating:", systemImage: "star.leadinghalf.filled")
-                        .labelStyle(.titleOnly)
-                }
-                
-                Picker(selection: $difficultyFilterValue) {
-                    ForEach(["", "Easy", "Medium", "Hard"], id: \.self) { difficulty in
-                        Text(difficulty).tag(difficulty)
-                    }
-                } label: {
-                    Label("Difficulty", systemImage: "chart.bar.xaxis.ascending")
-                        .labelStyle(.titleOnly)
-                }
-            }
+            FilterView(searchValue: $searchValue, ratingFilterValue: $ratingFilterValue, difficultyFilterValue: $difficultyFilterValue, startDate: $startDate, endDate: $endDate)
         }
         
     }
