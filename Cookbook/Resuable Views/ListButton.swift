@@ -36,7 +36,7 @@ struct ListButton: View {
             .contentShape(Rectangle())
         }
         .frame(height: 44.0)
-        .background(Color.blue)
+        .background(Color.accent)
         .cornerRadius(10.0)
         .contentShape(Rectangle())
         .listRowInsets(EdgeInsets())

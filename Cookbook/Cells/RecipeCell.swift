@@ -24,7 +24,7 @@ struct RecipeCell: View {
             } placeholder: {
                 Color.gray.frame(width: imageSize, height: imageSize)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .clipShape(RoundedRectangle(cornerRadius: 15))
             
             VStack(alignment: .leading) {
                 
