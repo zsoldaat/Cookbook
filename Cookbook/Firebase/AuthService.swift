@@ -65,18 +65,4 @@ class AuthService: ObservableObject {
         }
     }
     
-    func checkIfUserExists(email: String, completion: @escaping (Bool) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: "fjwehjfhqwejdnjwebfihjwbdfjwehjfbwh") { data, error in
-            if let e = error {
-                let code = AuthErrorCode(rawValue: e._code)
-                switch code {
-                case .emailAlreadyInUse:
-                    completion(true)
-                default:
-                    completion(false)
-                }
-            }
-        }
-    }
-    
 }

@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyDdfzmsv8cBjH-ijCemctLFTqgQ9XCdOCQ</string>
+	<string>AIzaSyCeOewdqklMIigsbfGHWTQMm5SGw01h12M</string>
 	<key>GCM_SENDER_ID</key>
-	<string>776294841111</string>
+	<string>922197935815</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.zacsoldaat.Cookbook</string>
 	<key>PROJECT_ID</key>
-	<string>cookbook-ab51d</string>
+	<string>cookbook-7b65f</string>
 	<key>STORAGE_BUCKET</key>
-	<string>cookbook-ab51d.firebasestorage.app</string>
+	<string>cookbook-7b65f.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:776294841111:ios:bb5125fa3cd7ce5df69552</string>
+	<string>1:922197935815:ios:84b41949aefd8d236520e2</string>
 </dict>
 </plist>

@@ -15,37 +15,45 @@ struct LoginView: View {
     @State private var alertShowing: Bool = false
     @State private var privacyPolicyShowing: Bool = false
     @State private var errorMessage: String = ""
+    @State private var createAccountMode: Bool = false
     
     var body: some View {
         NavigationView {
             
             VStack {
-                CardView(button: {
-                    
-                    if (privacyPolicyShowing) {
-                        Button {
-                            privacyPolicyShowing = false
-                        } label: {
-                            Label("Close", systemImage: "xmark")
-                                .labelStyle(.iconOnly)
-                        }
-                        .padding()
+                CardView {
+                    HStack {
                         
-                    } else {
                         Button {
-                            privacyPolicyShowing = true
+                            createAccountMode.toggle()
                         } label: {
-                            Label("Info", systemImage: "questionmark.circle")
-                                .labelStyle(.iconOnly)
+                            createAccountMode ? Label("Login", systemImage: "arrow.left") : Label("Create Account", systemImage: "plus")
                         }
-                        .padding()
+                        
+                        Spacer()
+                        
+                        if (privacyPolicyShowing) {
+                            Button {
+                                privacyPolicyShowing = false
+                            } label: {
+                                Label("Close", systemImage: "xmark")
+                                    .labelStyle(.iconOnly)
+                            }
+                            
+                        } else {
+                            Button {
+                                privacyPolicyShowing = true
+                            } label: {
+                                Label("Info", systemImage: "questionmark.circle")
+                                    .labelStyle(.iconOnly)
+                            }
+                        }
                     }
-                }) {
+                    .padding()
                     
                     if (privacyPolicyShowing) {
                         Text("Create an account if you would like to share your recipes and grocery lists with other people. It's totally optional, and nothing bad will happen to you. (No emails, no data collection, etc.) I would do this without collecting emails if I could, but most backend services don't allow you to submit records without authentication.")
                             .font(.caption)
-                            .padding()
                     }
                     
                     TextField("Email", text: $email)
@@ -60,34 +68,42 @@ struct LoginView: View {
                             .font(.caption)
                     }
                     
-                    HStack {
-                        Spacer()
-                        Button("Login") {
-                            authService.regularSignIn(email: email, password: password) { error in
-                                if error != nil {
-                                    authService.checkIfUserExists(email: email) { userExists in
-                                        if (userExists) {
-                                            errorMessage = "Incorrect password. Please try again."
-                                        } else {
-                                            alertShowing = true
-                                        }
+                    if (createAccountMode) {
+                        HStack {
+                            Spacer()
+                            Button("Create Account") {
+                                authService.regularCreateAccount(email: email, password: password) { error in
+                                    if let e = error {
+                                        errorMessage = e.localizedDescription
                                     }
                                 }
                             }
+                            Spacer()
                         }
-                        Spacer()
+                        .padding()
                     }
-                    .padding()
+                    
+                    if (!createAccountMode) {
+                        HStack {
+                            Spacer()
+                            Button("Login") {
+                                authService.regularSignIn(email: email, password: password) { error in
+                                    if let e = error {
+                                        print(e.localizedDescription)
+                                        alertShowing = true
+                                    }
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding()
+                    }
                 }
                 .padding()
             }
             .alert("There is no account that matches these credentials. Create one?", isPresented: $alertShowing, actions: {
                 Button {
-                    authService.regularCreateAccount(email: email, password: password) { error in
-                        if let e = error {
-                            errorMessage = e.localizedDescription
-                        }
-                    }
+                    createAccountMode = true
                 } label: {
                     Label("Yes", systemImage: "checkmark")
                 }
