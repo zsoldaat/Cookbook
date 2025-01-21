@@ -14,6 +14,7 @@ struct FilterView: View {
     @Binding var searchValue: String
     @Binding var ratingFilterValue: Rating
     @Binding var difficultyFilterValue: String
+    @Binding var dateFilterViewShowing: Bool
     @Binding var startDate: Date
     @Binding var endDate: Date
     
@@ -36,7 +37,6 @@ struct FilterView: View {
                         }
                     } label: {
                         Label("Rating:", systemImage: "star.leadinghalf.filled")
-                            .labelStyle(.titleOnly)
                     }
                     
                     Picker(selection: $difficultyFilterValue) {
@@ -45,35 +45,39 @@ struct FilterView: View {
                         }
                     } label: {
                         Label("Difficulty", systemImage: "chart.bar.xaxis.ascending")
-                            .labelStyle(.titleOnly)
                     }
                 } header: {Text("Filters")}
                 
                 Section {
                     
-                    let startDateRange: ClosedRange<Date> = {
-                        let calendar = Calendar.current
-                        let startComponents = DateComponents(year: 2021, month: 1, day: 1)
-                        let endComponents = Calendar.current.dateComponents([.year, .month, .day], from: endDate <= Date() ? endDate : Date())
-                        return calendar.date(from:startComponents)!
-                            ...
-                            calendar.date(from:endComponents)!
-                    }()
+                    Toggle(isOn: $dateFilterViewShowing) {
+                        Label("Filter by Date", systemImage: "calendar")
+                    }
                     
-                    DatePicker("Start Date", selection: $startDate, in: startDateRange, displayedComponents: [.date])
-                    
-                    let endDateRange: ClosedRange<Date> = {
-                        let calendar = Calendar.current
-                        let startComponents = calendar.dateComponents([.year, .month, .day], from: startDate <= Date() ? startDate : Date())
-                        let endComponents = DateComponents(year: 2100, month: 1, day: 1)
-                        return calendar.date(from:startComponents)!
-                            ...
-                            calendar.date(from:endComponents)!
-                    }()
+                    if (dateFilterViewShowing) {
+                        let startDateRange: ClosedRange<Date> = {
+                            let calendar = Calendar.current
+                            let startComponents = DateComponents(year: 2021, month: 1, day: 1)
+                            let endComponents = Calendar.current.dateComponents([.year, .month, .day], from: endDate <= Date() ? endDate : Date())
+                            return calendar.date(from:startComponents)!
+                                ...
+                                calendar.date(from:endComponents)!
+                        }()
+                        
+                        DatePicker("Start Date", selection: $startDate, in: startDateRange, displayedComponents: [.date])
+                        
+                        let endDateRange: ClosedRange<Date> = {
+                            let calendar = Calendar.current
+                            let startComponents = calendar.dateComponents([.year, .month, .day], from: startDate <= Date() ? startDate : Date())
+                            let endComponents = DateComponents(year: 2100, month: 1, day: 1)
+                            return calendar.date(from:startComponents)!
+                                ...
+                                calendar.date(from:endComponents)!
+                        }()
 
-                    
-                    DatePicker("End Date", selection: $endDate, in: endDateRange, displayedComponents: [.date])
-                    
+                        
+                        DatePicker("End Date", selection: $endDate, in: endDateRange, displayedComponents: [.date])
+                    }
                     
                 } header: { Text("Dates") }
             }
@@ -83,11 +87,12 @@ struct FilterView: View {
                 difficultyFilterValue = ""
                 startDate = Date()
                 endDate = Date()
+                dateFilterViewShowing = false
             } label: {
                 Label("Reset Filters", systemImage: "arrowshape.turn.up.backward")
             }
             .buttonStyle(.bordered)
-            .disabled(ratingFilterValue == .none && difficultyFilterValue.isEmpty && Calendar.current.isDateInToday(startDate) && Calendar.current.isDateInToday(endDate))
+            .disabled(ratingFilterValue == .none && difficultyFilterValue.isEmpty && Calendar.current.isDateInToday(startDate) && Calendar.current.isDateInToday(endDate) && !dateFilterViewShowing)
         }
     }
 }

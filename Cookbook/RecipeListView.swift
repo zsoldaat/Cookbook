@@ -20,6 +20,7 @@ struct RecipeListView: View {
     @State private var ratingFilterValue: Rating = .none
     @State private var difficultyFilterValue: String = ""
     @State private var filterViewShowing: Bool = false
+    @State private var dateFilterViewShowing: Bool = false
     @State private var startDate: Date = Date()
     @State private var endDate: Date = Date()
     
@@ -55,20 +56,21 @@ struct RecipeListView: View {
             }
         }
         
-        let calendar = Calendar.current
-        
-        //if user has selected a date
-        if (!calendar.isDate(startDate, inSameDayAs: Date()) || !calendar.isDate(endDate, inSameDayAs: Date())) {
+        if dateFilterViewShowing == true {
+            let calendar = Calendar.current
             
-            if recipe.date < startDate && !calendar.isDate(recipe.date, inSameDayAs: startDate) {
-                shouldFilter = false
-            }
-            
-            if recipe.date > endDate && !calendar.isDate(recipe.date, inSameDayAs: endDate) {
-                shouldFilter = false
+            //if user has selected a date
+            if (!calendar.isDate(startDate, inSameDayAs: Date()) || !calendar.isDate(endDate, inSameDayAs: Date())) {
+                
+                if recipe.date < startDate && !calendar.isDate(recipe.date, inSameDayAs: startDate) {
+                    shouldFilter = false
+                }
+                
+                if recipe.date > endDate && !calendar.isDate(recipe.date, inSameDayAs: endDate) {
+                    shouldFilter = false
+                }
             }
         }
-        
         
         return shouldFilter
     }
@@ -115,7 +117,7 @@ struct RecipeListView: View {
         }
         .searchable(text: $searchValue, prompt: "Search...")
         .sheet(isPresented: $filterViewShowing) {
-            FilterView(searchValue: $searchValue, ratingFilterValue: $ratingFilterValue, difficultyFilterValue: $difficultyFilterValue, startDate: $startDate, endDate: $endDate)
+            FilterView(searchValue: $searchValue, ratingFilterValue: $ratingFilterValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate)
         }
         
     }
