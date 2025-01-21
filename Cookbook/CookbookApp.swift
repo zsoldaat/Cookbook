@@ -7,6 +7,15 @@
 
 import SwiftUI
 import SwiftData
+import FirebaseCore
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        return true
+    }
+}
 
 @main
 struct CookbookApp: App {
@@ -14,26 +23,29 @@ struct CookbookApp: App {
         let schema = Schema([Recipe.self, ShoppingList.self])
         let container = try! ModelContainer(for: schema, configurations: [])
         container.mainContext.insert(ShoppingList())
-//                container.deleteAllData()
+        //                container.deleteAllData()
         return container
     }()
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var selectedTab: SelectedTab = SelectedTab(selectedTabTag: 0)
+    @StateObject var authService: AuthService = AuthService()
     
     var body: some Scene {
         WindowGroup {
             SectionSelectView()
                 .modelContainer(container)
                 .environmentObject(selectedTab)
+                .environmentObject(authService)
                 .task {
-//                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
-//                    let data = await scraper.getRecipeData()
-//                    
-//                    if let data = data {
-//                        
-//                        print(data.ingredients)
-//
-//                    }
+                    //                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
+                    //                    let data = await scraper.getRecipeData()
+                    //
+                    //                    if let data = data {
+                    //
+                    //                        print(data.ingredients)
+                    //
+                    //                    }
                 }
         }
         

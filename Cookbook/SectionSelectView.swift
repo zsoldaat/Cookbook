@@ -29,6 +29,14 @@ struct SectionSelectView: View {
                     }
                 }
                 .tag(1)
+            ShareView()
+                .tabItem {
+                    HStack {
+                        Image(systemName: "person.fill")
+                        Text("Share")
+                    }
+                }
+                .tag(2)
         }
     }
     
