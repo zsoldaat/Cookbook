@@ -28,23 +28,20 @@ struct IngredientsCard: View {
         ScrollView(.horizontal) {
             HStack(alignment: .top) {
                 Group {
-                    CardView(title: "Ingredients") {
-                        
+                    CardView(title: "Ingredients", button: {
                         let scaleBinding = Binding<String>(get: {
                             String(scaleFactor) + "x"
                         }, set: {
                             scaleFactor = Int($0.prefix(1))!
                         })
                         
-                        HStack {
-                            Spacer()
-                            Picker("Scale", selection: scaleBinding) {
-                                ForEach( ["1x", "2x", "3x", "4x"], id: \.self) { factor in
-                                    Text(factor)
-                                }
+                        Picker("Scale", selection: scaleBinding) {
+                            ForEach( ["1x", "2x", "3x", "4x"], id: \.self) { factor in
+                                Text(factor)
                             }
                         }
-                        
+                    }) {
+
                         ForEach(recipe.ingredients.sorted {$0.index < $1.index}) { ingredient in
                             HStack {
                                 Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle.fill" : "circle")
