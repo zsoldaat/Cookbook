@@ -17,9 +17,9 @@ import SwiftData
 
 @Model
 class ShoppingList: Identifiable, Hashable, ObservableObject {
-    var id = UUID()
+    @Attribute var id = UUID()
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.shoppingList) private var items: [Ingredient]? = []
-    var selections = Set<UUID>()
+    @Attribute var selections = Set<UUID>()
     
     init() {
         

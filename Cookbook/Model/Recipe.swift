@@ -13,17 +13,17 @@ import UniformTypeIdentifiers
 @Model
 class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     
-    var id = UUID()
-    var date = Date()
-    var name: String = ""
-    var instructions: String = ""
+    @Attribute var id = UUID()
+    @Attribute var date = Date()
+    @Attribute var name: String = ""
+    @Attribute var instructions: String = ""
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.recipe) var ingredients: [Ingredient]? = []
-    var ingredientStrings: [String]?
-    var link: String?
-    var imageUrl: URL?
-    var difficulty: String?
-    var lastMadeDate: Date?
-    var rating: Rating?
+    @Attribute var ingredientStrings: [String]?
+    @Attribute var link: String?
+    @Attribute var imageUrl: URL?
+    @Attribute var difficulty: String?
+    @Attribute var lastMadeDate: Date?
+    @Attribute var rating: Rating?
     
     init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
         self.name = name

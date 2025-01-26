@@ -13,15 +13,15 @@ import UniformTypeIdentifiers
 @Model
 class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     
-    var id = UUID()
-    var name: String = ""
-    var recipe: Recipe?
-    var shoppingList: ShoppingList?
-    var quantityWhole: Int = 0
-    var quantityFraction: Double = 0
+    @Attribute var id = UUID()
+    @Attribute var name: String = ""
+    @Relationship var recipe: Recipe?
+    @Relationship var shoppingList: ShoppingList?
+    @Attribute var quantityWhole: Int = 0
+    @Attribute var quantityFraction: Double = 0
     var quantity: Double {Double(quantityWhole) + quantityFraction}
-    var unit: Unit = Unit.item
-    var index: Int = 0
+    @Attribute var unit: Unit = Unit.item
+    @Attribute var index: Int = 0
     
     init(name: String, recipe: Recipe? = nil, shoppingList: ShoppingList? = nil, quantityWhole: Int, quantityFraction: Double, unit: Unit, index: Int) {
         self.name = name
