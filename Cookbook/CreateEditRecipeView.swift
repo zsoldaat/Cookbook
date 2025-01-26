@@ -74,7 +74,7 @@ struct CreateEditRecipeView: View {
                 } header: {
                     Text("Name")
                 }
-
+                
                 Section {
                     TextField("", text: $recipe.instructions, axis: .vertical)
                         .lineLimit(5...)
@@ -87,14 +87,14 @@ struct CreateEditRecipeView: View {
                     ingredientModalShowing = true
                 }
                 
-                if (!recipe.ingredients.isEmpty) {
+                if (!recipe.ingredients!.isEmpty) {
                     Section {
                         List {
-                            ForEach(recipe.ingredients.sorted {$0.index < $1.index}) {ingredient in
+                            ForEach(recipe.ingredients!.sorted {$0.index < $1.index}) {ingredient in
                                 IngredientCell(ingredient: ingredient)
                                     .swipeActions {
                                         Button(role: .destructive) {
-                                            recipe.ingredients.removeAll(where: {$0.id == ingredient.id})
+                                            recipe.ingredients!.removeAll(where: {$0.id == ingredient.id})
                                             
                                         } label: {
                                             Label("Edit", systemImage: "trash")
@@ -116,7 +116,8 @@ struct CreateEditRecipeView: View {
                         
                     } header: {Text("Ingredients")}
                 }
-            }.toolbar {
+            }
+            .toolbar {
                 if (isNewRecipe) {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
@@ -141,12 +142,19 @@ struct CreateEditRecipeView: View {
                 }
             }
             .sheet(isPresented: $ingredientModalShowing) {
+                
+                let ingredientBinding = Binding<[Ingredient]>(get: {
+                    recipe.ingredients!
+                }, set: {
+                    recipe.ingredients = $0
+                })
+                
                 if let id = ingredientIdToEdit {
-                    @Bindable var ingredient = recipe.ingredients.filter({ $0.id == id}).first!
-                    CreateEditIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
+                    @Bindable var ingredient = recipe.ingredients!.filter({ $0.id == id}).first!
+                    CreateEditIngredientModal(ingredients: ingredientBinding, ingredient: ingredient)
                 } else {
                     @Bindable var ingredient = Ingredient(name: "", recipe: recipe, quantityWhole: 1, quantityFraction: 0, unit: .item, index: recipe.getNextIngredientIndex())
-                    CreateEditIngredientModal(ingredients: $recipe.ingredients, ingredient: ingredient)
+                    CreateEditIngredientModal(ingredients: ingredientBinding, ingredient: ingredient)
                 }
             }
             .alert("Recipes must have a name.", isPresented: $alertShowing, actions: {})

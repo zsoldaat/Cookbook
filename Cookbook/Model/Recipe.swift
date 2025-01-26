@@ -13,11 +13,11 @@ import UniformTypeIdentifiers
 @Model
 class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     
-    @Attribute(.unique) var id = UUID()
+    var id = UUID()
     var date = Date()
-    var name: String
-    var instructions: String
-    @Relationship(deleteRule: .cascade, inverse: \Ingredient.recipe) var ingredients: [Ingredient]
+    var name: String = ""
+    var instructions: String = ""
+    @Relationship(deleteRule: .cascade, inverse: \Ingredient.recipe) var ingredients: [Ingredient]? = []
     var ingredientStrings: [String]?
     var link: String?
     var imageUrl: URL?
@@ -59,7 +59,7 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     }
     
     func getNextIngredientIndex() -> Int {
-        return (ingredients.map { $0.index }.max() ?? 0) + 1
+        return (ingredients!.map { $0.index }.max() ?? 0) + 1
     }
     
     //Codable conformance

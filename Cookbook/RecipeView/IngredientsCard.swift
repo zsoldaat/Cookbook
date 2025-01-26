@@ -42,7 +42,7 @@ struct IngredientsCard: View {
                         }
                     }) {
 
-                        ForEach(recipe.ingredients.sorted {$0.index < $1.index}) { ingredient in
+                        ForEach(recipe.ingredients!.sorted {$0.index < $1.index}) { ingredient in
                             HStack {
                                 Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle.fill" : "circle")
                                     .resizable()
@@ -90,8 +90,7 @@ struct IngredientsCard: View {
             if !selections.isEmpty {
                 ToolbarItem {
                     Button {
-                        recipe.ingredients
-                        
+                        recipe.ingredients!
                             .filter {item in
                                 selections.contains(item.id)
                             }

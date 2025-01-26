@@ -31,7 +31,7 @@ struct RecipeListView: View {
         
         if (!searchValue.isEmpty) {
             if (
-                !recipe.ingredients
+                !recipe.ingredients!
                     .map{$0.name.lowercased()}
                     .reduce("", {"\($0) \($1)"})
                     .contains(searchValue.lowercased())

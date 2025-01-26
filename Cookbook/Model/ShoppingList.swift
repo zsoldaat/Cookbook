@@ -17,8 +17,8 @@ import SwiftData
 
 @Model
 class ShoppingList: Identifiable, Hashable, ObservableObject {
-    @Attribute(.unique) var id = UUID()
-    @Relationship(deleteRule: .cascade, inverse: \Ingredient.shoppingList) private var items: [Ingredient] = []
+    var id = UUID()
+    @Relationship(deleteRule: .cascade, inverse: \Ingredient.shoppingList) private var items: [Ingredient]? = []
     var selections = Set<UUID>()
     
     init() {
@@ -26,26 +26,26 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     }
     
     func addItem(_ ingredient: Ingredient) {
-        if let existingItem = items.first(where: { $0.name == ingredient.name && $0.unit.possibleConversions().contains(ingredient.unit) }) {
+        if let existingItem = items!.first(where: { $0.name == ingredient.name && $0.unit.possibleConversions().contains(ingredient.unit) }) {
             addIngredients(existingIngredient: existingItem, newIngredient: ingredient)
         } else {
-            items.append(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit, index: getNextIngredientIndex()))
+            items!.append(Ingredient(name: ingredient.name, quantityWhole: ingredient.quantityWhole, quantityFraction: ingredient.quantityFraction, unit: ingredient.unit, index: getNextIngredientIndex()))
         }
     }
     
     func getItems() -> [Ingredient] {
-        return items
+        return items!
     }
     
     func removeById(ids: [UUID]) {
-        items.removeAll { ingredient in
+        items!.removeAll { ingredient in
             ids.map{$0.uuidString}.contains(ingredient.id.uuidString)
         }
     }
     
     func deleteItem(indexSet: IndexSet, context: ModelContext) {
         for i in indexSet {
-            context.delete(items[i])
+            context.delete(items![i])
         }
         do {
             try context.save()
@@ -55,7 +55,7 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     }
     
     func clear() {
-        items.removeAll()
+        items!.removeAll()
         selections.removeAll()
     }
     
@@ -97,7 +97,7 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     }
     
     func getNextIngredientIndex() -> Int {
-        return (items.map { $0.index }.max() ?? 0) + 1
+        return (items!.map { $0.index }.max() ?? 0) + 1
     }
     
 }
