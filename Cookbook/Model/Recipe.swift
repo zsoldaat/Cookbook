@@ -11,18 +11,12 @@ import CloudKit
 
 @Model
 final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
-    static let container = CKContainer(identifier: "iCloud.com.zacsoldaat.Cookbook")
-    /// This project uses the user's private database.
-    static private let database = container.privateCloudDatabase
-    /// Sharing requires using a custom record zone.
-    static let recordZone = CKRecordZone(zoneName: "Recipes")
     
     @Attribute var id = UUID()
     @Attribute var date = Date()
     @Attribute var name: String = ""
     @Attribute var instructions: String = ""
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.recipe) var ingredients: [Ingredient]? = []
-    @Attribute var group: String? = "Group 1"
     @Attribute var ingredientStrings: [String]?
     @Attribute var link: String?
     @Attribute var imageUrl: URL?
@@ -100,6 +94,12 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(difficulty, forKey: .difficulty)
         try container.encode(lastMadeDate, forKey: .lastMadeDate)
         try container.encode(rating, forKey: .rating)
+    }
+    
+    init(from: CKRecord) {
+        self.name = from["CD_name"] as! String
+        self.instructions = from["CD_instructions"] as! String
+        self.ingredients = []
     }
 
 }

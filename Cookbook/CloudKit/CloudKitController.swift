@@ -10,30 +10,27 @@ import CloudKit
 
 class CloudKitController: ObservableObject {
     
-    static let container = CKContainer(identifier: "iCloud.com.zacsoldaat.Cookbook")
-    /// This project uses the user's private database.
-    static private let database = container.privateCloudDatabase
+    let container = CKContainer(identifier: "iCloud.com.zacsoldaat.Cookbook")
     /// Sharing requires using a custom record zone.
-    static let recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
+    let recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
     
     func fetchPrivateRecipes() async throws -> [Recipe] {
         
-        let records: [Recipe] = []
+        var recipes: [Recipe] = []
         
-        let recipes = try! await CloudKitController.container.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true))).matchResults
+        let results = try! await container.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true))).matchResults
         
-        recipes.forEach { record in
-            let (recordId, result) = record
-//            print(result.)
+        results.forEach {result in
+            let (recordId, record) = result
+            
+            do {
+                let foundRecord = try record.get()
+                let recipe = Recipe(from: foundRecord)
+                recipes.append(recipe)
+            } catch {
+                print(error)
+            }
         }
-        
-//        let zones = try! await CloudKitController.container.privateCloudDatabase.fetch(withQuery: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), completionHandler: { hello in
-//            print("yayaya", hello)
-//        })
-//        let recipes = try! await fetchRecipes(scope: .private, in: zones)
-        
-//        return recipes
-        return []
+        return recipes
     }
-
 }
