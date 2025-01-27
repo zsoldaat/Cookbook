@@ -50,11 +50,15 @@ struct CreateEditIngredientModal: View {
             .toolbar{
                 ToolbarItem {
                     Button {
-                        if (ingredient.name.isEmpty) { return }
-                        if let onAdd = onAdd {
-                            onAdd(ingredient)
+                        
+                        if (!ingredient.name.isEmpty) {
+                            if let onAdd = onAdd {
+                                onAdd(ingredient)
+                            }
                         }
+                        
                         dismiss()
+                        
                     } label: {
                         Label("Done", systemImage: "return.left").labelStyle(.titleOnly)
                     }

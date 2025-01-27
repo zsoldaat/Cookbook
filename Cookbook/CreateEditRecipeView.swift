@@ -52,7 +52,7 @@ struct CreateEditRecipeView: View {
                         @Bindable var ingredient = recipe.ingredients!.filter({ $0.id == id}).first!
                         CreateEditIngredientModal(ingredients: recipe.ingredients!, ingredient: ingredient)
                     } else {
-                        @Bindable var ingredient = Ingredient(name: "", recipe: recipe, quantityWhole: 1, quantityFraction: 0, unit: .item, index: recipe.getNextIngredientIndex())
+                        @Bindable var ingredient = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: .item, index: recipe.getNextIngredientIndex())
                         CreateEditIngredientModal(ingredients: recipe.ingredients!, ingredient: ingredient) {newIngredient in
                             recipe.ingredients!.append(newIngredient)
                         }
