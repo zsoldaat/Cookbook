@@ -11,6 +11,11 @@ import CloudKit
 
 @Model
 final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
+    static let container = CKContainer(identifier: "iCloud.com.zacsoldaat.Cookbook")
+    /// This project uses the user's private database.
+    static private let database = container.privateCloudDatabase
+    /// Sharing requires using a custom record zone.
+    static let recordZone = CKRecordZone(zoneName: "Recipes")
     
     @Attribute var id = UUID()
     @Attribute var date = Date()
@@ -96,78 +101,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(lastMadeDate, forKey: .lastMadeDate)
         try container.encode(rating, forKey: .rating)
     }
-    
-    //Cloudkit
-    
-    var asRecord: CKRecord {
-        let record = CKRecord(
-            recordType: "Recipe",
-            recordID: .init(zoneID: CKRecordZone.ID(zoneName: self.group!, ownerName: CKCurrentUserDefaultName))
-        )
-        record[RecipeProperties.id.rawValue] = self.id.uuidString
-        record[RecipeProperties.date.rawValue] = self.date
-        record[RecipeProperties.name.rawValue] = self.name
-        record[RecipeProperties.instructions.rawValue] = self.instructions
-        return record
-    }
-    
-    init?(from record: CKRecord) {
-        guard
-            let id = record[RecipeProperties.id.rawValue] as? String,
-            let date = record[RecipeProperties.date.rawValue] as? Date,
-            let name = record[RecipeProperties.name.rawValue] as? String,
-            let instructions = record[RecipeProperties.instructions.rawValue] as? String
-        else { return nil }
-        
-        self.id = UUID(uuidString: id)!
-        self.date = date
-        self.ingredients = []
-        self.name = name
-        self.instructions = instructions
-    }
+
 }
-
-private enum RecipeProperties: String, CodingKey {
-    case id, date, name, instructions, ingredients, group, ingredientStrings, link, imageUrl, difficulty, lastMade, rating
-}
-
-final class CloudKitService {
-    static let container = CKContainer(
-        identifier: "iCloud.com.zacsoldaat.Cookbook"
-    )
-    
-    func save(_ recipe: Recipe) async throws {
-        _ = try await Self.container.privateCloudDatabase.modifyRecordZones(
-            saving: [CKRecordZone(zoneName: recipe.group!)],
-            deleting: []
-        )
-        _ = try await Self.container.privateCloudDatabase.modifyRecords(
-            saving: [recipe.asRecord],
-            deleting: []
-        )
-    }
-}
-
-extension CloudKitService {
-    func shareRecipeRecords() async throws -> CKShare {
-        _ = try await Self.container.privateCloudDatabase.modifyRecordZones(
-            saving: [CKRecordZone(zoneName: "Group 1")],
-            deleting: []
-        )
-        
-        let share = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "Group 1", ownerName: CKCurrentUserDefaultName))
-        share.publicPermission = .readOnly
-        let result = try await Self.container.privateCloudDatabase.save(share)
-        return result as! CKShare
-    }
-}
-
-extension CloudKitService {
-    func accept(_ metadata: CKShare.Metadata) async throws {
-        try await Self.container.accept(metadata)
-    }
-}
-
-
 
 

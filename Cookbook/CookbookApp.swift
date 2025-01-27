@@ -50,6 +50,7 @@ struct CookbookApp: App {
                     //                        print(data.ingredients)
                     //
                     //                    }
+                    let cloudKitController = CloudKitController()
                 }
         }
         
