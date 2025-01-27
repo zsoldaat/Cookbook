@@ -60,7 +60,7 @@ struct CreateEditRecipeView: View {
                         CreateEditIngredientModal(ingredients: ingredientBinding, ingredient: ingredient)
                     } else {
                         @Bindable var ingredient = Ingredient(name: "", recipe: recipe, quantityWhole: 1, quantityFraction: 0, unit: .item, index: recipe.getNextIngredientIndex())
-                        CreateEditIngredientModal(ingredients: ingredientBinding)
+                        CreateEditIngredientModal(ingredients: ingredientBinding, ingredient: ingredient)
                     }
                 }
                 .alert("Recipes must have a name.", isPresented: $alertShowing, actions: {})
