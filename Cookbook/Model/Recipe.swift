@@ -7,17 +7,17 @@
 
 import Foundation
 import SwiftData
-import CoreTransferable
-import UniformTypeIdentifiers
+import CloudKit
 
 @Model
-class Recipe: Identifiable, Hashable, ObservableObject, Codable {
+final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     
     @Attribute var id = UUID()
     @Attribute var date = Date()
     @Attribute var name: String = ""
     @Attribute var instructions: String = ""
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.recipe) var ingredients: [Ingredient]? = []
+    @Attribute var group: String? = "Group 1"
     @Attribute var ingredientStrings: [String]?
     @Attribute var link: String?
     @Attribute var imageUrl: URL?
@@ -68,7 +68,7 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         case id, date, name, instructions, ingredients, ingredientStrings, link, imageUrl, difficulty, lastMadeDate, rating
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         date = try container.decode(Date.self, forKey: .date)
@@ -97,14 +97,77 @@ class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(rating, forKey: .rating)
     }
     
-}
-
-extension Recipe: Transferable {
-    static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .recipe)
+    //Cloudkit
+    
+    var asRecord: CKRecord {
+        let record = CKRecord(
+            recordType: "Recipe",
+            recordID: .init(zoneID: CKRecordZone.ID(zoneName: self.group!, ownerName: CKCurrentUserDefaultName))
+        )
+        record[RecipeProperties.id.rawValue] = self.id.uuidString
+        record[RecipeProperties.date.rawValue] = self.date
+        record[RecipeProperties.name.rawValue] = self.name
+        record[RecipeProperties.instructions.rawValue] = self.instructions
+        return record
+    }
+    
+    init?(from record: CKRecord) {
+        guard
+            let id = record[RecipeProperties.id.rawValue] as? String,
+            let date = record[RecipeProperties.date.rawValue] as? Date,
+            let name = record[RecipeProperties.name.rawValue] as? String,
+            let instructions = record[RecipeProperties.instructions.rawValue] as? String
+        else { return nil }
+        
+        self.id = UUID(uuidString: id)!
+        self.date = date
+        self.ingredients = []
+        self.name = name
+        self.instructions = instructions
     }
 }
 
-extension UTType {
-    static var recipe = UTType(exportedAs: "com.zacsoldaat.Cookbook.recipe")
+private enum RecipeProperties: String, CodingKey {
+    case id, date, name, instructions, ingredients, group, ingredientStrings, link, imageUrl, difficulty, lastMade, rating
 }
+
+final class CloudKitService {
+    static let container = CKContainer(
+        identifier: "iCloud.com.zacsoldaat.Cookbook"
+    )
+    
+    func save(_ recipe: Recipe) async throws {
+        _ = try await Self.container.privateCloudDatabase.modifyRecordZones(
+            saving: [CKRecordZone(zoneName: recipe.group!)],
+            deleting: []
+        )
+        _ = try await Self.container.privateCloudDatabase.modifyRecords(
+            saving: [recipe.asRecord],
+            deleting: []
+        )
+    }
+}
+
+extension CloudKitService {
+    func shareRecipeRecords() async throws -> CKShare {
+        _ = try await Self.container.privateCloudDatabase.modifyRecordZones(
+            saving: [CKRecordZone(zoneName: "Group 1")],
+            deleting: []
+        )
+        
+        let share = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "Group 1", ownerName: CKCurrentUserDefaultName))
+        share.publicPermission = .readOnly
+        let result = try await Self.container.privateCloudDatabase.save(share)
+        return result as! CKShare
+    }
+}
+
+extension CloudKitService {
+    func accept(_ metadata: CKShare.Metadata) async throws {
+        try await Self.container.accept(metadata)
+    }
+}
+
+
+
+
