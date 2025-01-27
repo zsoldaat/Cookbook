@@ -48,19 +48,14 @@ struct CreateEditRecipeView: View {
                     }
                 }
                 .sheet(isPresented: $ingredientModalShowing) {
-                    
-                    let ingredientBinding = Binding<[Ingredient]>(get: {
-                        recipe.ingredients!
-                    }, set: {
-                        recipe.ingredients = $0
-                    })
-                    
                     if let id = ingredientIdToEdit {
                         @Bindable var ingredient = recipe.ingredients!.filter({ $0.id == id}).first!
-                        CreateEditIngredientModal(ingredients: ingredientBinding, ingredient: ingredient)
+                        CreateEditIngredientModal(ingredients: recipe.ingredients!, ingredient: ingredient)
                     } else {
                         @Bindable var ingredient = Ingredient(name: "", recipe: recipe, quantityWhole: 1, quantityFraction: 0, unit: .item, index: recipe.getNextIngredientIndex())
-                        CreateEditIngredientModal(ingredients: ingredientBinding, ingredient: ingredient)
+                        CreateEditIngredientModal(ingredients: recipe.ingredients!, ingredient: ingredient) {newIngredient in
+                            recipe.ingredients!.append(newIngredient)
+                        }
                     }
                 }
                 .alert("Recipes must have a name.", isPresented: $alertShowing, actions: {})
@@ -68,6 +63,7 @@ struct CreateEditRecipeView: View {
                 .scrollDismissesKeyboard(.immediately)
         }
     }
+    
     
     var form: some View {
         Form {

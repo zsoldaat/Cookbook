@@ -11,15 +11,18 @@ struct CreateEditIngredientModal: View {
     
     @Environment(\.dismiss) private var dismiss
     
-    @Binding var ingredients: [Ingredient]
+    var ingredients: [Ingredient]
     @Bindable var ingredient: Ingredient
+    var onAdd: ((Ingredient) -> Void)?
     
     @FocusState private var keyboardIsActive: Bool
     
     func onCreateIngredient() {
         keyboardIsActive = true
         if (ingredient.name.isEmpty) {return}
-        ingredients.append(ingredient)
+        if let onAdd = onAdd {
+            onAdd(ingredient)
+        }
     }
     
     var body: some View {
@@ -47,8 +50,9 @@ struct CreateEditIngredientModal: View {
             .toolbar{
                 ToolbarItem {
                     Button {
-                        if (!ingredient.name.isEmpty) {
-                            ingredients.append(ingredient)
+                        if (ingredient.name.isEmpty) { return }
+                        if let onAdd = onAdd {
+                            onAdd(ingredient)
                         }
                         dismiss()
                     } label: {
