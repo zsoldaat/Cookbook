@@ -7,14 +7,22 @@
 
 import SwiftUI
 import SwiftData
+import CloudKit
 
 struct RecipeView: View {
     
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var cloudKitController: CloudKitController
     
     let recipe: Recipe
     
     @State private var editShowing: Bool = false
+    
+    @State private var isSharing = false
+    @State private var isProcessingShare = false
+
+    @State private var activeShare: CKShare?
+    @State private var activeContainer: CKContainer?
 
     @FocusState var keyboardisActive: Bool
 
@@ -88,6 +96,30 @@ struct RecipeView: View {
                 }
             }
             
+            ToolbarItem {
+                Button {
+                    isSharing = true
+                } label: {
+                    Text("Share")
+                }
+                .sheet(isPresented: $isSharing) {
+                    CloudSharingView(container: activeContainer!, share: activeShare!)
+                }
+                .disabled(activeShare == nil || activeContainer == nil)
+            }
+        }
+        .task {
+            do {
+                if let (share, container) = try await cloudKitController.fetchOrCreateShare(recipe: recipe) {
+                    activeShare = share
+                    activeContainer = container
+                }
+            } catch {
+                
+            }
+            
         }
     }
 }
+
+

@@ -16,8 +16,29 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseApp.configure()
         return true
     }
+    
+    func application(_ application: UIApplication, configurationForConnecting
+        connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+
+
+        // Create a scene configuration object for the
+        // specified session role.
+        let config = UISceneConfiguration(name: nil,
+            sessionRole: connectingSceneSession.role)
+
+
+        // Set the configuration's delegate class to the
+        // scene delegate that implements the share
+        // acceptance method.
+        config.delegateClass = SceneDelegate.self
+
+
+        return config
+    }
+    
 }
-//test
+
 @main
 struct CookbookApp: App {
     let container: ModelContainer = {
@@ -31,9 +52,11 @@ struct CookbookApp: App {
         return container
     }()
     
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+//    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     @StateObject var selectedTab: SelectedTab = SelectedTab(selectedTabTag: 0)
     @StateObject var authService: AuthService = AuthService()
+    @StateObject var cloudKitController: CloudKitController = CloudKitController()
     
     var body: some Scene {
         WindowGroup {
@@ -41,6 +64,7 @@ struct CookbookApp: App {
                 .modelContainer(container)
                 .environmentObject(selectedTab)
                 .environmentObject(authService)
+                .environmentObject(cloudKitController)
                 .task {
                     //                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
                     //                    let data = await scraper.getRecipeData()
@@ -50,14 +74,7 @@ struct CookbookApp: App {
                     //                        print(data.ingredients)
                     //
                     //                    }
-//                    let cloudKitController = CloudKitController()
-                    //                    let recipes = try! await cloudKitController.fetchPrivateRecipes()
-                    //                    print("Hello", recipes)
-                    //                    print(recipes.map {$0.name})
-                    
                 }
         }
-        
-        
     }
 }

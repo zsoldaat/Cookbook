@@ -10,9 +10,11 @@ import CloudKit
 
 class CloudKitController: ObservableObject {
     
-    let container = CKContainer(identifier: "iCloud.com.zacsoldaat.Cookbook")
+    static var containerIdentifier: String = "iCloud.com.zacsoldaat.Cookbook"
+    
+    var container = CKContainer(identifier: CloudKitController.containerIdentifier)
     /// Sharing requires using a custom record zone.
-    let recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
+    var recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
     
     func fetchPrivateRecipes() async throws -> [Recipe] {
         
@@ -33,4 +35,45 @@ class CloudKitController: ObservableObject {
         }
         return recipes
     }
+    
+    func fetchRecord(recipe: Recipe) async -> CKRecord? {
+        guard let result = try! await container.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString))).matchResults.first else {return nil}
+        
+        let (recordId, record) = result
+        
+        do {
+            let foundRecord = try record.get()
+            return foundRecord
+        } catch {
+            print(error)
+            return nil
+        }
+    }
+    
+    func fetchOrCreateShare(recipe: Recipe) async throws -> (CKShare, CKContainer)? {
+        
+        guard let associatedRecord = await fetchRecord(recipe: recipe) else {return nil}
+        
+        guard let existingShare = associatedRecord.share else {
+            let share = CKShare(rootRecord: associatedRecord)
+            share[CKShare.SystemFieldKey.title] = "Recipe: \(recipe.name)"
+            print(recipe.imageUrl!.absoluteString)
+            share[CKShare.SystemFieldKey.thumbnailImageData] = recipe.imageUrl!.absoluteString
+            _ = try await container.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
+            return (share, container)
+        }
+        
+        guard let share = try await container.privateCloudDatabase.record(for: existingShare.recordID) as? CKShare else {
+            throw MyError.runtimeError("search meee")
+        }
+        
+        return (share, container)
+        
+    }
+    
+    enum MyError: Error {
+        case runtimeError(String)
+    }
+    
+    
 }
