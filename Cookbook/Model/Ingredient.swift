@@ -23,9 +23,8 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     @Attribute var unit: Unit = Unit.item
     @Attribute var index: Int = 0
     
-    init(name: String, shoppingList: ShoppingList? = nil, quantityWhole: Int, quantityFraction: Double, unit: Unit, index: Int) {
+    init(name: String, quantityWhole: Int, quantityFraction: Double, unit: Unit, index: Int) {
         self.name = name
-        self.shoppingList = shoppingList
         self.quantityWhole = quantityWhole
         self.quantityFraction = quantityFraction
         self.unit = unit

@@ -15,18 +15,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         connectingSceneSession: UISceneSession,
         options: UIScene.ConnectionOptions) -> UISceneConfiguration {
 
-
         // Create a scene configuration object for the
         // specified session role.
         let config = UISceneConfiguration(name: nil,
             sessionRole: connectingSceneSession.role)
 
-
         // Set the configuration's delegate class to the
         // scene delegate that implements the share
         // acceptance method.
         config.delegateClass = SceneDelegate.self
-
 
         return config
     }
@@ -42,7 +39,7 @@ struct CookbookApp: App {
         if listCount == 0 {
             container.mainContext.insert(ShoppingList())
         }
-        //        container.deleteAllData()
+//                container.deleteAllData()
         return container
     }()
     
