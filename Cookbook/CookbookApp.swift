@@ -7,15 +7,9 @@
 
 import SwiftUI
 import SwiftData
-import FirebaseCore
 import CoreData
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        FirebaseApp.configure()
-        return true
-    }
     
     func application(_ application: UIApplication, configurationForConnecting
         connectingSceneSession: UISceneSession,
@@ -55,7 +49,6 @@ struct CookbookApp: App {
 //    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     @StateObject var selectedTab: SelectedTab = SelectedTab(selectedTabTag: 0)
-    @StateObject var authService: AuthService = AuthService()
     @StateObject var cloudKitController: CloudKitController = CloudKitController()
     
     var body: some Scene {
@@ -63,7 +56,6 @@ struct CookbookApp: App {
             SectionSelectView()
                 .modelContainer(container)
                 .environmentObject(selectedTab)
-                .environmentObject(authService)
                 .environmentObject(cloudKitController)
                 .task {
                     //                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
