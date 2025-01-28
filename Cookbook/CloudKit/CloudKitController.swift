@@ -16,11 +16,11 @@ class CloudKitController: ObservableObject {
     /// Sharing requires using a custom record zone.
     var recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
     
-    func fetchPrivateRecipes() async throws -> [Recipe] {
+    func fetchRecipes(scope: CKDatabase.Scope) async throws -> [Recipe] {
         
         var recipes: [Recipe] = []
         
-        let results = try! await container.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true))).matchResults
+        let results = try! await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true))).matchResults
         
         results.forEach {result in
             let (recordId, record) = result
@@ -57,8 +57,6 @@ class CloudKitController: ObservableObject {
         guard let existingShare = associatedRecord.share else {
             let share = CKShare(rootRecord: associatedRecord)
             share[CKShare.SystemFieldKey.title] = "Recipe: \(recipe.name)"
-            print(recipe.imageUrl!.absoluteString)
-            share[CKShare.SystemFieldKey.thumbnailImageData] = recipe.imageUrl!.absoluteString
             _ = try await container.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
             return (share, container)
         }
