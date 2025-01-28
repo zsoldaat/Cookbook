@@ -77,7 +77,7 @@ struct ShoppingListView: View {
                         Spacer()
                     }
                 }
-                .padding(.horizontal, 5)
+                .padding([.bottom, .horizontal])
             }
             .alert("These units of these ingredients can't be added together.", isPresented: $errorShowing, actions: {})
             .navigationTitle("Shopping List")

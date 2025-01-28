@@ -16,6 +16,8 @@ struct RecipeImageView: View {
     @State var imageSelectShowing: Bool = false
     @State var alertShowing: Bool = false
     
+    let imageHeight: CGFloat = 200
+    
     func onSelect(url: URL?) -> Void {
         
         if let url = url {
@@ -28,16 +30,16 @@ struct RecipeImageView: View {
         AsyncImage(url: recipe.imageUrl) { image in
             image.resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: UIScreen.main.bounds.width, height: 250, alignment: .center)
+                .frame(width: UIScreen.main.bounds.width, height: imageHeight, alignment: .center)
                 .clipped()
                 .onLongPressGesture {
                     alertShowing = true
                 }
         } placeholder: {
             if (recipe.imageUrl !=  nil) {
-                Color.gray.frame(height: 250)
+                Color.gray.frame(height: imageHeight)
             } else {
-                Color.gray.frame(height: 250).overlay {
+                Color.gray.frame(height: imageHeight).overlay {
                     Button {
                         imageSelectShowing = true
                     } label: {
