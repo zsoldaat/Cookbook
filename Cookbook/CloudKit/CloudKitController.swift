@@ -23,7 +23,7 @@ class CloudKitController: ObservableObject {
         let zones = try await container.database(with: scope).allRecordZones()
         
         for zone in zones {
-            let results = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID, desiredKeys: nil, resultsLimit: 100).matchResults
+            let results = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             
             results.forEach {result in
                 let (recordId, record) = result
@@ -42,23 +42,29 @@ class CloudKitController: ObservableObject {
         return recipes
     }
     
-    func fetchRecord(recipe: Recipe) async -> CKRecord? {
-        guard let result = try! await container.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString))).matchResults.first else {return nil}
+    func fetchRecord(recipe: Recipe, scope: CKDatabase.Scope) async throws -> CKRecord? {
+        let zones = try await container.database(with: scope).allRecordZones()
         
-        let (recordId, record) = result
-        
-        do {
-            let foundRecord = try record.get()
-            return foundRecord
-        } catch {
-            print(error)
-            return nil
+        for zone in zones {
+            if let result = try! await container.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
+                let (recordId, record) = result
+                
+                do {
+                    let record = try record.get()
+                    return record
+                } catch {
+                    print(error)
+                    return nil
+                }
+            }
         }
+        
+        return nil
     }
     
-    func fetchOrCreateShare(recipe: Recipe) async throws -> (CKShare, CKContainer)? {
+    func fetchOrCreateShare(recipe: Recipe, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
         
-        guard let associatedRecord = await fetchRecord(recipe: recipe) else {return nil}
+        guard let associatedRecord = try await fetchRecord(recipe: recipe, scope: scope) else {return nil}
         
         guard let existingShare = associatedRecord.share else {
             let share = CKShare(rootRecord: associatedRecord)
