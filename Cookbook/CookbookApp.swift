@@ -63,6 +63,13 @@ struct CookbookApp: App {
                     //                        print(data.ingredients)
                     //
                     //                    }
+                    do {
+                        let recipes: [Recipe] = try await cloudKitController.fetchRecipes(scope: .private)
+                        
+                        print(recipes)
+                    } catch {
+                        print(error)
+                    }
                 }
         }
     }

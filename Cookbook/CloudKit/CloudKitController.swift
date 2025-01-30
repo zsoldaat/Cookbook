@@ -20,19 +20,25 @@ class CloudKitController: ObservableObject {
         
         var recipes: [Recipe] = []
         
-        let results = try! await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true))).matchResults
+        let zones = try await container.database(with: scope).allRecordZones()
         
-        results.forEach {result in
-            let (recordId, record) = result
+        for zone in zones {
+            let results = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID, desiredKeys: nil, resultsLimit: 100).matchResults
             
-            do {
-                let foundRecord = try record.get()
-                let recipe = Recipe(from: foundRecord)
-                recipes.append(recipe)
-            } catch {
-                print(error)
+            results.forEach {result in
+                let (recordId, record) = result
+                
+                do {
+                    let foundRecord = try record.get()
+                    let recipe = Recipe(from: foundRecord)
+                    recipes.append(recipe)
+                } catch {
+                    print(error)
+                }
             }
+            
         }
+
         return recipes
     }
     
