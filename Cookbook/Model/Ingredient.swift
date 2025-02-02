@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import CoreTransferable
 import UniformTypeIdentifiers
+import CloudKit
 
 @Model
 class Ingredient: Identifiable, Hashable, ObservableObject, Codable {

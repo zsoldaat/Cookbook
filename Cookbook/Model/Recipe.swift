@@ -97,10 +97,8 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(rating, forKey: .rating)
     }
     
-    init(from: CKRecord) {
-        self.name = from["CD_name"] as! String
-        self.instructions = from["CD_instructions"] as! String
-        self.ingredients = []
+    init(from record: CKRecord, ingredients: [CKRecord]) {
+        self.name = record["CD_name"] as! String
     }
 
 }

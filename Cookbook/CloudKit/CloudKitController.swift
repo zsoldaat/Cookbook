@@ -23,13 +23,17 @@ class CloudKitController: ObservableObject {
         let zones = try await container.database(with: scope).allRecordZones()
         
         for zone in zones {
-            let results = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let recipes = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let ingredients = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             
-            results.forEach {result in
+            recipes.forEach {result in
                 let (_, record) = result
                 
                 do {
                     let foundRecord = try record.get()
+                    
+                    
+                    
                     records.append(foundRecord)
                 } catch {
                     print(error)
@@ -47,13 +51,20 @@ class CloudKitController: ObservableObject {
         for zone in zones {
             if let result = try! await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
                 
-                let (_, record) = result
+                let (recordId, record) = result
                 
                 do {
                     let record = try record.get()
                     
-                    //how to get ingredients
+                    //Set parent relationships whenever you fetch
                     let ingredients = try! await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", record.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
+                    
+                    for ingredient in ingredients {
+                        let (_, record) = ingredient
+                        let ingredientRecord = try record.get()
+                        ingredientRecord.setParent(recordId)
+                        try await container.privateCloudDatabase.save(ingredientRecord)
+                    }
                     
                     return record
                 } catch {
