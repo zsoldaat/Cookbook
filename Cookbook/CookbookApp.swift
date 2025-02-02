@@ -21,6 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             sessionRole: connectingSceneSession.role)
 
         // Set the configuration's delegate class to the
+        
         // scene delegate that implements the share
         // acceptance method.
         config.delegateClass = SceneDelegate.self

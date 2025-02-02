@@ -46,11 +46,17 @@ class CloudKitController: ObservableObject {
         let zones = try await container.database(with: scope).allRecordZones()
         
         for zone in zones {
-            if let result = try! await container.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
+            if let result = try! await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
+                
                 let (recordId, record) = result
                 
                 do {
                     let record = try record.get()
+                    
+                    //how to get ingredients
+                    let ingredients = try! await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", record.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
+                    print(ingredients)
+                    
                     return record
                 } catch {
                     print(error)
@@ -66,9 +72,12 @@ class CloudKitController: ObservableObject {
         
         guard let associatedRecord = try await fetchRecord(recipe: recipe, scope: scope) else {return nil}
         
+        let imageData = try Data(contentsOf: recipe.imageUrl!)
+        
         guard let existingShare = associatedRecord.share else {
             let share = CKShare(rootRecord: associatedRecord)
             share[CKShare.SystemFieldKey.title] = "Recipe: \(recipe.name)"
+            share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
             _ = try await container.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
             return (share, container)
         }
