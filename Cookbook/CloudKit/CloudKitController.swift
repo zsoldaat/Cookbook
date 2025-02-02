@@ -16,9 +16,9 @@ class CloudKitController: ObservableObject {
     /// Sharing requires using a custom record zone.
     var recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
     
-    func fetchRecipes(scope: CKDatabase.Scope) async throws -> [Recipe] {
+    func fetchRecipes(scope: CKDatabase.Scope) async throws -> [CKRecord] {
         
-        var recipes: [Recipe] = []
+        var records: [CKRecord] = []
         
         let zones = try await container.database(with: scope).allRecordZones()
         
@@ -30,8 +30,7 @@ class CloudKitController: ObservableObject {
                 
                 do {
                     let foundRecord = try record.get()
-                    let recipe = Recipe(from: foundRecord)
-                    recipes.append(recipe)
+                    records.append(foundRecord)
                 } catch {
                     print(error)
                 }
@@ -39,7 +38,7 @@ class CloudKitController: ObservableObject {
             
         }
 
-        return recipes
+        return records
     }
     
     func fetchRecord(recipe: Recipe, scope: CKDatabase.Scope) async throws -> CKRecord? {
