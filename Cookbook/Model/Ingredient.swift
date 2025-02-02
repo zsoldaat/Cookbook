@@ -161,13 +161,3 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     }
     
 }
-
-extension Ingredient: Transferable {
-    static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .ingredient)
-    }
-}
-
-extension UTType {
-    static var ingredient = UTType(exportedAs: "com.zacsoldaat.Cookbook.ingredient")
-}
