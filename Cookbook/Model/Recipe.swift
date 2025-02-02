@@ -23,13 +23,36 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var imageUrl: URL?
     var difficulty: String?
     var lastMadeDate: Date?
-    var rating: Rating?
+    @Transient var rating: Rating?
+    var ratingString: String = "" {
+        didSet {
+            if (rating != nil) {
+                ratingString = rating.rawValue
+            }
+        }
+    }
     
     init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
         self.name = name
         self.instructions = instructions
         self.ingredients = ingredients
         self.ingredientStrings = ingredientStrings
+    }
+    
+    init(from record: CKRecord, ingredients: [Ingredient]? = nil) {
+        self.id = UUID(uuidString: record["CD_id"] as! String)!
+        self.date = record["CD_date"] as! Date
+        self.name = record["CD_name"] as! String
+        self.instructions = record["CD_instructions"] as! String
+        self.ingredients = ingredients
+        self.ingredientStrings = record["CD_ingredientStrings"] as? [String]
+        self.link = record["CD_link"] as? String
+        self.imageUrl = URL(string: record["CD_imageUrl"] as! String)
+        self.difficulty = record["CD_difficulty"] as? String
+        self.lastMadeDate = record["CD_lastMadeDate"] as? Date
+        let ratingString = record["CD_ratingString"] as! String
+        self.rating = Rating(rawValue: ratingString)
+        self.ratingString = ratingString
     }
     
     func save(context: ModelContext) {
@@ -97,9 +120,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(rating, forKey: .rating)
     }
     
-    init(from record: CKRecord, ingredients: [CKRecord]) {
-        self.name = record["CD_name"] as! String
-    }
+    
 
 }
 

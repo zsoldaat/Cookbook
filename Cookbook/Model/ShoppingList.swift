@@ -14,6 +14,7 @@
 
 import Foundation
 import SwiftData
+import CloudKit
 
 @Model
 class ShoppingList: Identifiable, Hashable, ObservableObject {
@@ -23,6 +24,12 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     
     init() {
         
+    }
+    
+    init(from record: CKRecord, items: [Ingredient]? = nil) {
+        self.id = UUID(uuidString: record["CD_id"] as! String)!
+        self.items = items
+//        self.selections = Set(record["CD_selections"] as! [String]).compactMap(UUID.init)
     }
     
     func addItem(_ ingredient: Ingredient) {
