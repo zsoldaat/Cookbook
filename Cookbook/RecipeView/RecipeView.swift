@@ -112,6 +112,7 @@ struct RecipeView: View {
                 if let (share, container) = try await cloudKitController.fetchOrCreateShare(recipe: recipe, scope: .private) {
                     activeShare = share
                     activeContainer = container
+                    try await cloudKitController.fetchRecord(recipe: recipe, scope: .shared)
                 }
             } catch {
                 

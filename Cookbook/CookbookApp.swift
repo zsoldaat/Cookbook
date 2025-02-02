@@ -65,9 +65,7 @@ struct CookbookApp: App {
                     //
                     //                    }
                     do {
-                        let recipes: [Recipe] = try await cloudKitController.fetchRecipes(scope: .private)
-                        
-                        print(recipes)
+                        let recipes: [Recipe] = try await cloudKitController.fetchRecipes(scope: .shared)
                     } catch {
                         print(error)
                     }
