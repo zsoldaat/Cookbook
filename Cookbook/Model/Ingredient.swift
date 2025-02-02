@@ -21,7 +21,12 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     var quantityWhole: Int = 0
     var quantityFraction: Double = 0
     var quantity: Double {Double(quantityWhole) + quantityFraction}
-    var unit: Unit = Unit.item
+    @Transient var unit: Unit = Unit.item {
+        didSet {
+            unitString = unit.rawValue
+        }
+    }
+    var unitString: String = ""
     var index: Int = 0
     
     init(name: String, quantityWhole: Int, quantityFraction: Double, unit: Unit, index: Int) {
@@ -30,6 +35,19 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         self.quantityFraction = quantityFraction
         self.unit = unit
         self.index = index
+    }
+    
+    init(from record: CKRecord, recipe: Recipe? = nil, shoppingList: ShoppingList? = nil) {
+        self.id = UUID(uuidString: record["CD_id"] as! String)!
+        self.name = record["CD_name"] as! String
+        self.recipe = recipe
+        self.shoppingList = shoppingList
+        self.quantityWhole = record["CD_quantityWhole"] as! Int
+        self.quantityFraction = record["CD_quantityFraction"] as! Double
+        let unitString = record["CD_unitString"] as! String
+        self.unit = Unit(rawValue: unitString)!
+        self.unitString = unitString
+        self.index = record["CD_index"] as! Int
     }
     
     func getUnitString(displayUnit: Unit) -> String {

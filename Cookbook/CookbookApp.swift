@@ -11,6 +11,8 @@ import CoreData
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     
+    
+    
     func application(_ application: UIApplication, configurationForConnecting
         connectingSceneSession: UISceneSession,
         options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -34,6 +36,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct CookbookApp: App {
     let container: ModelContainer = {
+        
         let schema = Schema([Recipe.self, ShoppingList.self])
         let container = try! ModelContainer(for: schema, configurations: [])
         let listCount = try! container.mainContext.fetchCount(FetchDescriptor<ShoppingList>())

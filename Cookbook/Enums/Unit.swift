@@ -5,6 +5,8 @@
 //  Created by Zac Soldaat on 2025-01-11.
 //
 
+import Foundation
+
 enum Unit: String, Codable, Identifiable, CaseIterable {
     var id: Self { self }
     
