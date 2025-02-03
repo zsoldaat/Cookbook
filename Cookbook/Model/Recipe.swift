@@ -119,9 +119,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(lastMadeDate, forKey: .lastMadeDate)
         try container.encode(rating, forKey: .rating)
     }
-    
-    
-
 }
 
 
