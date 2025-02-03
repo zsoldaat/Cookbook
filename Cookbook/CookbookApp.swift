@@ -36,7 +36,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct CookbookApp: App {
     let container: ModelContainer = {
-        
+//        let config = ModelConfiguration(cloudKitDatabase: .private("iCloud.com.zacsoldaat.cookbook"))
         let schema = Schema([Recipe.self, ShoppingList.self])
         let container = try! ModelContainer(for: schema, configurations: [])
         let listCount = try! container.mainContext.fetchCount(FetchDescriptor<ShoppingList>())
@@ -59,19 +59,8 @@ struct CookbookApp: App {
                 .environmentObject(selectedTab)
                 .environmentObject(cloudKitController)
                 .task {
-                    //                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
-                    //                    let data = await scraper.getRecipeData()
-                    //
-                    //                    if let data = data {
-                    //
-                    //                        print(data.ingredients)
-                    //
-                    //                    }
-                    do {
-                        let recipes = try await cloudKitController.fetchRecipes(scope: .shared)
-                    } catch {
-                        print(error)
-                    }
+//                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
+//                    await cloudKitController.setSharedRecipes()
                 }
         }
     }

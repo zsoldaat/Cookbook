@@ -34,6 +34,7 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         self.quantityWhole = quantityWhole
         self.quantityFraction = quantityFraction
         self.unit = unit
+        self.unitString = unit.rawValue
         self.index = index
     }
     

@@ -20,7 +20,7 @@ import CloudKit
 class ShoppingList: Identifiable, Hashable, ObservableObject {
     var id = UUID()
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.shoppingList) var items: [Ingredient]? = []
-    var selections = Set<UUID>()
+    @Transient var selections = Set<UUID>()
     
     init() {
         
@@ -29,7 +29,7 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     init(from record: CKRecord, items: [Ingredient]? = nil) {
         self.id = UUID(uuidString: record["CD_id"] as! String)!
         self.items = items
-//        self.selections = Set(record["CD_selections"] as! [String]).compactMap(UUID.init)
+        self.selections = Set<UUID>()
     }
     
     func addItem(_ ingredient: Ingredient) {

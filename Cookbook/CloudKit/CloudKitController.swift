@@ -16,33 +16,49 @@ class CloudKitController: ObservableObject {
     /// Sharing requires using a custom record zone.
     var recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
     
-    func fetchRecipes(scope: CKDatabase.Scope) async throws -> [CKRecord] {
+    var sharedRecipes: [Recipe] = []
+    
+    func setSharedRecipes() async {
+        do {
+            let recipes = try await fetchRecipes(scope: .shared)
+            sharedRecipes.append(contentsOf: recipes)
+        } catch {
+            print(error)
+        }
+    }
+    
+    func fetchRecipes(scope: CKDatabase.Scope) async throws -> [Recipe] {
         
-        var records: [CKRecord] = []
+        var recipes: [Recipe] = []
         
         let zones = try await container.database(with: scope).allRecordZones()
         
         for zone in zones {
-            let recipes = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
-            let ingredients = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let recipeResults = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let ingredientResults = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             
-            recipes.forEach {result in
-                let (_, record) = result
+            let recipesInZone = try recipeResults.map {
+                let (_, record) = $0
                 
-                do {
-                    let foundRecord = try record.get()
-                    
-                    
-                    
-                    records.append(foundRecord)
-                } catch {
-                    print(error)
-                }
+                let ingredients = try ingredientResults
+                    .filter { (_, ingredientRecord) in
+                        let ingredientRecipeId = try! ingredientRecord.get()["CD_recipe"] as! String
+                        let recordName = try record.get().recordID.recordName
+                        
+                        return ingredientRecipeId == recordName
+                    }.map { (_, ingredientRecord) in
+                        return Ingredient(from: try ingredientRecord.get())
+                    }
+                
+                return Recipe(from: try record.get(), ingredients: ingredients)
             }
             
+            recipes.append(contentsOf: recipesInZone)
         }
-
-        return records
+        
+        print(recipes)
+        
+        return recipes
     }
     
     func fetchRecord(recipe: Recipe, scope: CKDatabase.Scope) async throws -> CKRecord? {
