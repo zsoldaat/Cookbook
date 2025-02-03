@@ -25,7 +25,7 @@ struct RecipeListView: View {
     @State private var startDate: Date = Date()
     @State private var endDate: Date = Date()
     
-    @State private var allRecipes: [Recipe] = []
+    @State private var sharedRecipes: [Recipe] = []
     
     @Query(sort: \Recipe.name) var recipes: [Recipe]
     
@@ -81,7 +81,7 @@ struct RecipeListView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(allRecipes.filter {filterSearch(recipe: $0)}) { recipe in
+                ForEach(recipes.filter {filterSearch(recipe: $0)}) { recipe in
                     NavigationLink {
                         RecipeView(recipe: recipe)
                     } label: {
@@ -99,6 +99,14 @@ struct RecipeListView: View {
                     }
                     
                 }
+                ForEach(sharedRecipes.filter {filterSearch(recipe: $0)}) { recipe in
+                    NavigationLink {
+                        RecipeView(recipe: recipe)
+                    } label: {
+                        RecipeCell(recipe: recipe)
+                    }
+                }
+                
             }
             .navigationTitle("Recipes")
             .navigationBarItems(
@@ -125,17 +133,7 @@ struct RecipeListView: View {
         }
         .task {
             do {
-                let sharedRecipes = try await cloudKitController.fetchRecipes(scope: .shared)
-                
-                //Since the Recipe objects are managed by SwiftData, any edits to a shared recipe will create a new local copy (which we don't want).
-                //To avoid this, filter the local recipes to exclude recipes with ids that appear in the shared list.
-                let filteredLocalRecipes = recipes.filter {recipe in
-                    let existingIds = sharedRecipes.map{$0.id.uuidString}
-                    return !existingIds.contains(recipe.id.uuidString)
-                }
-                
-                allRecipes = filteredLocalRecipes + sharedRecipes
-                
+                sharedRecipes = try await cloudKitController.fetchRecipes(scope: .shared)
             } catch {
                 print("Hello")
             }
