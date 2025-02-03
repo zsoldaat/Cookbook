@@ -23,14 +23,14 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var imageUrl: URL?
     var difficulty: String?
     var lastMadeDate: Date?
-    @Transient var rating: Rating?
-    var ratingString: String = "" {
+    var rating: Rating? {
         didSet {
             if (rating != nil) {
-                ratingString = rating.rawValue
+                ratingString = rating!.rawValue
             }
         }
     }
+    var ratingString: String = ""
     var isShared: Bool = false
     
     init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
