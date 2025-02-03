@@ -59,10 +59,14 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     
     func save(context: ModelContext) {
         if context.hasChanges {
-            do {
-                try context.save()
-            } catch (let error) {
-                print(error)
+            if (self.isShared) {
+                print("shared")
+            } else {
+                do {
+                    try context.save()
+                } catch (let error) {
+                    print(error)
+                }
             }
         }
     }
