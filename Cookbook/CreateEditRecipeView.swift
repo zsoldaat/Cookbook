@@ -141,7 +141,7 @@ struct CreateEditRecipeView: View {
                                         recipe.ingredients!.removeAll(where: {$0.id == ingredient.id})
                                         
                                     } label: {
-                                        Label("Edit", systemImage: "trash")
+                                        Label("Delete", systemImage: "trash")
                                             .labelStyle(.iconOnly)
                                     }
                                     .tint(.red)
