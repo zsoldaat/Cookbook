@@ -31,6 +31,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
             }
         }
     }
+    var isShared: Bool = false
     
     init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
         self.name = name
@@ -53,6 +54,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         let ratingString = record["CD_ratingString"] as! String
         self.rating = Rating(rawValue: ratingString)
         self.ratingString = ratingString
+        self.isShared = true
     }
     
     func save(context: ModelContext) {

@@ -51,6 +51,13 @@ struct RecipeCell: View {
                                 .lineLimit(1)
                         }
                     }
+                    
+                    if recipe.isShared {
+                        ChipView {
+                            Text(recipe.isShared ? "Shared" : "Not shared")
+                                .lineLimit(1)
+                        }
+                    }
                 }
             }
             

@@ -56,8 +56,6 @@ class CloudKitController: ObservableObject {
             recipes.append(contentsOf: recipesInZone)
         }
         
-        print(recipes)
-        
         return recipes
     }
     

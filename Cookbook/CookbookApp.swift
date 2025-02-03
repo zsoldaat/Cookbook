@@ -36,6 +36,8 @@ struct CookbookApp: App {
     let container: ModelContainer = {
         let schema = Schema([Recipe.self, ShoppingList.self])
         let container = try! ModelContainer(for: schema, configurations: [])
+        container.mainContext.autosaveEnabled = false
+        
         let listCount = try! container.mainContext.fetchCount(FetchDescriptor<ShoppingList>())
         if listCount == 0 {
             container.mainContext.insert(ShoppingList())
