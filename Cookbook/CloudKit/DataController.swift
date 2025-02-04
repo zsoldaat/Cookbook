@@ -7,35 +7,49 @@
 
 import SwiftUI
 import CloudKit
+import SwiftData
 
-class CloudKitController: ObservableObject {
+@MainActor
+class DataController: ObservableObject {
+    
+    let localContainer: ModelContainer = {
+        let schema = Schema([Recipe.self, ShoppingList.self])
+        let container = try! ModelContainer(for: schema, configurations: [])
+        
+        let listCount = try! container.mainContext.fetchCount(FetchDescriptor<ShoppingList>())
+        if listCount == 0 {
+            container.mainContext.insert(ShoppingList())
+        }
+//                container.deleteAllData()
+        return container
+    }()
     
     static var containerIdentifier: String = "iCloud.com.zacsoldaat.Cookbook"
     
-    var container = CKContainer(identifier: CloudKitController.containerIdentifier)
+    var cloudContainer = CKContainer(identifier: DataController.containerIdentifier)
     /// Sharing requires using a custom record zone.
-    var recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
+//    var recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
     
-    var sharedRecipes: [Recipe] = []
+//    var sharedRecipes: [Recipe] = []
     
-    func setSharedRecipes() async {
-        do {
-            let recipes = try await fetchRecipes(scope: .shared)
-            sharedRecipes.append(contentsOf: recipes)
-        } catch {
-            print(error)
-        }
-    }
+//    func setSharedRecipes() async {
+//        do {
+//            let recipes = try await fetchRecipes(scope: .shared)
+//            sharedRecipes.append(contentsOf: recipes)
+//        } catch {
+//            print(error)
+//        }
+//    }
     
     func fetchRecipes(scope: CKDatabase.Scope) async throws -> [Recipe] {
         
         var recipes: [Recipe] = []
         
-        let zones = try await container.database(with: scope).allRecordZones()
+        let zones = try await cloudContainer.database(with: scope).allRecordZones()
         
         for zone in zones {
-            let recipeResults = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
-            let ingredientResults = try await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let recipeResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let ingredientResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             
             let recipesInZone = try recipeResults.map {
                 let (_, record) = $0
@@ -56,14 +70,20 @@ class CloudKitController: ObservableObject {
             recipes.append(contentsOf: recipesInZone)
         }
         
+        recipes.forEach { recipe in
+            localContainer.mainContext.insert(recipe)
+        }
+        
+        try localContainer.mainContext.save()
+        
         return recipes
     }
     
     func fetchRecord(recipe: Recipe, scope: CKDatabase.Scope) async throws -> CKRecord? {
-        let zones = try await container.database(with: scope).allRecordZones()
+        let zones = try await cloudContainer.database(with: scope).allRecordZones()
         
         for zone in zones {
-            if let result = try! await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
+            if let result = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
                 
                 let (recordId, record) = result
                 
@@ -71,13 +91,13 @@ class CloudKitController: ObservableObject {
                     let record = try record.get()
                     
                     //Set parent relationships whenever you fetch
-                    let ingredients = try! await container.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", record.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
+                    let ingredients = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", record.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
                     
                     for ingredient in ingredients {
                         let (_, record) = ingredient
                         let ingredientRecord = try record.get()
                         ingredientRecord.setParent(recordId)
-                        try await container.privateCloudDatabase.save(ingredientRecord)
+                        try await cloudContainer.privateCloudDatabase.save(ingredientRecord)
                     }
                     
                     return record
@@ -104,15 +124,15 @@ class CloudKitController: ObservableObject {
                 share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
             }
             
-            _ = try await container.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
-            return (share, container)
+            _ = try await cloudContainer.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
+            return (share, cloudContainer)
         }
         
-        guard let share = try await container.privateCloudDatabase.record(for: existingShare.recordID) as? CKShare else {
+        guard let share = try await cloudContainer.privateCloudDatabase.record(for: existingShare.recordID) as? CKShare else {
             throw MyError.runtimeError("search meee")
         }
         
-        return (share, container)
+        return (share, cloudContainer)
         
     }
     
