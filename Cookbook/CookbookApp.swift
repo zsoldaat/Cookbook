@@ -33,30 +33,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct CookbookApp: App {
-    let container: ModelContainer = {
-        let schema = Schema([Recipe.self, ShoppingList.self])
-        let container = try! ModelContainer(for: schema, configurations: [])
-        let listCount = try! container.mainContext.fetchCount(FetchDescriptor<ShoppingList>())
-        if listCount == 0 {
-            container.mainContext.insert(ShoppingList())
-        }
-//                container.deleteAllData()
-        return container
-    }()
-    
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     @StateObject var selectedTab: SelectedTab = SelectedTab(selectedTabTag: 0)
-    @StateObject var cloudKitController: CloudKitController = CloudKitController()
+    @StateObject var dataController: DataController = DataController()
     
     var body: some Scene {
         WindowGroup {
             SectionSelectView()
-                .modelContainer(container)
+                .modelContainer(dataController.localContainer)
                 .environmentObject(selectedTab)
-                .environmentObject(cloudKitController)
+                .environmentObject(dataController)
                 .task {
+                    await dataController.fetchSharedRecipes()
 //                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
-//                    await cloudKitController.setSharedRecipes()
                 }
         }
     }

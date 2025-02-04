@@ -24,22 +24,30 @@ class DataController: ObservableObject {
         return container
     }()
     
-    static var containerIdentifier: String = "iCloud.com.zacsoldaat.Cookbook"
+    static var cloudContainerIdentifier: String = "iCloud.com.zacsoldaat.Cookbook"
     
-    var cloudContainer = CKContainer(identifier: DataController.containerIdentifier)
-    /// Sharing requires using a custom record zone.
-//    var recordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
+    var cloudContainer = CKContainer(identifier: DataController.cloudContainerIdentifier)
     
-//    var sharedRecipes: [Recipe] = []
-    
-//    func setSharedRecipes() async {
-//        do {
-//            let recipes = try await fetchRecipes(scope: .shared)
-//            sharedRecipes.append(contentsOf: recipes)
-//        } catch {
-//            print(error)
-//        }
-//    }
+    func fetchSharedRecipes() async {
+        do {
+            let recipes = try await fetchRecipes(scope: .shared)
+            
+            let localRecipes = try localContainer.mainContext.fetch(FetchDescriptor<Recipe>())
+            
+            recipes.forEach { recipe in
+                let localRecipeIds = localRecipes.map{ $0.id.uuidString }
+                
+                if !localRecipeIds.contains(recipe.id.uuidString) {
+                    localContainer.mainContext.insert(recipe)
+                }
+            }
+            
+            try localContainer.mainContext.save()
+            
+        } catch {
+            print("Error fetching shared recipes.")
+        }
+    }
     
     func fetchRecipes(scope: CKDatabase.Scope) async throws -> [Recipe] {
         
@@ -69,13 +77,6 @@ class DataController: ObservableObject {
             
             recipes.append(contentsOf: recipesInZone)
         }
-        
-        recipes.forEach { recipe in
-            localContainer.mainContext.insert(recipe)
-        }
-        
-        try localContainer.mainContext.save()
-        
         return recipes
     }
     

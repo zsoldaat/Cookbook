@@ -11,7 +11,6 @@ import SwiftData
 struct RecipeListView: View {
     
     @Environment(\.modelContext) var context
-    @EnvironmentObject var cloudKitController: CloudKitController
     
     @State private var isShowingItemSheet = false
     @State private var recipeToEdit: Recipe?
@@ -24,8 +23,6 @@ struct RecipeListView: View {
     @State private var dateFilterViewShowing: Bool = false
     @State private var startDate: Date = Date()
     @State private var endDate: Date = Date()
-    
-    @State private var sharedRecipes: [Recipe] = []
     
     @Query(sort: \Recipe.name) var recipes: [Recipe]
     
@@ -99,14 +96,6 @@ struct RecipeListView: View {
                     }
                     
                 }
-                ForEach(sharedRecipes.filter {filterSearch(recipe: $0)}) { recipe in
-                    NavigationLink {
-                        RecipeView(recipe: recipe)
-                    } label: {
-                        RecipeCell(recipe: recipe)
-                    }
-                }
-                
             }
             .navigationTitle("Recipes")
             .navigationBarItems(
@@ -131,16 +120,6 @@ struct RecipeListView: View {
         .sheet(isPresented: $filterViewShowing) {
             FilterView(searchValue: $searchValue, ratingFilterValue: $ratingFilterValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate)
         }
-        .task {
-            do {
-                sharedRecipes = try await cloudKitController.fetchRecipes(scope: .shared)
-            } catch {
-                print("Hello")
-            }
-            
-        }
-
-        
     }
     
 }

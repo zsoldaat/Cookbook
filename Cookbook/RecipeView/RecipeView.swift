@@ -12,7 +12,7 @@ import CloudKit
 struct RecipeView: View {
     
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var cloudKitController: CloudKitController
+    @EnvironmentObject var dataController: DataController
     
     let recipe: Recipe
     
@@ -109,12 +109,12 @@ struct RecipeView: View {
         }
         .task {
             do {
-                if let (share, container) = try await cloudKitController.fetchOrCreateShare(recipe: recipe, scope: .private) {
+                if let (share, container) = try await dataController.fetchOrCreateShare(recipe: recipe, scope: .private) {
                     activeShare = share
                     activeContainer = container
                 }
             } catch {
-                
+                print("Error creating share: \(error)")
             }
             
         }
