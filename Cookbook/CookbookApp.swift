@@ -33,6 +33,20 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct CookbookApp: App {
+    
+    let localContainer: ModelContainer = {
+        let schema = Schema([Recipe.self, ShoppingList.self, Ingredient.self])
+        let container = try! ModelContainer(for: schema, configurations: [])
+        container.mainContext.autosaveEnabled = true
+        
+        let listCount = try! container.mainContext.fetchCount(FetchDescriptor<ShoppingList>())
+        if listCount == 0 {
+            container.mainContext.insert(ShoppingList())
+        }
+//                container.deleteAllData()
+        return container
+    }()
+    
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     @StateObject var selectedTab: SelectedTab = SelectedTab(selectedTabTag: 0)
     @StateObject var dataController: DataController = DataController()
@@ -40,11 +54,12 @@ struct CookbookApp: App {
     var body: some Scene {
         WindowGroup {
             SectionSelectView()
-                .modelContainer(dataController.localContainer)
+                .modelContainer(localContainer)
                 .environmentObject(selectedTab)
                 .environmentObject(dataController)
                 .task {
-                    await dataController.fetchSharedRecipes()
+                    dataController.localContainer = localContainer
+//                    await dataController.fetchSharedRecipes()
 //                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
                 }
         }

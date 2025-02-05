@@ -25,6 +25,8 @@ struct RecipeView: View {
     @State private var activeContainer: CKContainer?
 
     @FocusState var keyboardisActive: Bool
+    
+    @StateObject private var shareController: ShareController = .init()
 
     var body: some View {
         ScrollView {
@@ -97,28 +99,33 @@ struct RecipeView: View {
             
             ToolbarItem {
                 Button {
-                    isSharing = true
+                    Task {
+                        do {
+                            if let (share, container) = try await dataController.fetchOrCreateShare(recipe: recipe, scope: .private) {
+                                activeShare = share
+                                activeContainer = container
+                                shareController.isSharing = true
+                            }
+                        } catch {
+                            print("Error creating share: \(error)")
+                        }
+                    }
+                    
                 } label: {
                     Text("Share")
                 }
-                .sheet(isPresented: $isSharing) {
+                .sheet(isPresented: $shareController.isSharing, onDismiss: {
+                    shareController.isSharing = false
+                }) {
                     CloudSharingView(container: activeContainer!, share: activeShare!)
                 }
-                .disabled(activeShare == nil || activeContainer == nil)
             }
-        }
-        .task {
-            do {
-                if let (share, container) = try await dataController.fetchOrCreateShare(recipe: recipe, scope: .private) {
-                    activeShare = share
-                    activeContainer = container
-                }
-            } catch {
-                print("Error creating share: \(error)")
-            }
-            
         }
     }
 }
 
+//needed because if you use a regular state variable, it doesn't work properly because of async issues. 
+class ShareController: ObservableObject {
+    @Published var isSharing: Bool = false
+}
 

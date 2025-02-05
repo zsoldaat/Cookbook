@@ -12,17 +12,7 @@ import SwiftData
 @MainActor
 class DataController: ObservableObject {
     
-    let localContainer: ModelContainer = {
-        let schema = Schema([Recipe.self, ShoppingList.self])
-        let container = try! ModelContainer(for: schema, configurations: [])
-        
-        let listCount = try! container.mainContext.fetchCount(FetchDescriptor<ShoppingList>())
-        if listCount == 0 {
-            container.mainContext.insert(ShoppingList())
-        }
-//                container.deleteAllData()
-        return container
-    }()
+    var localContainer: ModelContainer?
     
     static var cloudContainerIdentifier: String = "iCloud.com.zacsoldaat.Cookbook"
     
@@ -32,17 +22,17 @@ class DataController: ObservableObject {
         do {
             let recipes = try await fetchRecipes(scope: .shared)
             
-            let localRecipes = try localContainer.mainContext.fetch(FetchDescriptor<Recipe>())
+            let localRecipes = try localContainer!.mainContext.fetch(FetchDescriptor<Recipe>())
             
             recipes.forEach { recipe in
                 let localRecipeIds = localRecipes.map{ $0.id.uuidString }
                 
                 if !localRecipeIds.contains(recipe.id.uuidString) {
-                    localContainer.mainContext.insert(recipe)
+                    localContainer!.mainContext.insert(recipe)
                 }
             }
             
-            try localContainer.mainContext.save()
+            try localContainer!.mainContext.save()
             
         } catch {
             print("Error fetching shared recipes.")
@@ -81,6 +71,7 @@ class DataController: ObservableObject {
     }
     
     func fetchRecord(recipe: Recipe, scope: CKDatabase.Scope) async throws -> CKRecord? {
+        
         let zones = try await cloudContainer.database(with: scope).allRecordZones()
         
         for zone in zones {
@@ -116,6 +107,9 @@ class DataController: ObservableObject {
         
         guard let associatedRecord = try await fetchRecord(recipe: recipe, scope: scope) else {return nil}
         
+        //might be an issue here with fetching the wrong record, we shall see
+//        print(associatedRecord.value(forKey: "CD_id"))
+        
         guard let existingShare = associatedRecord.share else {
             let share = CKShare(rootRecord: associatedRecord)
             share[CKShare.SystemFieldKey.title] = "Recipe: \(recipe.name)"
@@ -130,6 +124,7 @@ class DataController: ObservableObject {
         }
         
         guard let share = try await cloudContainer.privateCloudDatabase.record(for: existingShare.recordID) as? CKShare else {
+            print("problem")
             throw MyError.runtimeError("search meee")
         }
         
