@@ -105,7 +105,11 @@ class DataController: ObservableObject {
     
     func fetchOrCreateShare(recipe: Recipe, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
         
-        guard let associatedRecord = try await fetchRecord(recipe: recipe, scope: scope) else {return nil}
+        guard let associatedRecord = try await fetchRecord(recipe: recipe, scope: scope) else {
+            print("Could not find associated record")
+            
+            return nil
+        }
         
         //might be an issue here with fetching the wrong record, we shall see
 //        print(associatedRecord.value(forKey: "CD_id"))
@@ -115,8 +119,12 @@ class DataController: ObservableObject {
             share[CKShare.SystemFieldKey.title] = "Recipe: \(recipe.name)"
             
             if let url = recipe.imageUrl {
-                let imageData = try Data(contentsOf: url)
-                share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
+                URLSession.shared.dataTask(with: url) {(data, response, error) in
+                    if let data = data {
+                        let imageData = data
+                        share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
+                    }
+                }
             }
             
             _ = try await cloudContainer.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
