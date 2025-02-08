@@ -96,7 +96,7 @@ struct RecipeView: View {
                         .labelStyle(.iconOnly)
                 }
             }
-            
+
             ToolbarItem {
                 Button {
                     Task {

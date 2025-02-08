@@ -30,10 +30,11 @@ struct GroupListView: View {
                 @Bindable var recipeGroup: RecipeGroup = RecipeGroup(name: "")
                 CreateEditGroupView(recipeGroup: recipeGroup, isNewGroup: true)
             }
+            .navigationTitle("Groups")
         }
     }
 }
 
-#Preview {
-    GroupListView()
-}
+//#Preview {
+//    GroupListView()
+//}
