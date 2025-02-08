@@ -13,7 +13,7 @@ import CloudKit
 class ShoppingList: Identifiable, Hashable, ObservableObject {
     var id = UUID()
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.shoppingList) var items: [Ingredient]? = []
-    @Transient var selections = Set<UUID>()
+    var selections = Set<UUID>()
     
     init() {
         
