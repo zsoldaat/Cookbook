@@ -17,17 +17,20 @@ struct AddToGroupView: View {
     @Query var groups: [RecipeGroup]
     
     var body: some View {
-        List {
-            ForEach(groups) { group in
-                HStack {
-                    Button {
-                        group.recipes!.contains(recipe) ? group.removeRecipe(recipe: recipe) : group.addRecipe(recipe: recipe)
-                    } label: {
-                        Image(systemName: group.recipes!.contains(recipe) ? "checkmark.circle.fill" : "circle")
+        NavigationStack {
+            List {
+                ForEach(groups) { group in
+                    HStack {
+                        Button {
+                            group.recipes!.contains(recipe) ? group.removeRecipe(recipe: recipe) : group.addRecipe(recipe: recipe)
+                        } label: {
+                            Image(systemName: group.recipes!.contains(recipe) ? "checkmark.circle.fill" : "circle")
+                        }
+                        Text(group.name)
                     }
-                    Text(group.name)
                 }
             }
+            .navigationTitle("Groups")
         }
     }
 }
