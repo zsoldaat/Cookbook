@@ -81,18 +81,23 @@ class DataController: ObservableObject {
                 
                 do {
                     let record = try record.get()
-                    
-                    //Set parent relationships whenever you fetch
-                    let ingredients = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", record.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
-                    
-                    for ingredient in ingredients {
-                        let (_, record) = ingredient
-                        let ingredientRecord = try record.get()
-                        ingredientRecord.setParent(recordId)
-                        try await cloudContainer.privateCloudDatabase.save(ingredientRecord)
+    
+                    //Set parent relationships whenever you fetch. SwiftData doesn't set the relationships in iCloud for some reason, and they really only matter for sharing so you might as well fetch them when you're about to share something.
+                    // Also only do this if you're fetching a private record, shared records will already have the relationships created
+                    if scope == .private {
+                        let ingredients = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", record.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
+                        
+                        for ingredient in ingredients {
+                            let (_, record) = ingredient
+                            let ingredientRecord = try record.get()
+                            if ingredientRecord.parent?.recordID == nil {
+                                ingredientRecord.setParent(recordId)
+                                try await cloudContainer.privateCloudDatabase.save(ingredientRecord)
+                            }
+                        }
                     }
-                    
                     return record
+                    
                 } catch {
                     print(error)
                     return nil
@@ -104,22 +109,15 @@ class DataController: ObservableObject {
     }
     
     func fetchOrCreateShare(recipe: Recipe, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
-        
         if recipe.isShared {
-            let zones = try await cloudContainer.sharedCloudDatabase.allRecordZones()
+            let shareReference = try await fetchRecord(recipe: recipe, scope: .shared)?.share
             
-            for zone in zones {
-                let (_, result) = try await cloudContainer.sharedCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults.first!
-                
-                let shareReference = try result.get().share
-                
-                guard let share = try await cloudContainer.sharedCloudDatabase.record(for: shareReference!.recordID) as? CKShare else {
-                    print("Could not get share")
-                    return nil
-                }
-                
-                return (share, cloudContainer)
+            guard let share = try await cloudContainer.sharedCloudDatabase.record(for: shareReference!.recordID) as? CKShare else {
+                print("Could not get share")
+                return nil
             }
+            
+            return (share, cloudContainer)
         }
         
         guard let associatedRecord = try await fetchRecord(recipe: recipe, scope: scope) else {
