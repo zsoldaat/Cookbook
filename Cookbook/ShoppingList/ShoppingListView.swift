@@ -28,20 +28,22 @@ struct ShoppingListView: View {
                     ScrollView {
                         ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
                             HStack {
-                                Image(systemName: shoppingList.selections.contains(ingredient.id) ? "circle.fill" : "circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25)
-                                    .onTapGesture {
-                                        if (shoppingList.selections.contains(ingredient.id)) {
-                                            shoppingList.selections.remove(ingredient.id)
-                                        } else {
-                                            shoppingList.selections.insert(ingredient.id)
-                                        }
+                                Button {
+                                    if (shoppingList.selections.contains(ingredient.id)) {
+                                        shoppingList.selections.remove(ingredient.id)
+                                    } else {
+                                        shoppingList.selections.insert(ingredient.id)
                                     }
-                                    .sensoryFeedback(trigger: shoppingList.selections.contains(ingredient.id)) { oldValue, newValue in
-                                        return .increase
-                                    }
+                                } label: {
+                                    Image(systemName: shoppingList.selections.contains(ingredient.id) ? "checkmark.circle.fill" : "circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25)
+                                }
+                                .sensoryFeedback(trigger: shoppingList.selections.contains(ingredient.id)) { oldValue, newValue in
+                                    return .increase
+                                }
+                                    
                                 IngredientCell(ingredient: ingredient)
                             }
                             .contentShape(Rectangle())
@@ -124,9 +126,14 @@ struct ShoppingListView: View {
                             shoppingList.save(context: context)
                         }, keyboardIsActive: $keyboardIsActive)
                         
-                        IngredientListSection(ingredients: shoppingList.getItems(), selections: $shoppingList.selections, onDelete: { indexSet in
-                            shoppingList.deleteItem(indexSet: indexSet, context: context)
-                        })
+                        Section(header: Text("Ingredients")) {
+                            ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
+                                IngredientCell(ingredient: ingredient)
+                            }
+                            .onDelete { indexSet in
+                                shoppingList.deleteItem(indexSet: indexSet, context: context)
+                            }
+                        }
                     }
                 }
                 

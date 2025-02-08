@@ -41,23 +41,22 @@ struct IngredientsCard: View {
                             }
                         }
                     }) {
-
                         ForEach(recipe.ingredients!.sorted {$0.index < $1.index}) { ingredient in
                             HStack {
-                                Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle.fill" : "circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 20)
-                                    .onTapGesture {
-                                        if (selections.contains(ingredient.id)) {
-                                            selections.remove(ingredient.id)
-                                        } else {
-                                            selections.insert(ingredient.id)
-                                        }
+                                Button {
+                                    if (selections.contains(ingredient.id)) {
+                                        selections.remove(ingredient.id)
+                                    } else {
+                                        selections.insert(ingredient.id)
                                     }
-                                    .sensoryFeedback(trigger: selections.contains(ingredient.id)) { oldValue, newValue in
-                                        return .increase
-                                    }
+                                } label: {
+                                    Image(systemName: selections.contains(ingredient.id) ? "checkmark.circle.fill" : "circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25)
+                                }.sensoryFeedback(trigger: selections.contains(ingredient.id)) { oldValue, newValue in
+                                    return .increase
+                                }
                                 IngredientCell(ingredient: ingredient, scaleFactor: $scaleFactor)
                             }
                             //Specify height to help the scrollview become the right size, maybe fix later to something dynamic?
