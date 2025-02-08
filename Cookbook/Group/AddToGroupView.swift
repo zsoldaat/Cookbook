@@ -19,11 +19,12 @@ struct AddToGroupView: View {
     var body: some View {
         List {
             ForEach(groups) { group in
-                Button {
-                    group.addRecipe(recipe: recipe)
-                    try! context.save()
-                    dismiss()
-                } label: {
+                HStack {
+                    Button {
+                        group.recipes!.contains(recipe) ? group.removeRecipe(recipe: recipe) : group.addRecipe(recipe: recipe)
+                    } label: {
+                        Image(systemName: group.recipes!.contains(recipe) ? "checkmark.circle.fill" : "circle")
+                    }
                     Text(group.name)
                 }
             }
