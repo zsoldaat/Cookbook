@@ -22,13 +22,17 @@ struct CreateEditGroupView: View {
                     TextField("", text: $recipeGroup.name)
                 }
             }
-            .navigationBarItems(trailing: Button{
-                context.insert(recipeGroup)
-                try! context.save()
-                dismiss()
-            } label: {
-                Label("Done", systemImage: "checkmark")
-            })
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button{
+                        context.insert(recipeGroup)
+                        try! context.save()
+                        dismiss()
+                    } label: {
+                        Label("Done", systemImage: "checkmark")
+                    }
+                }
+            }
         }
     }
 }

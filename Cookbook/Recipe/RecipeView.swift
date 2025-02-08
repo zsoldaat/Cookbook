@@ -100,7 +100,7 @@ struct RecipeView: View {
                 }
             }
             
-            ToolbarItem {
+            ToolbarItem(placement: .topBarTrailing){
                 Button {
                     addToGroupShowing = true
                 } label: {
@@ -111,7 +111,7 @@ struct RecipeView: View {
                 }
             }
 
-            ToolbarItem {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     Task {
                         do {

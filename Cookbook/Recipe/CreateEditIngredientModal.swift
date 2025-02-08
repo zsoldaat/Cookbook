@@ -47,10 +47,9 @@ struct CreateEditIngredientModal: View {
                 }
             }
             .navigationTitle("Ingredients")
-            .toolbar{
-                ToolbarItem {
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        
                         if (!ingredient.name.isEmpty) {
                             if let onAdd = onAdd {
                                 onAdd(ingredient)

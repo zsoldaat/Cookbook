@@ -83,25 +83,31 @@ struct ShoppingListView: View {
             .navigationTitle("Shopping List")
             .toolbar {
                 if (!shoppingList.selections.isEmpty) {
-                    Button(role: .destructive) {
-                        shoppingList.removeById(ids: Array(shoppingList.selections))
-                        shoppingList.selections.removeAll()
-                    } label: {
-                        Label("Remove", systemImage: "text.badge.xmark")
-                            .labelStyle(.iconOnly)
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(role: .destructive) {
+                            shoppingList.removeById(ids: Array(shoppingList.selections))
+                            shoppingList.selections.removeAll()
+                        } label: {
+                            Label("Remove", systemImage: "text.badge.xmark")
+                                .labelStyle(.iconOnly)
+                        }
                     }
                 }
-                Button {
-                    shoppingList.clear()
-                } label: {
-                    Label("Clear", systemImage: "text.page.slash")
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        shoppingList.clear()
+                    } label: {
+                        Label("Clear", systemImage: "text.page.slash")
+                    }
                 }
                 
-                Button {
-                    addShowing = true
-                } label: {
-                    Label("Add", systemImage: "text.badge.plus")
-                        .labelStyle(.iconOnly)
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        addShowing = true
+                    } label: {
+                        Label("Add", systemImage: "text.badge.plus")
+                            .labelStyle(.iconOnly)
+                    }
                 }
             }
             .sheet(isPresented: $addShowing, content: {

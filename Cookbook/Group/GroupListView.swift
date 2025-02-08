@@ -34,11 +34,15 @@ struct GroupListView: View {
 
                 }
             }
-            .navigationBarItems(trailing: Button {
-                addGroupShowing = true
-            } label: {
-                Label("Add", systemImage: "plus")
-            })
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        addGroupShowing = true
+                    } label: {
+                        Label("Add", systemImage: "plus")
+                    }
+                }
+            }
             .fullScreenCover(isPresented: $addGroupShowing) {
                 @Bindable var recipeGroup: RecipeGroup = RecipeGroup(name: "")
                 CreateEditGroupView(recipeGroup: recipeGroup, isNewGroup: true)
