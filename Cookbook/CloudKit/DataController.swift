@@ -105,6 +105,23 @@ class DataController: ObservableObject {
     
     func fetchOrCreateShare(recipe: Recipe, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
         
+        if recipe.isShared {
+            let zones = try await cloudContainer.sharedCloudDatabase.allRecordZones()
+            
+            for zone in zones {
+                let (_, result) = try await cloudContainer.sharedCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults.first!
+                
+                let shareReference = try result.get().share
+                
+                guard let share = try await cloudContainer.sharedCloudDatabase.record(for: shareReference!.recordID) as? CKShare else {
+                    print("Could not get share")
+                    return nil
+                }
+                
+                return (share, cloudContainer)
+            }
+        }
+        
         guard let associatedRecord = try await fetchRecord(recipe: recipe, scope: scope) else {
             print("Could not find associated record")
             
@@ -118,21 +135,20 @@ class DataController: ObservableObject {
             let share = CKShare(rootRecord: associatedRecord)
             share[CKShare.SystemFieldKey.title] = "Recipe: \(recipe.name)"
             
-            if let url = recipe.imageUrl {
-                URLSession.shared.dataTask(with: url) {(data, response, error) in
-                    if let data = data {
-                        let imageData = data
-                        share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
-                    }
-                }
-            }
+//            if let url = recipe.imageUrl {
+//                URLSession.shared.dataTask(with: url) {(data, response, error) in
+//                    if let data = data {
+//                        let imageData = data
+//                        share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
+//                    }
+//                }
+//            }
             
             _ = try await cloudContainer.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
             return (share, cloudContainer)
         }
         
         guard let share = try await cloudContainer.privateCloudDatabase.record(for: existingShare.recordID) as? CKShare else {
-            print("problem")
             throw MyError.runtimeError("search meee")
         }
         
