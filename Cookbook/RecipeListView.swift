@@ -94,7 +94,6 @@ struct RecipeListView: View {
                     } catch {
                         print("error")
                     }
-                    
                 }
             }
             .navigationTitle("Recipes")

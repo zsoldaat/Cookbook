@@ -5,13 +5,6 @@
 //  Created by Zac Soldaat on 2025-01-04.
 //
 
-//
-//  Recipe.swift
-//  Cookbook
-//
-//  Created by Zac Soldaat on 2024-12-16.
-//
-
 import Foundation
 import SwiftData
 import CloudKit

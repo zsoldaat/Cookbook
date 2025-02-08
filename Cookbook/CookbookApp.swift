@@ -35,7 +35,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct CookbookApp: App {
     
     let localContainer: ModelContainer = {
-        let schema = Schema([Recipe.self, ShoppingList.self, Ingredient.self])
+        let schema = Schema([RecipeGroup.self, Recipe.self, ShoppingList.self, Ingredient.self])
         let container = try! ModelContainer(for: schema, configurations: [])
         container.mainContext.autosaveEnabled = true
         
@@ -43,7 +43,9 @@ struct CookbookApp: App {
         if listCount == 0 {
             container.mainContext.insert(ShoppingList())
         }
-//                container.deleteAllData()
+        
+//        container.deleteAllData()
+                
         return container
     }()
     

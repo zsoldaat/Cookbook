@@ -29,7 +29,7 @@ struct SectionSelectView: View {
                     }
                 }
                 .tag(1)
-            ShareView()
+            GroupListView()
                 .tabItem {
                     HStack {
                         Image(systemName: "person.fill")
