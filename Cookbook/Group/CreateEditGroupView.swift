@@ -20,16 +20,22 @@ struct CreateEditGroupView: View {
             Form {
                 Section(header: Text("Name")) {
                     TextField("", text: $recipeGroup.name)
+                        .onSubmit {
+                            if (recipeGroup.name.isEmpty) {return}
+                            
+                            context.insert(recipeGroup)
+                            try! context.save()
+                            dismiss()
+                        }
+                        .submitLabel(.done)
                 }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button{
-                        context.insert(recipeGroup)
-                        try! context.save()
                         dismiss()
                     } label: {
-                        Label("Done", systemImage: "checkmark")
+                        Text("Done")
                     }
                 }
             }
