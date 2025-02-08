@@ -17,12 +17,15 @@ struct RecipeView: View {
     let recipe: Recipe
     
     @State private var editShowing: Bool = false
+    @State private var addToGroupShowing: Bool = false
     
     @State private var isSharing = false
     @State private var isProcessingShare = false
 
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
+    
+    
 
     @FocusState var keyboardisActive: Bool
     
@@ -94,6 +97,17 @@ struct RecipeView: View {
                 } label: {
                     Label("Edit", systemImage: "square.and.pencil")
                         .labelStyle(.iconOnly)
+                }
+            }
+            
+            ToolbarItem {
+                Button {
+                    addToGroupShowing = true
+                } label: {
+                    Label("Group", systemImage: "person.fill")
+                }
+                .sheet(isPresented: $addToGroupShowing) {
+                    AddToGroupView(recipe: recipe)
                 }
             }
 

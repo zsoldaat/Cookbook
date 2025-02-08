@@ -10,6 +10,8 @@ import SwiftData
 
 struct GroupListView: View {
     
+    @Environment(\.modelContext) var context
+    
     @Query var groups: [RecipeGroup]
     
     @State private var addGroupShowing = false
@@ -18,7 +20,18 @@ struct GroupListView: View {
         NavigationStack {
             List {
                 ForEach(groups) { group in
-                    Text(group.name)
+                    NavigationLink {
+                        GroupView(group: group)
+                    } label: {
+                        Text(group.name)
+                    }
+
+                }.onDelete { indexSet in
+                    for i in indexSet {
+                        context.delete(groups[i])
+                    }
+                    try! context.save()
+
                 }
             }
             .navigationBarItems(trailing: Button {

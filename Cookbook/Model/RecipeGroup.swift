@@ -21,7 +21,7 @@ class RecipeGroup: Identifiable, Hashable, ObservableObject {
     }
     
     func addRecipe(recipe: Recipe) {
-//        self.recipes.append(recipe)
+        self.recipes!.append(recipe)
         
         //do cloudkit stuff
     }
