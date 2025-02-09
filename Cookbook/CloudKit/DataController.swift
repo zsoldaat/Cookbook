@@ -83,7 +83,7 @@ class DataController: ObservableObject {
                 
                 do {
                     let record = try record.get()
-    
+                    
                     //Set parent relationships whenever you fetch. SwiftData doesn't set the relationships in iCloud for some reason, and they really only matter for sharing so you might as well fetch them when you're about to share something.
                     // Also only do this if you're fetching a private record, shared records will already have the relationships created
                     if scope == .private {
@@ -129,20 +129,20 @@ class DataController: ObservableObject {
         }
         
         //might be an issue here with fetching the wrong record, we shall see
-//        print(associatedRecord.value(forKey: "CD_id"))
+        //        print(associatedRecord.value(forKey: "CD_id"))
         
         guard let existingShare = associatedRecord.share else {
             let share = CKShare(rootRecord: associatedRecord)
             share[CKShare.SystemFieldKey.title] = "Recipe: \(recipe.name)"
             
-//            if let url = recipe.imageUrl {
-//                URLSession.shared.dataTask(with: url) {(data, response, error) in
-//                    if let data = data {
-//                        let imageData = data
-//                        share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
-//                    }
-//                }
-//            }
+            //            if let url = recipe.imageUrl {
+            //                URLSession.shared.dataTask(with: url) {(data, response, error) in
+            //                    if let data = data {
+            //                        let imageData = data
+            //                        share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
+            //                    }
+            //                }
+            //            }
             
             _ = try await cloudContainer.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
             return (share, cloudContainer)
@@ -196,8 +196,6 @@ class DataController: ObservableObject {
             let ingredientResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             let CDMRResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CDMR", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             
-            
-            
             let recipesInZone = try recipeResults.map {
                 let (_, record) = $0
                 
@@ -240,25 +238,42 @@ class DataController: ObservableObject {
     
     func setRelationShipsForGroup(groupRecord: CKRecord, zone: CKRecordZone) async throws {
         
-        // This isn't working because the recipe records don't have a CD_group attribute filled because they are many to many, use CDMR records to create the relationships
-        let recipesInGroup = try! await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_group == %@", groupRecord.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
+        //change this to use NSPRedicate to only fetch relevant records vs filtering after, the CONTAINS keyword doesn't work here for some reasson. Might be because it's expecting an array?
+        let recordNamesInGroup = try await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CDMR", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            .filter { (_, record) in
+                let recordNames = try record.get()["CD_recordNames"] as! String
+                return recordNames.contains(groupRecord.recordID.recordName)
+            }
+            .map { (_, record) in
+                let recordNames = try record.get()["CD_recordNames"] as! String
+                return String(recordNames.split(separator: ":").first!)
+            }
+        
+        // Again, don't filter, use predicate. Can't get it to work because NSPredicate is annoying as fuck to use.
+        let recipesInGroup = try await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            .filter { (recordId, record) in
+                return recordNamesInGroup.contains(recordId.recordName)
+            }
+        
+        let allIngredients = try await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
         
         for recipe in recipesInGroup {
-            let (_, record) = recipe
+            let (recordId, record) = recipe
             let recipeRecord = try record.get()
             
-            //shouldn't be making a call to db for each recipe, do it once
-            let ingredientsInRecipe = try! await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", recipeRecord.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
-            
+            let ingredientsInRecipe = try allIngredients.filter { (_, record) in
+                return try record.get()["CD_recipe"] == recordId.recordName
+            }
+
             for ingredient in ingredientsInRecipe {
                 let (_, record) = ingredient
                 let ingredientRecord = try record.get()
                 if ingredientRecord.parent?.recordID == nil {
-                    ingredientRecord.setParent(ingredientRecord.recordID)
-                    try await cloudContainer.privateCloudDatabase.save(ingredientRecord)
+                    ingredientRecord.setParent(recordId)
+                    try! await cloudContainer.privateCloudDatabase.save(ingredientRecord)
                 }
             }
-            
+
             if recipeRecord.parent?.recordID == nil {
                 recipeRecord.setParent(groupRecord.recordID)
                 try await cloudContainer.privateCloudDatabase.save(recipeRecord)
@@ -277,7 +292,7 @@ class DataController: ObservableObject {
                 
                 do {
                     let groupRecord = try record.get()
-    
+                    
                     // Set parent relationships whenever you fetch. SwiftData doesn't set the relationships in iCloud for some reason, and they really only matter for sharing so you might as well fetch them when you're about to share something.
                     // Also only do this if you're fetching a private record, shared records will already have the relationships created
                     if scope == .private {
@@ -309,7 +324,7 @@ class DataController: ObservableObject {
         }
         
         guard let associatedRecord = try await fetchGroupRecord(group: group, scope: scope) else {
-            print("Could not find associated record")
+            print("Could not find associated group record")
             
             return nil
         }
