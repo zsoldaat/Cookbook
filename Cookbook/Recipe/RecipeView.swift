@@ -131,6 +131,7 @@ struct RecipeView: View {
                 .sheet(isPresented: $shareController.isSharing, onDismiss: {
                     shareController.isSharing = false
                 }) {
+//                    ShareLink(item: activeShare!.url!)
                     CloudSharingView(container: activeContainer!, share: activeShare!)
                 }
             }

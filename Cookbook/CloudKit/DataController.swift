@@ -18,6 +18,8 @@ class DataController: ObservableObject {
     
     var cloudContainer = CKContainer(identifier: DataController.cloudContainerIdentifier)
     
+    //MARK: Recipes
+    
     func fetchSharedRecipes() async {
         do {
             let recipes = try await fetchRecipes(scope: .shared)
@@ -108,6 +110,8 @@ class DataController: ObservableObject {
         return nil
     }
     
+    
+    
     func fetchOrCreateShare(recipe: Recipe, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
         if recipe.isShared {
             let shareReference = try await fetchRecord(recipe: recipe, scope: .shared)?.share
@@ -156,6 +160,169 @@ class DataController: ObservableObject {
     
     enum MyError: Error {
         case runtimeError(String)
+    }
+    
+    //MARK: GROUPS
+    
+    func fetchSharedGroups() async {
+        do {
+            let groups = try await fetchGroups(scope: .shared)
+            
+            let localGroups = try localContainer!.mainContext.fetch(FetchDescriptor<RecipeGroup>())
+            
+            groups.forEach { group in
+                let localGroupIds = localGroups.map{ $0.id.uuidString }
+                
+                if !localGroupIds.contains(group.id.uuidString) {
+                    localContainer!.mainContext.insert(group)
+                }
+            }
+            
+            try localContainer!.mainContext.save()
+            
+        } catch {
+            print("Error fetching shared recipes.")
+        }
+    }
+    
+    func fetchGroups(scope: CKDatabase.Scope) async throws -> [RecipeGroup] {
+        
+        var groups: [RecipeGroup] = []
+        
+        let zones = try await cloudContainer.database(with: scope).allRecordZones()
+        
+        for zone in zones {
+            //fetch all groups, recipes, and ingredients
+            let groupResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_RecipeGroup", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let recipeResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let ingredientResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            
+            let recipesInZone = try recipeResults.map {
+                let (_, record) = $0
+                
+                let ingredientsInRecipe = try ingredientResults
+                    .filter { (_, ingredientRecord) in
+                        let ingredientRecipeId = try! ingredientRecord.get()["CD_recipe"] as! String
+                        let recordName = try record.get().recordID.recordName
+                        
+                        return ingredientRecipeId == recordName
+                    }.map { (_, ingredientRecord) in
+                        return Ingredient(from: try ingredientRecord.get())
+                    }
+                
+                return Recipe(from: try record.get(), ingredients: ingredientsInRecipe)
+            }
+            
+            let groupsInZone = try groupResults.map {
+                let (_, record) = $0
+                
+                let recipesInGroup = try recipeResults
+                    .filter { (_, recipeRecord) in
+                        let recipeGroupId = try! recipeRecord.get()["CD_group"] as! String
+                        let recordName = try record.get().recordID.recordName
+                        
+                        return recipeGroupId == recordName
+                    }.map { (_, recipeRecord) in
+                        return Recipe(from: try recipeRecord.get())
+                    }
+                
+                return RecipeGroup(from: try record.get(), recipes: recipesInGroup)
+                
+            }
+            
+            groups.append(contentsOf: groupsInZone)
+        }
+        return groups
+    }
+    
+    func setRelationShipsForGroup(groupRecord: CKRecord, zone: CKRecordZone) async throws {
+        let recipesInGroup = try! await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_group == %@", groupRecord.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
+        
+        for recipe in recipesInGroup {
+            let (_, record) = recipe
+            let recipeRecord = try record.get()
+            
+            //shouldn't be making a call to db for each recipe, do it once
+            let ingredientsInRecipe = try! await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", recipeRecord.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
+            
+            for ingredient in ingredientsInRecipe {
+                let (_, record) = ingredient
+                let ingredientRecord = try record.get()
+                if ingredientRecord.parent?.recordID == nil {
+                    ingredientRecord.setParent(ingredientRecord.recordID)
+                    try await cloudContainer.privateCloudDatabase.save(ingredientRecord)
+                }
+            }
+            
+            if recipeRecord.parent?.recordID == nil {
+                recipeRecord.setParent(groupRecord.recordID)
+                try await cloudContainer.privateCloudDatabase.save(recipeRecord)
+            }
+        }
+    }
+    
+    func fetchGroupRecord(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> CKRecord? {
+        
+        let zones = try await cloudContainer.database(with: scope).allRecordZones()
+        
+        for zone in zones {
+            if let result = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_RecipeGroup", predicate: NSPredicate(format: "CD_id == %@", group.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
+                
+                let (recordId, record) = result
+                
+                do {
+                    let groupRecord = try record.get()
+    
+                    // Set parent relationships whenever you fetch. SwiftData doesn't set the relationships in iCloud for some reason, and they really only matter for sharing so you might as well fetch them when you're about to share something.
+                    // Also only do this if you're fetching a private record, shared records will already have the relationships created
+                    if scope == .private {
+                        try await setRelationShipsForGroup(groupRecord: groupRecord, zone: zone)
+                    }
+                    
+                    return groupRecord
+                    
+                } catch {
+                    print(error)
+                    return nil
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func fetchOrCreateGroupShare(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
+        if group.isShared {
+            let shareReference = try await fetchGroupRecord(group: group, scope: .shared)?.share
+            
+            guard let share = try await cloudContainer.sharedCloudDatabase.record(for: shareReference!.recordID) as? CKShare else {
+                print("Could not get share")
+                return nil
+            }
+            
+            return (share, cloudContainer)
+        }
+        
+        guard let associatedRecord = try await fetchGroupRecord(group: group, scope: scope) else {
+            print("Could not find associated record")
+            
+            return nil
+        }
+        
+        guard let existingShare = associatedRecord.share else {
+            let share = CKShare(rootRecord: associatedRecord)
+            share[CKShare.SystemFieldKey.title] = "Group: \(group.name)"
+            
+            _ = try await cloudContainer.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
+            return (share, cloudContainer)
+        }
+        
+        guard let share = try await cloudContainer.privateCloudDatabase.record(for: existingShare.recordID) as? CKShare else {
+            throw MyError.runtimeError("search meee")
+        }
+        
+        return (share, cloudContainer)
+        
     }
     
     
