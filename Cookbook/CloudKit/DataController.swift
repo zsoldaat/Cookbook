@@ -251,7 +251,7 @@ class DataController: ObservableObject {
         
         // Again, don't filter, use predicate. Can't get it to work because NSPredicate is annoying as fuck to use.
         let recipesInGroup = try await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
-            .filter { (recordId, record) in
+            .filter { (recordId, _) in
                 return recordNamesInGroup.contains(recordId.recordName)
             }
         
@@ -288,7 +288,7 @@ class DataController: ObservableObject {
         for zone in zones {
             if let result = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_RecipeGroup", predicate: NSPredicate(format: "CD_id == %@", group.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
                 
-                let (recordId, record) = result
+                let (_, record) = result
                 
                 do {
                     let groupRecord = try record.get()
