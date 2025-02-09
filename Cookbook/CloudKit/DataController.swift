@@ -110,8 +110,6 @@ class DataController: ObservableObject {
         return nil
     }
     
-    
-    
     func fetchOrCreateShare(recipe: Recipe, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
         if recipe.isShared {
             let shareReference = try await fetchRecord(recipe: recipe, scope: .shared)?.share
@@ -196,6 +194,9 @@ class DataController: ObservableObject {
             let groupResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_RecipeGroup", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             let recipeResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             let ingredientResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            let CDMRResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CDMR", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            
+            
             
             let recipesInZone = try recipeResults.map {
                 let (_, record) = $0
@@ -212,6 +213,8 @@ class DataController: ObservableObject {
                 
                 return Recipe(from: try record.get(), ingredients: ingredientsInRecipe)
             }
+            
+            // Use CDMR Records to create many to many relationships between groups and recipes
             
             let groupsInZone = try groupResults.map {
                 let (_, record) = $0
@@ -236,6 +239,8 @@ class DataController: ObservableObject {
     }
     
     func setRelationShipsForGroup(groupRecord: CKRecord, zone: CKRecordZone) async throws {
+        
+        // This isn't working because the recipe records don't have a CD_group attribute filled because they are many to many, use CDMR records to create the relationships
         let recipesInGroup = try! await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_group == %@", groupRecord.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
         
         for recipe in recipesInGroup {

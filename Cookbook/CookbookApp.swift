@@ -62,6 +62,7 @@ struct CookbookApp: App {
                 .task {
                     dataController.localContainer = localContainer
                     await dataController.fetchSharedRecipes()
+                    await dataController.fetchSharedGroups()
 //                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
                 }
         }
