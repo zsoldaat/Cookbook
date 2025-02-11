@@ -110,31 +110,6 @@ struct RecipeView: View {
                     AddToGroupView(recipe: recipe)
                 }
             }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    Task {
-                        do {
-                            if let (share, container) = try await dataController.fetchOrCreateShare(recipe: recipe, scope: .private) {
-                                activeShare = share
-                                activeContainer = container
-                                shareController.isSharing = true
-                            }
-                        } catch {
-                            print("Error creating share: \(error)")
-                        }
-                    }
-                    
-                } label: {
-                    Text("Share")
-                }
-                .sheet(isPresented: $shareController.isSharing, onDismiss: {
-                    shareController.isSharing = false
-                }) {
-//                    ShareLink(item: activeShare!.url!)
-                    CloudSharingView(container: activeContainer!, share: activeShare!)
-                }
-            }
         }
     }
 }

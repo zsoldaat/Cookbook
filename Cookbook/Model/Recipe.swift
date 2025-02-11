@@ -49,7 +49,9 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         self.ingredients = ingredients
         self.ingredientStrings = record["CD_ingredientStrings"] as? [String]
         self.link = record["CD_link"] as? String
-        self.imageUrl = URL(string: record["CD_imageUrl"] as! String)
+        if let imageUrl = record["CD_imageUrl"] {
+            self.imageUrl = URL(string: imageUrl as! String)
+        }
         self.difficulty = record["CD_difficulty"] as? String
         self.lastMadeDate = record["CD_lastMadeDate"] as? Date
         let ratingString = record["CD_ratingString"] as! String

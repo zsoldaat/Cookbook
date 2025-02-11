@@ -18,149 +18,10 @@ class DataController: ObservableObject {
     
     var cloudContainer = CKContainer(identifier: DataController.cloudContainerIdentifier)
     
-    //MARK: Recipes
-    
-    func fetchSharedRecipes() async {
-        do {
-            let recipes = try await fetchRecipes(scope: .shared)
-            
-            let localRecipes = try localContainer!.mainContext.fetch(FetchDescriptor<Recipe>())
-            
-            recipes.forEach { recipe in
-                let localRecipeIds = localRecipes.map{ $0.id.uuidString }
-                
-                if !localRecipeIds.contains(recipe.id.uuidString) {
-                    localContainer!.mainContext.insert(recipe)
-                }
-            }
-            
-            try localContainer!.mainContext.save()
-            
-        } catch {
-            print("Error fetching shared recipes.")
-        }
-    }
-    
-    func fetchRecipes(scope: CKDatabase.Scope) async throws -> [Recipe] {
-        
-        var recipes: [Recipe] = []
-        
-        let zones = try await cloudContainer.database(with: scope).allRecordZones()
-        
-        for zone in zones {
-            let recipeResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
-            let ingredientResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
-            
-            let recipesInZone = try recipeResults.map {
-                let (_, record) = $0
-                
-                let ingredients = try ingredientResults
-                    .filter { (_, ingredientRecord) in
-                        let ingredientRecipeId = try! ingredientRecord.get()["CD_recipe"] as! String
-                        let recordName = try record.get().recordID.recordName
-                        
-                        return ingredientRecipeId == recordName
-                    }.map { (_, ingredientRecord) in
-                        return Ingredient(from: try ingredientRecord.get())
-                    }
-                
-                return Recipe(from: try record.get(), ingredients: ingredients)
-            }
-            
-            recipes.append(contentsOf: recipesInZone)
-        }
-        return recipes
-    }
-    
-    func fetchRecord(recipe: Recipe, scope: CKDatabase.Scope) async throws -> CKRecord? {
-        
-        let zones = try await cloudContainer.database(with: scope).allRecordZones()
-        
-        for zone in zones {
-            if let result = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Recipe", predicate: NSPredicate(format: "CD_id == %@", recipe.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
-                
-                let (recordId, record) = result
-                
-                do {
-                    let record = try record.get()
-                    
-                    //Set parent relationships whenever you fetch. SwiftData doesn't set the relationships in iCloud for some reason, and they really only matter for sharing so you might as well fetch them when you're about to share something.
-                    // Also only do this if you're fetching a private record, shared records will already have the relationships created
-                    if scope == .private {
-                        let ingredients = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(format: "CD_recipe == %@", record.recordID.recordName)), inZoneWith: zone.zoneID).matchResults
-                        
-                        for ingredient in ingredients {
-                            let (_, record) = ingredient
-                            let ingredientRecord = try record.get()
-                            if ingredientRecord.parent?.recordID == nil {
-                                ingredientRecord.setParent(recordId)
-                                try await cloudContainer.privateCloudDatabase.save(ingredientRecord)
-                            }
-                        }
-                    }
-                    return record
-                    
-                } catch {
-                    print(error)
-                    return nil
-                }
-            }
-        }
-        
-        return nil
-    }
-    
-    func fetchOrCreateShare(recipe: Recipe, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
-        if recipe.isShared {
-            let shareReference = try await fetchRecord(recipe: recipe, scope: .shared)?.share
-            
-            guard let share = try await cloudContainer.sharedCloudDatabase.record(for: shareReference!.recordID) as? CKShare else {
-                print("Could not get share")
-                return nil
-            }
-            
-            return (share, cloudContainer)
-        }
-        
-        guard let associatedRecord = try await fetchRecord(recipe: recipe, scope: scope) else {
-            print("Could not find associated record")
-            
-            return nil
-        }
-        
-        //might be an issue here with fetching the wrong record, we shall see
-        //        print(associatedRecord.value(forKey: "CD_id"))
-        
-        guard let existingShare = associatedRecord.share else {
-            let share = CKShare(rootRecord: associatedRecord)
-            share[CKShare.SystemFieldKey.title] = "Recipe: \(recipe.name)"
-            
-            //            if let url = recipe.imageUrl {
-            //                URLSession.shared.dataTask(with: url) {(data, response, error) in
-            //                    if let data = data {
-            //                        let imageData = data
-            //                        share[CKShare.SystemFieldKey.thumbnailImageData] = imageData
-            //                    }
-            //                }
-            //            }
-            
-            _ = try await cloudContainer.privateCloudDatabase.modifyRecords(saving: [associatedRecord, share], deleting: [])
-            return (share, cloudContainer)
-        }
-        
-        guard let share = try await cloudContainer.privateCloudDatabase.record(for: existingShare.recordID) as? CKShare else {
-            throw MyError.runtimeError("search meee")
-        }
-        
-        return (share, cloudContainer)
-        
-    }
     
     enum MyError: Error {
         case runtimeError(String)
     }
-    
-    //MARK: GROUPS
     
     func fetchSharedGroups() async {
         do {
@@ -196,41 +57,38 @@ class DataController: ObservableObject {
             let ingredientResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_Ingredient", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             let CDMRResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CDMR", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             
-            let recipesInZone = try recipeResults.map {
-                let (_, record) = $0
-                
-                let ingredientsInRecipe = try ingredientResults
-                    .filter { (_, ingredientRecord) in
-                        let ingredientRecipeId = try! ingredientRecord.get()["CD_recipe"] as! String
-                        let recordName = try record.get().recordID.recordName
-                        
-                        return ingredientRecipeId == recordName
-                    }.map { (_, ingredientRecord) in
-                        return Ingredient(from: try ingredientRecord.get())
-                    }
-                
-                return Recipe(from: try record.get(), ingredients: ingredientsInRecipe)
-            }
-            
             // Use CDMR Records to create many to many relationships between groups and recipes
             
             let groupsInZone = try groupResults.map {
                 let (_, record) = $0
+                let groupRecord = try record.get()
                 
-                let recipesInGroup = try recipeResults
-                    .filter { (_, recipeRecord) in
-                        let recipeGroupId = try! recipeRecord.get()["CD_group"] as! String
-                        let recordName = try record.get().recordID.recordName
-                        
-                        return recipeGroupId == recordName
-                    }.map { (_, recipeRecord) in
-                        return Recipe(from: try recipeRecord.get())
+                let recipeNamesInGroup = try CDMRResults
+                    .filter { (_, record) in
+                        let CDMRRecord = try record.get()
+                        return CDMRRecord.parent?.recordID == groupRecord.recordID
+                    }.map { (_, record) in
+                        let recordNames = try record.get()["CD_recordNames"] as! String
+                        return String(recordNames.split(separator: ":").first!)
                     }
                 
-                return RecipeGroup(from: try record.get(), recipes: recipesInGroup)
+                let recipesInGroup = try recipeResults.filter{ (recordId, _) in
+                    return recipeNamesInGroup.contains(recordId.recordName)
+                }.map { (record_id, recipeRecord) in
+                    
+                    let ingredientsInRecipe = try ingredientResults.filter { (_, record) in
+                        let ingredientRecord = try record.get()
+                        return ingredientRecord["CD_recipe"] == record_id.recordName
+                    }.map { (_, record) in
+                        let ingredientRecord = try record.get()
+                        return Ingredient(from: ingredientRecord)
+                    }
+                    
+                    return Recipe(from: try recipeRecord.get(), ingredients: ingredientsInRecipe)
+                }
                 
+                return RecipeGroup(from: try record.get(), recipes: recipesInGroup)
             }
-            
             groups.append(contentsOf: groupsInZone)
         }
         return groups
@@ -239,11 +97,23 @@ class DataController: ObservableObject {
     func setRelationShipsForGroup(groupRecord: CKRecord, zone: CKRecordZone) async throws {
         
         //change this to use NSPRedicate to only fetch relevant records vs filtering after, the CONTAINS keyword doesn't work here for some reasson. Might be because it's expecting an array?
-        let recordNamesInGroup = try await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CDMR", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+        let relationshipsForGroup = try await cloudContainer.privateCloudDatabase.records(matching: CKQuery(recordType: "CDMR", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
             .filter { (_, record) in
                 let recordNames = try record.get()["CD_recordNames"] as! String
                 return recordNames.contains(groupRecord.recordID.recordName)
             }
+        
+        // Set parents for all the relationships
+        for relationship in relationshipsForGroup {
+            let (_, record) = relationship
+            let relationshipRecord = try record.get()
+            if relationshipRecord.parent?.recordID == nil {
+                relationshipRecord.setParent(groupRecord)
+                try! await cloudContainer.privateCloudDatabase.save(relationshipRecord)
+            }
+        }
+        
+        let recordNamesInGroup = try relationshipsForGroup
             .map { (_, record) in
                 let recordNames = try record.get()["CD_recordNames"] as! String
                 return String(recordNames.split(separator: ":").first!)
@@ -264,7 +134,7 @@ class DataController: ObservableObject {
             let ingredientsInRecipe = try allIngredients.filter { (_, record) in
                 return try record.get()["CD_recipe"] == recordId.recordName
             }
-
+            
             for ingredient in ingredientsInRecipe {
                 let (_, record) = ingredient
                 let ingredientRecord = try record.get()
@@ -273,7 +143,7 @@ class DataController: ObservableObject {
                     try! await cloudContainer.privateCloudDatabase.save(ingredientRecord)
                 }
             }
-
+            
             if recipeRecord.parent?.recordID == nil {
                 recipeRecord.setParent(groupRecord.recordID)
                 try await cloudContainer.privateCloudDatabase.save(recipeRecord)
@@ -344,6 +214,4 @@ class DataController: ObservableObject {
         return (share, cloudContainer)
         
     }
-    
-    
 }
