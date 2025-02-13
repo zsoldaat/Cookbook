@@ -97,7 +97,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     //Codable conformance
     
     enum CodingKeys: CodingKey {
-        case id, date, name, instructions, ingredients, ingredientStrings, link, imageUrl, difficulty, lastMadeDate, rating
+        case id, date, name, instructions, ingredients, ingredientStrings, link, imageUrl, difficulty, lastMadeDate, rating, ratingString, isShared
     }
     
     init(from decoder: Decoder) throws {
@@ -106,18 +106,21 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         date = try container.decode(Date.self, forKey: .date)
         name = try container.decode(String.self, forKey: .name)
         instructions = try container.decode(String.self, forKey: .instructions)
-        ingredients = try container.decode([Ingredient].self, forKey: .ingredients)
-        ingredientStrings = try container.decode([String].self, forKey: .ingredientStrings)
-        link = try container.decode(String.self, forKey: .link)
-        imageUrl = try container.decode(URL.self, forKey: .imageUrl)
-        difficulty = try container.decode(String.self, forKey: .difficulty)
-        lastMadeDate = try container.decode(Date.self, forKey: .lastMadeDate)
-        rating = try container.decode(Rating.self, forKey: .rating)
+        ingredients = try container.decode([Ingredient]?.self, forKey: .ingredients)
+        ingredientStrings = try container.decode([String]?.self, forKey: .ingredientStrings)
+        link = try container.decode(String?.self, forKey: .link)
+        imageUrl = try container.decode(URL?.self, forKey: .imageUrl)
+        difficulty = try container.decode(String?.self, forKey: .difficulty)
+        lastMadeDate = try container.decode(Date?.self, forKey: .lastMadeDate)
+        rating = try container.decode(Rating?.self, forKey: .rating)
+        ratingString = try container.decode(String.self, forKey: .ratingString)
+        isShared = try container.decode(Bool.self, forKey: .isShared)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
+        try container.encode(date, forKey: .date)
         try container.encode(name, forKey: .name)
         try container.encode(instructions, forKey: .instructions)
         try container.encode(ingredients, forKey: .ingredients)
@@ -127,6 +130,8 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(difficulty, forKey: .difficulty)
         try container.encode(lastMadeDate, forKey: .lastMadeDate)
         try container.encode(rating, forKey: .rating)
+        try container.encode(ratingString, forKey: .ratingString)
+        try container.encode(isShared, forKey: .isShared)
     }
 }
 

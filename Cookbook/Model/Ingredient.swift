@@ -12,7 +12,7 @@ import UniformTypeIdentifiers
 import CloudKit
 
 @Model
-class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
+final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     
     var id = UUID()
     var name: String = ""
@@ -155,28 +155,28 @@ class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     //Codable Conformance
     
     enum CodingKeys: CodingKey {
-        case id, name, recipe, quantityWhole, quantityFraction, unit, index
+        case id, name, quantityWhole, quantityFraction, unit, unitString, index
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
-        recipe = try container.decode(Recipe.self, forKey: .recipe)
         name = try container.decode(String.self, forKey: .name)
         quantityWhole = try container.decode(Int.self, forKey: .quantityWhole)
         quantityFraction = try container.decode(Double.self, forKey: .quantityFraction)
         unit = try container.decode(Unit.self, forKey: .unit)
+        unitString = try container.decode(String.self, forKey: .unitString)
         index = try container.decode(Int.self, forKey: .index)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
-        try container.encode(recipe, forKey: .recipe)
         try container.encode(name, forKey: .name)
         try container.encode(quantityWhole, forKey: .quantityWhole)
         try container.encode(quantityFraction, forKey: .quantityFraction)
         try container.encode(unit, forKey: .unit)
+        try container.encode(unitString, forKey: .unitString)
         try container.encode(index, forKey: .index)
     }
     

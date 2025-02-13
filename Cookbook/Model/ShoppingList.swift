@@ -10,7 +10,7 @@ import SwiftData
 import CloudKit
 
 @Model
-class ShoppingList: Identifiable, Hashable, ObservableObject {
+final class ShoppingList: Identifiable, Hashable, ObservableObject, Codable {
     var id = UUID()
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.shoppingList) var items: [Ingredient]? = []
     var selections = Set<UUID>()
@@ -98,6 +98,24 @@ class ShoppingList: Identifiable, Hashable, ObservableObject {
     
     func getNextIngredientIndex() -> Int {
         return (items!.map { $0.index }.max() ?? 0) + 1
+    }
+    
+    // Codable Conformance
+    
+    enum CodingKeys: CodingKey {
+        case id, items
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        items = try container.decode([Ingredient].self, forKey: .items)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(items, forKey: .items)
     }
     
 }
