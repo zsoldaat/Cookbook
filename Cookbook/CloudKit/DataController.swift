@@ -31,6 +31,7 @@ class DataController: ObservableObject {
                     group.isShared = true
                     group.recipes!.forEach { recipe in
                         recipe.isShared = true
+                        print(recipe.name)
                     }
                     
                     localContainer!.mainContext.insert(group)
@@ -66,7 +67,7 @@ class DataController: ObservableObject {
         return groups
     }
     
-    private func fetchRecordForGroup(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> CKRecord? {
+    func fetchRecordForGroup(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> CKRecord? {
         
         let zones = try await cloudContainer.database(with: scope).allRecordZones()
         
@@ -87,6 +88,13 @@ class DataController: ObservableObject {
         }
         
         return nil
+    }
+    
+    func updateRecipesForSharedGroup(group: RecipeGroup) async throws {
+        if let groupRecord = try await fetchRecordForGroup(group: group, scope: .shared) {
+            groupRecord.setValue(group.encodedRecipes, forKey: "CD_encodedRecipes")
+            try await cloudContainer.sharedCloudDatabase.save(groupRecord)
+        }
     }
     
     private func addSharedGroupsToLocalContext(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> CKRecord? {

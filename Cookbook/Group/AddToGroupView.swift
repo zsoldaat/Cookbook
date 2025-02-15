@@ -29,6 +29,12 @@ struct AddToGroupView: View {
                                 group.addRecipe(recipe: recipe)
                             }
                             try! context.save()
+                            
+                            if group.isShared {
+                                Task {
+                                    try! await dataController.updateRecipesForSharedGroup(group: group)
+                                }
+                            }
                         } label: {
                             Image(systemName: group.recipes!.contains(recipe) ? "checkmark.circle.fill" : "circle")
                         }
