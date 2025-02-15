@@ -28,9 +28,16 @@ class DataController: ObservableObject {
                 let localGroupIds = localGroups.map{ $0.id.uuidString }
                 
                 if !localGroupIds.contains(group.id.uuidString) {
+                    group.isShared = true
+                    group.recipes!.forEach { recipe in
+                        recipe.isShared = true
+                    }
+                    
                     localContainer!.mainContext.insert(group)
                 }
             }
+            
+            
             
             try localContainer!.mainContext.save()
             
