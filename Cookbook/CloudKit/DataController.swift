@@ -55,6 +55,7 @@ class DataController: ObservableObject {
             
             groups.append(contentsOf: groupsInZone)
         }
+        
         return groups
     }
     
@@ -65,7 +66,7 @@ class DataController: ObservableObject {
         for zone in zones {
             if let result = try! await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_RecipeGroup", predicate: NSPredicate(format: "CD_id == %@", group.id.uuidString)), inZoneWith: zone.zoneID).matchResults.first {
                 
-                let (recordId, record) = result
+                let (_, record) = result
                 
                 do {
                     let record = try record.get()

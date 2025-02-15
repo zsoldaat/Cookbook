@@ -21,7 +21,7 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     var quantityWhole: Int = 0
     var quantityFraction: Double = 0
     var quantity: Double {Double(quantityWhole) + quantityFraction}
-    @Transient var unit: Unit = Unit.item {
+    var unit: Unit = Unit.item {
         didSet {
             unitString = unit.rawValue
         }
@@ -38,18 +38,7 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         self.index = index
     }
     
-    init(from record: CKRecord, recipe: Recipe? = nil, shoppingList: ShoppingList? = nil) {
-        self.id = UUID(uuidString: record["CD_id"] as! String)!
-        self.name = record["CD_name"] as! String
-        self.recipe = recipe
-        self.shoppingList = shoppingList
-        self.quantityWhole = record["CD_quantityWhole"] as! Int
-        self.quantityFraction = record["CD_quantityFraction"] as! Double
-        let unitString = record["CD_unitString"] as! String
-        self.unit = Unit(rawValue: unitString)!
-        self.unitString = unitString
-        self.index = record["CD_index"] as! Int
-    }
+
     
     func getUnitString(displayUnit: Unit) -> String {
         
@@ -152,10 +141,25 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         
     }
     
+    // Almost certainly won't need this anymore since switching to method of encoding ingredients and recipes
+    
+    init(from record: CKRecord, recipe: Recipe? = nil, shoppingList: ShoppingList? = nil) {
+        self.id = UUID(uuidString: record["CD_id"] as! String)!
+        self.name = record["CD_name"] as! String
+        self.recipe = recipe
+        self.shoppingList = shoppingList
+        self.quantityWhole = record["CD_quantityWhole"] as! Int
+        self.quantityFraction = record["CD_quantityFraction"] as! Double
+        let unitString = record["CD_unitString"] as! String
+        self.unit = Unit(rawValue: unitString)!
+        self.unitString = unitString
+        self.index = record["CD_index"] as! Int
+    }
+    
     //Codable Conformance
     
     enum CodingKeys: CodingKey {
-        case id, name, quantityWhole, quantityFraction, unit, unitString, index
+        case id, name, quantityWhole, quantityFraction, unitString, unit, index
     }
     
     init(from decoder: Decoder) throws {
@@ -164,8 +168,8 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         name = try container.decode(String.self, forKey: .name)
         quantityWhole = try container.decode(Int.self, forKey: .quantityWhole)
         quantityFraction = try container.decode(Double.self, forKey: .quantityFraction)
-        unit = try container.decode(Unit.self, forKey: .unit)
         unitString = try container.decode(String.self, forKey: .unitString)
+        unit = try container.decode(Unit.self, forKey: .unit)
         index = try container.decode(Int.self, forKey: .index)
     }
     
@@ -175,8 +179,8 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(name, forKey: .name)
         try container.encode(quantityWhole, forKey: .quantityWhole)
         try container.encode(quantityFraction, forKey: .quantityFraction)
-        try container.encode(unit, forKey: .unit)
         try container.encode(unitString, forKey: .unitString)
+        try container.encode(unit, forKey: .unit)
         try container.encode(index, forKey: .index)
     }
     
