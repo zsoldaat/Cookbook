@@ -14,7 +14,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     
     var id = UUID()
     var date = Date()
-    var group: [RecipeGroup]? = []
+    var groups: [RecipeGroup]? = []
     var name: String = ""
     var instructions: String = ""
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.recipe)

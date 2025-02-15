@@ -14,7 +14,7 @@ import CloudKit
 final class RecipeGroup: Identifiable, Hashable, ObservableObject, Codable {
     var id = UUID()
     var name: String = ""
-    @Relationship(deleteRule: .nullify, inverse: \Recipe.group) var recipes: [Recipe]? = []
+    @Relationship(deleteRule: .nullify, inverse: \Recipe.groups) var recipes: [Recipe]? = []
     var encodedRecipes: Data?
     var isShared: Bool = false
     

@@ -60,7 +60,7 @@ struct RecipeCell: View {
                         }
                     }
                     
-                    if let groups = recipe.group {
+                    if let groups = recipe.groups {
                         ChipView {
                             Text(groups.map{$0.name}.joined(separator: ", "))
                         }
