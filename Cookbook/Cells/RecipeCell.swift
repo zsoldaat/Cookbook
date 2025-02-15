@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RecipeCell: View {
-    
     let recipe: Recipe
     
     let imageSize: CGFloat = 90
@@ -37,6 +37,7 @@ struct RecipeCell: View {
                 }
                 
                 HStack {
+                    
                     if let ratingImage = recipe.rating?.image() {
                         ChipView {
                             Image(uiImage: ratingImage)
@@ -54,8 +55,14 @@ struct RecipeCell: View {
                     
                     if recipe.isShared {
                         ChipView {
-                            Text(recipe.isShared ? "Shared" : "Not shared")
+                            Text("Shared With You")
                                 .lineLimit(1)
+                        }
+                    }
+                    
+                    if let groups = recipe.group {
+                        ChipView {
+                            Text(groups.map{$0.name}.joined(separator: ", "))
                         }
                     }
                 }
