@@ -20,26 +20,49 @@ class DataController: ObservableObject {
     
     func addSharedGroupsToLocalContext() async {
         do {
-            let groups = try await fetchGroups(scope: .shared)
-            
+            let sharedGroups = try await fetchGroups(scope: .shared)
             let localGroups = try localContainer!.mainContext.fetch(FetchDescriptor<RecipeGroup>())
             
-            groups.forEach { group in
-                let localGroupIds = localGroups.map{ $0.id.uuidString }
-                
-                if !localGroupIds.contains(group.id.uuidString) {
-                    group.isShared = true
-                    group.recipes!.forEach { recipe in
-                        recipe.isShared = true
-                        print(recipe.name)
-                    }
+            // Delete all shared groups from local
+            localGroups.forEach { group in
+                if group.isShared {
+                    localContainer!.mainContext.delete(group)
                     
-                    localContainer!.mainContext.insert(group)
+                    group.recipes?.forEach { recipe in
+                        localContainer!.mainContext.delete(recipe)
+                    }
                 }
             }
             
+            // Add them all back, with changes
+            sharedGroups.forEach { sharedGroup in
+                localContainer!.mainContext.insert(sharedGroup)
+            }
             
+            // This code below tries to actually update the local groups based on the incoming shared groups, but is not working right now so just deleting everything might be easier, we'll see
             
+//            sharedGroups.forEach { sharedGroup in
+//                let localGroupIds = localGroups.map{ $0.id.uuidString }
+//
+//                
+//                if localGroupIds.contains(sharedGroup.id.uuidString) {
+//                    // Update Recipes for shared groups that are already on the device
+//                    let localGroup = localGroups.first(where: { $0.id.uuidString == sharedGroup.id.uuidString })!
+//                    
+//                    localGroup.recipes = []
+//                    localGroup.recipes?.append(contentsOf: sharedGroup.recipes!)
+//                } else {
+//                    // Add groups (and their recipes) that don't exist on the device, mark the group and recipe as shared
+//                    print("Happening")
+//                    sharedGroup.isShared = true
+//                    sharedGroup.recipes!.forEach { recipe in
+//                        recipe.isShared = true
+//                    }
+//                    
+//                    localContainer!.mainContext.insert(sharedGroup)
+//                }
+//            }
+
             try localContainer!.mainContext.save()
             
         } catch {
