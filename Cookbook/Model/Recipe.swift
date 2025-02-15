@@ -32,7 +32,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         }
     }
     var ratingString: String = ""
-    var isShared: Bool = false
+    var isShared: Bool { groups!.map {$0.isShared}.contains(true) }
     
     init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
         self.name = name
@@ -93,7 +93,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         let ratingString = record["CD_ratingString"] as! String
         self.rating = Rating(rawValue: ratingString)
         self.ratingString = ratingString
-        self.isShared = true
     }
     
     //Codable conformance
@@ -116,7 +115,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         lastMadeDate = try container.decode(Date?.self, forKey: .lastMadeDate)
         rating = try container.decode(Rating?.self, forKey: .rating)
         ratingString = try container.decode(String.self, forKey: .ratingString)
-        isShared = try container.decode(Bool.self, forKey: .isShared)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -133,7 +131,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(lastMadeDate, forKey: .lastMadeDate)
         try container.encode(rating, forKey: .rating)
         try container.encode(ratingString, forKey: .ratingString)
-        try container.encode(isShared, forKey: .isShared)
     }
 }
 
