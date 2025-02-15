@@ -25,11 +25,19 @@ struct RecipeCell: View {
                 Color.gray.frame(width: imageSize, height: imageSize)
             }
             .clipShape(RoundedRectangle(cornerRadius: 15))
+//            .overlay(alignment: .topLeading) {
+//                if (recipe.isShared) {
+//                    Image(systemName: "person.fill")
+//                        .resizable()
+//                        .frame(width: 15, height: 15)
+////                        .foregroundStyle(.accent)
+//                        .padding(8)
+//                }
+//            }
             
             VStack(alignment: .leading) {
-                
                 Text(recipe.name).font(.headline)
-                
+
                 if let lastMadeDate = recipe.lastMadeDate {
                     Text("Last made on \(Recipe.dateFormatter.string(from: lastMadeDate))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
                 } else {
@@ -37,6 +45,14 @@ struct RecipeCell: View {
                 }
                 
                 HStack {
+                    
+                    if (recipe.isShared) {
+                        Image(systemName: "person.fill")
+                            .resizable()
+                            .frame(width: 15, height: 15)
+                            .foregroundStyle(.accent)
+                            .padding(8)
+                    }
                     
                     if let ratingImage = recipe.rating?.image() {
                         ChipView {
@@ -52,22 +68,8 @@ struct RecipeCell: View {
                                 .lineLimit(1)
                         }
                     }
-                    
-                    if recipe.isShared {
-                        ChipView {
-                            Text("Shared With You")
-                                .lineLimit(1)
-                        }
-                    }
-                    
-                    if let groups = recipe.groups {
-                        ChipView {
-                            Text(groups.map{$0.name}.joined(separator: ", "))
-                        }
-                    }
                 }
             }
-            
         }
     }
 }

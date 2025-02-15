@@ -36,6 +36,8 @@ class DataController: ObservableObject {
             
             // Add them all back, with changes
             sharedGroups.forEach { sharedGroup in
+                // isShared property should be set upon creating the share, not downloading, so this won't be necessary eventually
+                sharedGroup.isShared = true
                 localContainer!.mainContext.insert(sharedGroup)
             }
             
