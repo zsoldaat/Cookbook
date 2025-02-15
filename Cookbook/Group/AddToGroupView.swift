@@ -12,6 +12,7 @@ struct AddToGroupView: View {
     
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var dataController: DataController
     let recipe: Recipe
     
     @Query var groups: [RecipeGroup]
@@ -22,7 +23,12 @@ struct AddToGroupView: View {
                 ForEach(groups) { group in
                     HStack {
                         Button {
-                            group.recipes!.contains(recipe) ? group.removeRecipe(recipe: recipe) : group.addRecipe(recipe: recipe)
+                            if group.recipes!.contains(recipe) {
+                                group.removeRecipe(recipe: recipe)
+                            } else {
+                                group.addRecipe(recipe: recipe)
+                            }
+                            try! context.save()
                         } label: {
                             Image(systemName: group.recipes!.contains(recipe) ? "checkmark.circle.fill" : "circle")
                         }

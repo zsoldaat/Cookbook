@@ -61,7 +61,10 @@ struct CookbookApp: App {
                 .environmentObject(dataController)
                 .task {
                     dataController.localContainer = localContainer
-                    await dataController.fetchSharedGroups()
+                    await dataController.addSharedGroupsToLocalContext()
+                    // Fetch shared groups when the time comes and I can use Nathalie's phone to do more testing
+//                    let groups = try! await dataController.fetchGroups2(scope: .private)
+//                    await dataController.fetchSharedGroups()
 //                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
                 }
         }
