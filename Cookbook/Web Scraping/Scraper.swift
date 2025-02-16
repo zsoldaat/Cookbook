@@ -136,7 +136,8 @@ struct Scraper {
                 .reduce("", {cur, next in cur + (cur.isEmpty ? "" : "\n \n") + next})}
                 .compactMap {$0}
             
-            let ingredients = getListItemsForTitle(title: "Ingredients", headings: allHeadings)
+            let ingredients = getListItemsForTitle(title: "Ingredients", headings: allHeadings)?.filter{!$0.isEmpty}
+            
             let ingredientObjects: [Ingredient]? = ingredients != nil ? ingredients!.map{ parseIngredient(ingredient: $0, index: (ingredients?.firstIndex(of: $0))!) } : nil
             
             return RecipeData(name: name, instructions: instructions.first ?? "", ingredients: ingredientObjects, ingredientStrings: ingredients, imageUrls: imageUrls)
@@ -178,9 +179,9 @@ struct Scraper {
             remainingStringToParse = foundQuantity[1]
         }
         
-        if let foundUnit = getUnitPart(string: remainingStringToParse) {
-            unit = foundUnit.keys.first!
-            remainingStringToParse = foundUnit.values.first!
+        if let (foundUnit, foundString) = getUnitPart(string: remainingStringToParse) {
+            unit = foundUnit
+            remainingStringToParse = foundString
         }
         
         let parsedQuantity = parseQuantityPart(string: quantity)
@@ -208,7 +209,7 @@ struct Scraper {
     }
     
     //return somethign different here
-    private func getUnitPart(string: String) -> [Unit: String]? {
+    private func getUnitPart(string: String) -> (Unit, String)? {
         //keep only alphanumerics and spaced, split into array
         let words = String(string.unicodeScalars
             .filter {char in CharacterSet.alphanumerics.contains(char) || CharacterSet.whitespaces.contains(char) || char == "-" || char == "/" || char == "(" || char == ")" || char == ","})
@@ -217,7 +218,7 @@ struct Scraper {
         
         if words.count > 0 {
             if let unit = findUnit(in: words.first!) {
-                return [unit: words[1...].joined(separator: " ")]
+                return (unit, words[1...].joined(separator: " "))
             }
         }
         
