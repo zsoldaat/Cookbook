@@ -25,15 +25,6 @@ struct RecipeCell: View {
                 Color.gray.frame(width: imageSize, height: imageSize)
             }
             .clipShape(RoundedRectangle(cornerRadius: 15))
-//            .overlay(alignment: .topLeading) {
-//                if (recipe.isShared) {
-//                    Image(systemName: "person.fill")
-//                        .resizable()
-//                        .frame(width: 15, height: 15)
-////                        .foregroundStyle(.accent)
-//                        .padding(8)
-//                }
-//            }
             
             VStack(alignment: .leading) {
                 Text(recipe.name).font(.headline)
@@ -45,13 +36,11 @@ struct RecipeCell: View {
                 }
                 
                 HStack {
-                    
                     if (recipe.isShared) {
-                        Image(systemName: "person.fill")
+                        Image(systemName: "person.circle")
                             .resizable()
                             .frame(width: 15, height: 15)
                             .foregroundStyle(.accent)
-                            .padding(8)
                     }
                     
                     if let ratingImage = recipe.rating?.image() {
