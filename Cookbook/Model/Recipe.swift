@@ -24,14 +24,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var imageUrl: URL?
     var difficulty: String?
     var lastMadeDate: Date?
-    var rating: Rating? {
-        didSet {
-            if (rating != nil) {
-                ratingString = rating!.rawValue
-            }
-        }
-    }
-    var ratingString: String = ""
+    var rating: Rating?
     var isShared: Bool { groups!.map {$0.isShared}.contains(true) }
     
     init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
@@ -91,8 +84,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         self.difficulty = record["CD_difficulty"] as? String
         self.lastMadeDate = record["CD_lastMadeDate"] as? Date
         let ratingString = record["CD_ratingString"] as! String
-        self.rating = Rating(rawValue: ratingString)
-        self.ratingString = ratingString
+//        self.rating = Rating(rawValue: ratingString)
     }
     
     //Codable conformance
@@ -114,7 +106,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         difficulty = try container.decode(String?.self, forKey: .difficulty)
         lastMadeDate = try container.decode(Date?.self, forKey: .lastMadeDate)
         rating = try container.decode(Rating?.self, forKey: .rating)
-        ratingString = try container.decode(String.self, forKey: .ratingString)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -130,7 +121,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(difficulty, forKey: .difficulty)
         try container.encode(lastMadeDate, forKey: .lastMadeDate)
         try container.encode(rating, forKey: .rating)
-        try container.encode(ratingString, forKey: .ratingString)
     }
 }
 

@@ -21,12 +21,7 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
     var quantityWhole: Int = 0
     var quantityFraction: Double = 0
     var quantity: Double {Double(quantityWhole) + quantityFraction}
-    var unit: Unit = Unit.item {
-        didSet {
-            unitString = unit.rawValue
-        }
-    }
-    var unitString: String = ""
+    var unit: Unit = Unit.item
     var index: Int = 0
     
     init(name: String, quantityWhole: Int, quantityFraction: Double, unit: Unit, index: Int) {
@@ -34,11 +29,8 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         self.quantityWhole = quantityWhole
         self.quantityFraction = quantityFraction
         self.unit = unit
-        self.unitString = unit.rawValue
         self.index = index
     }
-    
-
     
     func getUnitString(displayUnit: Unit) -> String {
         
@@ -151,8 +143,7 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         self.quantityWhole = record["CD_quantityWhole"] as! Int
         self.quantityFraction = record["CD_quantityFraction"] as! Double
         let unitString = record["CD_unitString"] as! String
-        self.unit = Unit(rawValue: unitString)!
-        self.unitString = unitString
+//        self.unit = Unit(rawValue: unitString)!
         self.index = record["CD_index"] as! Int
     }
     
@@ -168,7 +159,6 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         name = try container.decode(String.self, forKey: .name)
         quantityWhole = try container.decode(Int.self, forKey: .quantityWhole)
         quantityFraction = try container.decode(Double.self, forKey: .quantityFraction)
-        unitString = try container.decode(String.self, forKey: .unitString)
         unit = try container.decode(Unit.self, forKey: .unit)
         index = try container.decode(Int.self, forKey: .index)
     }
@@ -179,7 +169,6 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(name, forKey: .name)
         try container.encode(quantityWhole, forKey: .quantityWhole)
         try container.encode(quantityFraction, forKey: .quantityFraction)
-        try container.encode(unitString, forKey: .unitString)
         try container.encode(unit, forKey: .unit)
         try container.encode(index, forKey: .index)
     }
