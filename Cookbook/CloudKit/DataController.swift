@@ -160,6 +160,7 @@ class DataController: ObservableObject {
             return nil
         }
         
+        group.isShared = true
         associatedRecord.setValue(true, forKey: "CD_isShared")
         
         guard let existingShare = associatedRecord.share else {
