@@ -21,14 +21,16 @@ struct RecipeView: View {
     
     @State private var isSharing = false
     @State private var isProcessingShare = false
-
+    
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
-
+    
     @FocusState var keyboardisActive: Bool
     
+    @State var sliderValue: Double = 0
+    
     @StateObject private var shareController: ShareController = .init()
-
+    
     var body: some View {
         ScrollView {
             RecipeImageView(recipe: recipe)
@@ -41,24 +43,8 @@ struct RecipeView: View {
             IngredientsCard(recipe: recipe)
                 .padding(.horizontal, 5)
             
-            CardView(title: "Difficulty") {
-                let difficultyBinding = Binding<String>(get: {
-                    if recipe.difficulty != nil {
-                        return recipe.difficulty!
-                    } else {
-                        return ""
-                    }
-                }, set: {
-                    recipe.difficulty = $0
-                })
-                
-                Picker("Difficulty", selection: difficultyBinding) {
-                    ForEach(["", "Easy", "Medium", "Hard"], id: \.self) { difficulty in
-                        Text(difficulty)
-                    }
-                }
-            }
-            .padding(.horizontal, 5)
+            DifficultyView(recipe: recipe)
+                .padding(.horizontal, 5)
             
             RatingView(recipe: recipe)
                 .padding(.horizontal, 5)
@@ -112,7 +98,7 @@ struct RecipeView: View {
     }
 }
 
-//needed because if you use a regular state variable, it doesn't work properly because of async issues. 
+//needed because if you use a regular state variable, it doesn't work properly because of async issues.
 class ShareController: ObservableObject {
     @Published var isSharing: Bool = false
 }
