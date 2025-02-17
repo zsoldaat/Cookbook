@@ -133,20 +133,6 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         
     }
     
-    // Almost certainly won't need this anymore since switching to method of encoding ingredients and recipes
-    
-    init(from record: CKRecord, recipe: Recipe? = nil, shoppingList: ShoppingList? = nil) {
-        self.id = UUID(uuidString: record["CD_id"] as! String)!
-        self.name = record["CD_name"] as! String
-        self.recipe = recipe
-        self.shoppingList = shoppingList
-        self.quantityWhole = record["CD_quantityWhole"] as! Int
-        self.quantityFraction = record["CD_quantityFraction"] as! Double
-        let unitString = record["CD_unitString"] as! String
-//        self.unit = Unit(rawValue: unitString)!
-        self.index = record["CD_index"] as! Int
-    }
-    
     //Codable Conformance
     
     enum CodingKeys: CodingKey {

@@ -11,7 +11,6 @@ import CloudKit
 
 @Model
 final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
-    
     var id = UUID()
     var date = Date()
     var groups: [RecipeGroup]? = []
@@ -66,24 +65,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     
     func getNextIngredientIndex() -> Int {
         return (ingredients!.map { $0.index }.max() ?? 0) + 1
-    }
-    
-    // Almost certainly won't need this anymore since switching to method of encoding ingredients and recipes
-    
-    init(from record: CKRecord, ingredients: [Ingredient]? = nil) {
-        self.id = UUID(uuidString: record["CD_id"] as! String)!
-        self.date = record["CD_date"] as! Date
-        self.name = record["CD_name"] as! String
-        self.instructions = record["CD_instructions"] as! String
-        self.ingredients = ingredients
-        self.ingredientStrings = record["CD_ingredientStrings"] as? [String]
-        self.link = record["CD_link"] as? String
-        if let imageUrl = record["CD_imageUrl"] {
-            self.imageUrl = URL(string: imageUrl as! String)
-        }
-        self.difficulty = record["CD_difficulty"] as? String
-        self.lastMadeDate = record["CD_lastMadeDate"] as? Date
-//        self.rating = Rating(rawValue: ratingString)
     }
     
     //Codable conformance
