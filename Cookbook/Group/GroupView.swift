@@ -39,7 +39,6 @@ struct GroupView: View {
             }
         }
         .navigationTitle(group.name)
-        
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 

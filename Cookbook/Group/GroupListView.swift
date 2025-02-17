@@ -33,7 +33,7 @@ struct GroupListView: View {
                                 .tint(.red)
                             }
                     } label: {
-                        Text(group.name)
+                        GroupCell(group: group)
                     }
                     
                 }

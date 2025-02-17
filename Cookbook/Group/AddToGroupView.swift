@@ -38,7 +38,7 @@ struct AddToGroupView: View {
                         } label: {
                             Image(systemName: group.recipes!.contains(recipe) ? "checkmark.circle.fill" : "circle")
                         }
-                        Text(group.name)
+                        GroupCell(group: group)
                     }
                 }
             }
