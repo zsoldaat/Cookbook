@@ -33,30 +33,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         self.ingredientStrings = ingredientStrings
     }
     
-    func save(context: ModelContext) {
-        if context.hasChanges {
-            if (self.isShared) {
-                print("shared")
-            } else {
-                do {
-                    try context.save()
-                } catch (let error) {
-                    print(error)
-                }
-            }
-        }
-    }
-    
-    func createUpdateRecipe(context: ModelContext) {
-        context.insert(self)
-        save(context: context)
-    }
-    
-    func addImage(url: URL, context: ModelContext) {
-        self.imageUrl = url
-        save(context: context)
-    }
-    
     static var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -83,9 +59,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         ingredientStrings = try container.decode([String]?.self, forKey: .ingredientStrings)
         link = try container.decode(String?.self, forKey: .link)
         imageUrl = try container.decode(URL?.self, forKey: .imageUrl)
-        difficulty = try container.decode(String?.self, forKey: .difficulty)
-        lastMadeDate = try container.decode(Date?.self, forKey: .lastMadeDate)
-        rating = try container.decode(Rating?.self, forKey: .rating)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -98,9 +71,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(ingredientStrings, forKey: .ingredientStrings)
         try container.encode(link, forKey: .link)
         try container.encode(imageUrl, forKey: .imageUrl)
-        try container.encode(difficulty, forKey: .difficulty)
-        try container.encode(lastMadeDate, forKey: .lastMadeDate)
-        try container.encode(rating, forKey: .rating)
     }
 }
 

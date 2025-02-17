@@ -29,12 +29,6 @@ struct GroupCell: View {
             VStack(alignment: .leading) {
                 Text(group.name).font(.headline)
                 
-//                if let lastMadeDate = recipe.lastMadeDate {
-//                    Text("Last made on \(Recipe.dateFormatter.string(from: lastMadeDate))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
-//                } else {
-//                    Text("Added \(Recipe.dateFormatter.string(from: recipe.date))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
-//                }
-                
                 HStack {
                     if (group.isShared) {
                         Image(systemName: "person.circle")

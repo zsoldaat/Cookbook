@@ -11,6 +11,7 @@ struct CreateEditRecipeView: View {
     
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var dataController: DataController
     
     @Bindable var recipe: Recipe
     
@@ -39,7 +40,17 @@ struct CreateEditRecipeView: View {
                                 alertShowing = true
                                 return
                             }
-                            recipe.createUpdateRecipe(context: context)
+                            context.insert(recipe)
+                            
+                            try! context.save()
+                            
+                            if recipe.isShared {
+                                Task {
+                                    for group in recipe.groups! {
+                                        try await dataController.updateRecipesForSharedGroup(group: group)
+                                    }
+                                }
+                            }
                             dismiss()
                         } label: {
                             Label("Done", systemImage: "return")

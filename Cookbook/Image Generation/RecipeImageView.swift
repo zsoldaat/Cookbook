@@ -10,6 +10,7 @@ import SwiftUI
 struct RecipeImageView: View {
     
     @Environment(\.modelContext) var context
+    @EnvironmentObject var dataController: DataController
     
     let recipe: Recipe
     
@@ -21,7 +22,17 @@ struct RecipeImageView: View {
     func onSelect(url: URL?) -> Void {
         
         if let url = url {
-            recipe.addImage(url: url, context: context)
+            recipe.imageUrl = url
+            
+            try! context.save()
+            
+            Task {
+                if recipe.isShared {
+                    for group in recipe.groups! {
+                        try await dataController.updateRecipesForSharedGroup(group: group)
+                    }
+                }
+            }
         }
     }
     
