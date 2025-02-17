@@ -24,8 +24,6 @@ struct RecipeView: View {
 
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
-    
-    
 
     @FocusState var keyboardisActive: Bool
     

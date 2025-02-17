@@ -29,18 +29,66 @@ struct IngredientsCard: View {
             HStack(alignment: .top) {
                 Group {
                     CardView(title: "Ingredients", button: {
-                        let scaleBinding = Binding<String>(get: {
-                            String(scaleFactor) + "x"
-                        }, set: {
-                            scaleFactor = Int($0.prefix(1))!
-                        })
                         
-                        Picker("Scale", selection: scaleBinding) {
-                            ForEach( ["1x", "2x", "3x", "4x"], id: \.self) { factor in
-                                Text(factor)
+                        HStack(alignment: .center) {
+                            Group {
+                                Button {
+                                    selections = Set(recipe.ingredients!.map{$0.id}.filter{!selections.contains($0)})
+                                } label: {
+                                    Label("Reverse selected", systemImage: "switch.2")
+                                        .labelStyle(.iconOnly)
+                                }
+                                
+                                Button {
+                                    selections.removeAll()
+                                } label: {
+                                    Label("Clear selections", systemImage: "xmark.circle")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .disabled(selections.isEmpty)
+                                
+                                Button {
+                                    recipe.ingredients!
+                                        .filter {item in
+                                            selections.contains(item.id)
+                                        }
+                                        .forEach { ingredient in
+                                            //add ingredients multiple times if scaling up the recipe
+                                            for _ in 1...scaleFactor {
+                                                shoppingList.addItem(ingredient)
+                                            }
+                                        }
+                                    shoppingList.save(context: context)
+                                    selections.removeAll()
+                                    recipe.lastMadeDate = Date()
+                                    showAlert = true
+                                } label: {
+                                    Label("Add to Grocery List", systemImage: "text.badge.plus")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .disabled(selections.isEmpty)
                             }
+                            .frame(width: 30, height: 30)
+                            .padding(.horizontal, 2)
                         }
                     }) {
+                        
+                        HStack {
+                            Spacer()
+                            
+                            let scaleBinding = Binding<String>(get: {
+                                String(scaleFactor) + "x"
+                            }, set: {
+                                scaleFactor = Int($0.prefix(1))!
+                            })
+                            
+                            Picker("Scale", selection: scaleBinding) {
+                                ForEach( ["1x", "2x", "3x", "4x"], id: \.self) { factor in
+                                    Text(factor)
+                                }
+                            }
+                        }
+                        
                         ForEach(recipe.ingredients!.sorted {$0.index < $1.index}) { ingredient in
                             HStack {
                                 Button {
@@ -85,30 +133,6 @@ struct IngredientsCard: View {
         .scrollPosition(id: $activeCardIndex)
         .scrollIndicators(.hidden)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
-        .toolbar {
-            if !selections.isEmpty {
-                ToolbarItem {
-                    Button {
-                        recipe.ingredients!
-                            .filter {item in
-                                selections.contains(item.id)
-                            }
-                            .forEach { ingredient in
-                                //add ingredients multiple times if scaling up the recipe
-                                for _ in 1...scaleFactor {
-                                    shoppingList.addItem(ingredient)
-                                }
-                            }
-                        shoppingList.save(context: context)
-                        selections.removeAll()
-                        recipe.lastMadeDate = Date()
-                        showAlert = true
-                    } label: {
-                        Label("Add to Grocery List", systemImage: "text.badge.plus")
-                    }
-                }
-            }
-        }
         
         if recipe.ingredientStrings != nil {
             HStack {

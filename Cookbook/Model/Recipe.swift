@@ -83,7 +83,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         }
         self.difficulty = record["CD_difficulty"] as? String
         self.lastMadeDate = record["CD_lastMadeDate"] as? Date
-        let ratingString = record["CD_ratingString"] as! String
 //        self.rating = Rating(rawValue: ratingString)
     }
     

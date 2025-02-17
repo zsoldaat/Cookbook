@@ -21,8 +21,7 @@ struct CardView<Content: View, ButtonContent: View>: View {
     }
     
     var body: some View {
-        
-        VStack {
+        Group {
             VStack(alignment: .leading) {
                 HStack(alignment: .top) {
                     if let title = title {

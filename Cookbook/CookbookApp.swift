@@ -62,7 +62,9 @@ struct CookbookApp: App {
                 .task {
                     dataController.localContainer = localContainer
                     await dataController.addSharedGroupsToLocalContext()
-//                    let scraper = Scraper(url: URL(string: "https://tasty.co/recipe/one-pot-garlic-parmesan-pasta")!)
+                    let scraper = Scraper(url: URL(string: "https://www.halfbakedharvest.com/4-ingredient-chocolate-mousse/#wprm-recipe-container-87338")!)
+                    
+                    let data = await scraper.getRecipeData()
                 }
         }
     }
