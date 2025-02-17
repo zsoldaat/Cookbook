@@ -15,10 +15,9 @@ struct CreateEditRecipeView: View {
     
     @Bindable var recipe: Recipe
     
-    @State var ingredientIdToEdit: UUID?
+    @State var ingredientToEdit: Ingredient?
     var isNewRecipe: Bool
     
-    @State private var ingredientModalShowing: Bool = false
     @State private var alertShowing: Bool = false
     
     var body: some View {
@@ -58,17 +57,12 @@ struct CreateEditRecipeView: View {
                         }
                     }
                 }
-                .sheet(isPresented: $ingredientModalShowing) {
-                    if let id = ingredientIdToEdit {
-                        @Bindable var ingredient = recipe.ingredients!.filter({ $0.id == id}).first!
-                        CreateEditIngredientModal(ingredients: recipe.ingredients!, ingredient: ingredient)
-                    } else {
-                        @Bindable var ingredient = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: .item, index: recipe.getNextIngredientIndex())
-                        CreateEditIngredientModal(ingredients: recipe.ingredients!, ingredient: ingredient) {newIngredient in
-                            recipe.ingredients!.append(newIngredient)
-                        }
+                .sheet(item: $ingredientToEdit, content: { ingredient in
+                    CreateEditIngredientModal(ingredients: recipe.ingredients!, ingredient: ingredient) {newIngredient in
+                        recipe.ingredients!.append(newIngredient)
+                        ingredientToEdit = nil
                     }
-                }
+                })
                 .alert("Recipes must have a name.", isPresented: $alertShowing, actions: {})
                 .navigationTitle(isNewRecipe ? "New Recipe" : "Edit \"\(recipe.name)\"")
                 .scrollDismissesKeyboard(.immediately)
@@ -138,8 +132,7 @@ struct CreateEditRecipeView: View {
             }
             
             ListButton(text: "Add Ingredients", imageSystemName: "plus") {
-                ingredientIdToEdit = nil
-                ingredientModalShowing = true
+                ingredientToEdit = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: .item, index: recipe.getNextIngredientIndex())
             }
             
             if (!recipe.ingredients!.isEmpty) {
@@ -158,8 +151,7 @@ struct CreateEditRecipeView: View {
                                     .tint(.red)
                                     
                                     Button {
-                                        ingredientIdToEdit = ingredient.id
-                                        ingredientModalShowing = true
+                                        ingredientToEdit = ingredient
                                     } label: {
                                         Label("Edit", systemImage: "square.and.pencil")
                                             .labelStyle(.iconOnly)
