@@ -15,6 +15,7 @@ struct ShoppingListView: View {
     
     @State var addShowing: Bool = false
     @State var errorShowing: Bool = false
+    @State var clearAlertShowing: Bool = false
     
     @FocusState var keyboardIsActive: Bool
     @StateObject var ingredient: Ingredient = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: .item, index: 1)
@@ -82,6 +83,16 @@ struct ShoppingListView: View {
                 .padding([.bottom, .horizontal])
             }
             .alert("These units of these ingredients can't be added together.", isPresented: $errorShowing, actions: {})
+            .alert(isPresented: $clearAlertShowing) {
+                Alert(
+                    title: Text("Are you sure you want to clear your grocery list?"),
+                    primaryButton:
+                            .default(Text("Yes"), action: {
+                                shoppingList.clear()
+                                clearAlertShowing = false
+                            }),
+                    secondaryButton: .cancel())
+            }
             .navigationTitle("Shopping List")
             .toolbar {
                 if (!shoppingList.selections.isEmpty) {
@@ -90,16 +101,16 @@ struct ShoppingListView: View {
                             shoppingList.removeById(ids: Array(shoppingList.selections))
                             shoppingList.selections.removeAll()
                         } label: {
-                            Label("Remove", systemImage: "text.badge.xmark")
+                            Label("Remove", systemImage: "xmark.circle")
                                 .labelStyle(.iconOnly)
                         }
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        shoppingList.clear()
+                        clearAlertShowing = true
                     } label: {
-                        Label("Clear", systemImage: "text.page.slash")
+                        Label("Clear", systemImage: "trash")
                     }
                 }
                 
@@ -107,7 +118,7 @@ struct ShoppingListView: View {
                     Button {
                         addShowing = true
                     } label: {
-                        Label("Add", systemImage: "text.badge.plus")
+                        Label("Add", systemImage: "plus")
                             .labelStyle(.iconOnly)
                     }
                 }
@@ -129,9 +140,16 @@ struct ShoppingListView: View {
                         Section(header: Text("Ingredients")) {
                             ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
                                 IngredientCell(ingredient: ingredient)
-                            }
-                            .onDelete { indexSet in
-                                shoppingList.deleteItem(indexSet: indexSet, context: context)
+                                    .swipeActions {
+                                        Button(role: .destructive) {
+                                            shoppingList.deleteItem(item: ingredient)
+                                            try! context.save()
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                                .labelStyle(.iconOnly)
+                                        }
+                                        .tint(.red)
+                                    }
                             }
                         }
                     }

@@ -26,12 +26,16 @@ struct GroupView: View {
         List {
             ForEach(group.recipes!) {recipe in
                 RecipeCell(recipe: recipe)
-            }
-            .onDelete { indexSet in
-                for i in indexSet {
-                    group.removeRecipe(recipe: group.recipes![i])
-                }
-                try! context.save()
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            group.removeRecipe(recipe: recipe)
+                            try! context.save()
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                                .labelStyle(.iconOnly)
+                        }
+                        .tint(.red)
+                    }
             }
         }
         .navigationTitle(group.name)
@@ -57,7 +61,7 @@ struct GroupView: View {
                 .sheet(isPresented: $shareController.isSharing, onDismiss: {
                     shareController.isSharing = false
                 }) {
-//                    ShareLink(item: activeShare!.url!)
+                    //                    ShareLink(item: activeShare!.url!)
                     CloudSharingView(container: activeContainer!, share: activeShare!)
                 }
             }

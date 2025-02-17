@@ -43,15 +43,8 @@ final class ShoppingList: Identifiable, Hashable, ObservableObject, Codable {
         }
     }
     
-    func deleteItem(indexSet: IndexSet, context: ModelContext) {
-        for i in indexSet {
-            context.delete(items![i])
-        }
-        do {
-            try context.save()
-        } catch {
-            print("error")
-        }
+    func deleteItem(item: Ingredient) {
+        items?.removeAll{$0.id == item.id}
     }
     
     func clear() {

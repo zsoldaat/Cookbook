@@ -22,16 +22,20 @@ struct GroupListView: View {
                 ForEach(groups) { group in
                     NavigationLink {
                         GroupView(group: group)
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    context.delete(group)
+                                    try! context.save()
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .tint(.red)
+                            }
                     } label: {
                         Text(group.name)
                     }
-
-                }.onDelete { indexSet in
-                    for i in indexSet {
-                        context.delete(groups[i])
-                    }
-                    try! context.save()
-
+                    
                 }
             }
             .toolbar {

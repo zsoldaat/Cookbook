@@ -102,7 +102,7 @@ struct RecipeView: View {
                 Button {
                     addToGroupShowing = true
                 } label: {
-                    Label("Group", systemImage: "person.fill")
+                    Label("Group", systemImage: "person.circle")
                 }
                 .sheet(isPresented: $addToGroupShowing) {
                     AddToGroupView(recipe: recipe)

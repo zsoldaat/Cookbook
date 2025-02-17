@@ -15,6 +15,7 @@ struct RecipeListView: View {
     @State private var isShowingItemSheet = false
     @State private var recipeToEdit: Recipe?
     @State private var addRecipeShowing: Bool = false
+    @State private var removeSharedAlertShowing: Bool = false
     
     @State private var searchValue: String = ""
     @State private var ratingFilterValue: Rating = .none
@@ -83,16 +84,25 @@ struct RecipeListView: View {
                         RecipeView(recipe: recipe)
                     } label: {
                         RecipeCell(recipe: recipe)
-                    }
-                }
-                .onDelete { indexSet in
-                    for i in indexSet {
-                        context.delete(recipes[i])
-                    }
-                    do {
-                        try context.save()
-                    } catch {
-                        print("error")
+                            .swipeActions {
+                                if (!recipe.isShared) {
+                                    Button(role: .destructive) {
+                                        context.delete(recipe)
+                                        try! context.save()
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .tint(.red)
+                                } else {
+                                    Button {
+                                        print("Manage shared group")
+                                    } label: {
+                                        Label("Manage shared group", systemImage: "person.fill")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                }
+                            }
                     }
                 }
             }
@@ -122,6 +132,7 @@ struct RecipeListView: View {
             }
         }
         .searchable(text: $searchValue, prompt: "Search...")
+        .alert("You cannot delete a recipe that is part of a shared group.", isPresented: $removeSharedAlertShowing, actions: {})
         .sheet(isPresented: $filterViewShowing) {
             FilterView(searchValue: $searchValue, ratingFilterValue: $ratingFilterValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate)
         }
