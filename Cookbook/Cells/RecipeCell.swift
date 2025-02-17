@@ -39,7 +39,8 @@ struct RecipeCell: View {
                     if (recipe.isShared) {
                         Image(systemName: "person.circle")
                             .resizable()
-                            .frame(width: 15, height: 15)
+                            .scaledToFit()
+                            .frame(width: 15)
                             .foregroundStyle(.accent)
                     }
                     
@@ -47,7 +48,8 @@ struct RecipeCell: View {
                         ChipView {
                             Image(uiImage: ratingImage)
                                 .resizable()
-                                .frame(width: 30, height: 30)
+                                .scaledToFit()
+                                .frame(width: 30)
                         }
                     }
                     

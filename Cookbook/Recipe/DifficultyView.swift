@@ -60,7 +60,8 @@ struct DiffultyItem: View {
                         .frame(width: 40)
                         
                 }
-                .frame(width: 50, height: 50)
+                .scaledToFit()
+                .frame(width: 50)
                 .onAppear {
                     opacity = isSelected ? 1 : 0
                 }

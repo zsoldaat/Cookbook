@@ -42,10 +42,12 @@ struct RatingItem: View {
                         .opacity(opacity)
                     Image(uiImage: image)
                         .resizable()
-                        .frame(width: 40, height: 40)
+                        .scaledToFit()
+                        .frame(width: 40)
                         
                 }
-                .frame(width: 50, height: 50)
+                .scaledToFit()
+                .frame(width: 50)
                 .onAppear {
                     opacity = isSelected ? 1 : 0
                 }

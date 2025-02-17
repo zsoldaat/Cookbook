@@ -140,7 +140,8 @@ struct IngredientsCard: View {
                 ForEach(0...1, id: \.self) {id in
                     Image(systemName: "circle.fill")
                         .resizable()
-                        .frame(width: 10, height: 10)
+                        .scaledToFit()
+                        .frame(width: 10)
                         .padding(2)
                         .foregroundStyle(.gray)
                         .opacity(activeCardIndex == id ? 1 : 0.5)
