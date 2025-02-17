@@ -90,7 +90,7 @@ class DataController: ObservableObject {
         return groups
     }
     
-    func fetchRecordForGroup(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> CKRecord? {
+    private func fetchRecordForGroup(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> CKRecord? {
         
         let zones = try await cloudContainer.database(with: scope).allRecordZones()
         
