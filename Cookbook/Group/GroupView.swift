@@ -25,23 +25,26 @@ struct GroupView: View {
         
         List {
             ForEach(group.recipes!) {recipe in
-                RecipeCell(recipe: recipe)
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            group.removeRecipe(recipe: recipe)
-                            try! context.save()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                                .labelStyle(.iconOnly)
+                NavigationLink {
+                    RecipeView(recipe: recipe)
+                } label: {
+                    RecipeCell(recipe: recipe)
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                group.removeRecipe(recipe: recipe)
+                                try! context.save()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                                    .labelStyle(.iconOnly)
+                            }
+                            .tint(.red)
                         }
-                        .tint(.red)
-                    }
+                }
             }
         }
         .navigationTitle(group.name)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                
                 Button {
                     Task {
                         do {
@@ -55,7 +58,7 @@ struct GroupView: View {
                         }
                     }
                 } label: {
-                    Text("Share")
+                    Label("Share", systemImage: "person.circle")
                 }
                 .sheet(isPresented: $shareController.isSharing, onDismiss: {
                     shareController.isSharing = false

@@ -95,12 +95,12 @@ struct RecipeListView: View {
                                     }
                                     .tint(.red)
                                 } else {
-                                    Button {
-                                        print("Manage shared group")
+                                    NavigationLink {
+                                        GroupListView()
                                     } label: {
-                                        Label("Manage shared group", systemImage: "person.fill")
+                                        Label("Manage shared group", systemImage: "person.2")
                                             .labelStyle(.iconOnly)
-                                    }
+                                    }.tint(.yellow)
                                 }
                             }
                     }
