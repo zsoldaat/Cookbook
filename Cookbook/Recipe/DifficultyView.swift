@@ -35,11 +35,11 @@ struct DiffultyItem: View {
     func emojiForDifficulty(_ difficulty: String) -> String {
         switch difficulty {
         case "Easy":
-            return "🔴"
+            return "🟢"
         case "Medium":
             return "🟡"
         case "Hard":
-            return "🟢"
+            return "🔴"
         default:
             return " "
         }
