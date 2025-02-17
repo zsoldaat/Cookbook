@@ -22,7 +22,6 @@ struct GroupView: View {
     @StateObject private var shareController: ShareController = .init()
     
     var body: some View {
-        
         List {
             ForEach(group.recipes!) {recipe in
                 NavigationLink {
@@ -33,6 +32,12 @@ struct GroupView: View {
                             Button(role: .destructive) {
                                 group.removeRecipe(recipe: recipe)
                                 try! context.save()
+                                
+                                if group.isShared {
+                                    Task {
+                                        try! await dataController.updateRecipesForSharedGroup(group: group)
+                                    }
+                                }
                             } label: {
                                 Label("Delete", systemImage: "trash")
                                     .labelStyle(.iconOnly)
