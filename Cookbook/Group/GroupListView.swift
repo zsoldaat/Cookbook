@@ -22,6 +22,8 @@ struct GroupListView: View {
                 ForEach(groups) { group in
                     NavigationLink {
                         GroupView(group: group)
+                    } label: {
+                        GroupCell(group: group)
                             .swipeActions {
                                 Button(role: .destructive) {
                                     context.delete(group)
@@ -32,8 +34,6 @@ struct GroupListView: View {
                                 }
                                 .tint(.red)
                             }
-                    } label: {
-                        GroupCell(group: group)
                     }
                     
                 }

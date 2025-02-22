@@ -40,16 +40,8 @@ struct CreateEditRecipeView: View {
                                 return
                             }
                             context.insert(recipe)
-                            
                             try! context.save()
                             
-                            if recipe.isShared {
-                                Task {
-                                    for group in recipe.groups! {
-                                        try await dataController.updateRecipesForSharedGroup(group: group)
-                                    }
-                                }
-                            }
                             dismiss()
                         } label: {
                             Label("Done", systemImage: "return")

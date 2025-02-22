@@ -23,16 +23,7 @@ struct RecipeImageView: View {
         
         if let url = url {
             recipe.imageUrl = url
-            
             try! context.save()
-            
-            Task {
-                if recipe.isShared {
-                    for group in recipe.groups! {
-                        try await dataController.updateRecipesForSharedGroup(group: group)
-                    }
-                }
-            }
         }
     }
     
