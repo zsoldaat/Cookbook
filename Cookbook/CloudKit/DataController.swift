@@ -20,49 +20,36 @@ class DataController: ObservableObject {
     
     func addSharedGroupsToLocalContext() async {
         do {
-            let sharedGroups = try await fetchGroups(scope: .shared)
-            let localGroups = try localContainer!.mainContext.fetch(FetchDescriptor<RecipeGroup>())
+            let sharedGroups: [CKRecord] = try await fetchGroupRecords(scope: .shared)
+            let localGroups: [RecipeGroup] = try localContainer!.mainContext.fetch(FetchDescriptor<RecipeGroup>())
+            let localRecipes: [Recipe] = try localContainer!.mainContext.fetch(FetchDescriptor<Recipe>())
             
-            // Delete all shared groups from local
-            localGroups.forEach { group in
-                if group.isShared {
-                    localContainer!.mainContext.delete(group)
-                    
-                    group.recipes?.forEach { recipe in
-                        localContainer!.mainContext.delete(recipe)
+            try sharedGroups.forEach { sharedGroupRecord in
+                // Update local groups' recipes to match incoming shared groups
+                let id = UUID(uuidString: sharedGroupRecord["CD_id"] as! String)
+                
+                if let matchingLocalGroup = localGroups.first(where: {$0.id == id}) {
+                    let decoder = JSONDecoder()
+                    if let encodedData = sharedGroupRecord["CD_encodedRecipes"] as? Data {
+                        let incomingSharedRecipes = try decoder.decode([Recipe].self, from: encodedData)
+
+                        // Add new recipes to existing shared group that aren't already stored locally
+                        let newRecipes = incomingSharedRecipes.filter { sharedRecipe in
+                            return localRecipes.contains(where: { $0.id == sharedRecipe.id }) == false
+                        }
+                        matchingLocalGroup.recipes!.append(contentsOf: newRecipes)
+                        
+                        // Remove recipes from matching local group that have been removed from the shared group. (They stay locally, they're just not part of the group anymore)
+                        matchingLocalGroup.recipes!.removeAll(where: { localRecipe in
+                            return incomingSharedRecipes.contains(where: {$0.id == localRecipe.id}) == false
+                        })
                     }
+                } else {
+                    // Add new shared groups
+                    localContainer!.mainContext.insert(RecipeGroup(from: sharedGroupRecord))
                 }
             }
             
-            // Add them all back, with changes
-            sharedGroups.forEach { sharedGroup in
-                localContainer!.mainContext.insert(sharedGroup)
-            }
-            
-            // This code below tries to actually update the local groups based on the incoming shared groups, but is not working right now so just deleting everything might be easier, we'll see
-            
-//            sharedGroups.forEach { sharedGroup in
-//                let localGroupIds = localGroups.map{ $0.id.uuidString }
-//
-//                
-//                if localGroupIds.contains(sharedGroup.id.uuidString) {
-//                    // Update Recipes for shared groups that are already on the device
-//                    let localGroup = localGroups.first(where: { $0.id.uuidString == sharedGroup.id.uuidString })!
-//                    
-//                    localGroup.recipes = []
-//                    localGroup.recipes?.append(contentsOf: sharedGroup.recipes!)
-//                } else {
-//                    // Add groups (and their recipes) that don't exist on the device, mark the group and recipe as shared
-//                    print("Happening")
-//                    sharedGroup.isShared = true
-//                    sharedGroup.recipes!.forEach { recipe in
-//                        recipe.isShared = true
-//                    }
-//                    
-//                    localContainer!.mainContext.insert(sharedGroup)
-//                }
-//            }
-
             try localContainer!.mainContext.save()
             
         } catch {
@@ -70,8 +57,8 @@ class DataController: ObservableObject {
         }
     }
     
-    private func fetchGroups(scope: CKDatabase.Scope) async throws -> [RecipeGroup] {
-        var groups: [RecipeGroup] = []
+    private func fetchGroupRecords(scope: CKDatabase.Scope) async throws -> [CKRecord] {
+        var groups: [CKRecord] = []
         
         let zones = try await cloudContainer.database(with: scope).allRecordZones()
         
@@ -80,8 +67,7 @@ class DataController: ObservableObject {
             
             let groupsInZone = try groupResults.map {
                 let (_, record) = $0
-                let groupRecord = try record.get()
-                return RecipeGroup(from: groupRecord)
+                return try record.get()
             }
             
             groups.append(contentsOf: groupsInZone)
