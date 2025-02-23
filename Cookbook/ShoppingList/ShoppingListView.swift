@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ShoppingListView: View {
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.modelContext) var context
     
     @Query() var shoppingLists: [ShoppingList]
@@ -81,6 +82,8 @@ struct ShoppingListView: View {
                     }
                 }
                 .padding([.bottom, .horizontal])
+                .background(Color.gray.opacity(colorScheme == .dark ? 0 : 0.15))
+                
             }
             .alert("These units of these ingredients can't be added together.", isPresented: $errorShowing, actions: {})
             .alert(isPresented: $clearAlertShowing) {
@@ -95,17 +98,16 @@ struct ShoppingListView: View {
             }
             .navigationTitle("Shopping List")
             .toolbar {
-                if (!shoppingList.selections.isEmpty) {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button(role: .destructive) {
-                            shoppingList.removeById(ids: Array(shoppingList.selections))
-                            shoppingList.selections.removeAll()
-                        } label: {
-                            Label("Remove", systemImage: "xmark.circle")
-                                .labelStyle(.iconOnly)
-                        }
-                    }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(role: .destructive) {
+                        shoppingList.removeById(ids: Array(shoppingList.selections))
+                        shoppingList.selections.removeAll()
+                    } label: {
+                        Label("Remove", systemImage: "xmark.circle")
+                            .labelStyle(.iconOnly)
+                    }.disabled(shoppingList.selections.isEmpty)
                 }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         clearAlertShowing = true
@@ -137,19 +139,21 @@ struct ShoppingListView: View {
                             shoppingList.save(context: context)
                         }, keyboardIsActive: $keyboardIsActive)
                         
-                        Section(header: Text("Ingredients")) {
-                            ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
-                                IngredientCell(ingredient: ingredient)
-                                    .swipeActions {
-                                        Button(role: .destructive) {
-                                            shoppingList.deleteItem(item: ingredient)
-                                            try! context.save()
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                                .labelStyle(.iconOnly)
+                        if shoppingList.getItems().count > 0 {
+                            Section(header: Text("Ingredients")) {
+                                ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
+                                    IngredientCell(ingredient: ingredient)
+                                        .swipeActions {
+                                            Button(role: .destructive) {
+                                                shoppingList.deleteItem(item: ingredient)
+                                                try! context.save()
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                                    .labelStyle(.iconOnly)
+                                            }
+                                            .tint(.red)
                                         }
-                                        .tint(.red)
-                                    }
+                                }
                             }
                         }
                     }

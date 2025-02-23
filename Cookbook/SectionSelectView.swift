@@ -32,7 +32,7 @@ struct SectionSelectView: View {
             GroupListView()
                 .tabItem {
                     HStack {
-                        Image(systemName: "person.circle")
+                        Image(systemName: "person.2")
                         Text("Share")
                     }
                 }

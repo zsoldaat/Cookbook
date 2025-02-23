@@ -39,7 +39,7 @@ struct GroupView: View {
                                     }
                                 }
                             } label: {
-                                Label("Delete", systemImage: "trash")
+                                Label("Delete", systemImage: "xmark.circle")
                                     .labelStyle(.iconOnly)
                             }
                             .tint(.red)

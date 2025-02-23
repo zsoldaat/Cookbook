@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CardView<Content: View, ButtonContent: View>: View {
     
+    @Environment(\.colorScheme) var colorScheme
+    
     let title: String?
     let button: () -> ButtonContent?
     let content: () -> Content
@@ -37,7 +39,7 @@ struct CardView<Content: View, ButtonContent: View>: View {
                 content()
             }.padding()
         }
-        .background(Color.gray.opacity(0.15))
+        .background(colorScheme == .dark ? Color.gray.opacity(0.15) : Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 15))
     }
 }

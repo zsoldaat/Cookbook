@@ -70,6 +70,7 @@ struct RecipeView: View {
             }
             .padding(.horizontal, 5)
         }
+        .background(Color.gray.opacity(colorScheme == .dark ? 0 : 0.15))
         .fullScreenCover(isPresented: $editShowing, content: {
             @Bindable var recipe = recipe
             CreateEditRecipeView(recipe: recipe, isNewRecipe: false)
