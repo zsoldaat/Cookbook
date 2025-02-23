@@ -22,6 +22,9 @@ struct IngredientsCard: View {
     
     @State private var activeCardIndex: Int? = 0
     
+    @State private var ingredientText: String = ""
+    @State private var isIngredientTextEditing: Bool = false
+    
     var body: some View {
         @Bindable var shoppingList = shoppingLists.first!
         
@@ -123,6 +126,34 @@ struct IngredientsCard: View {
                         }
                         .id(1)
                     }
+                    
+                    CardView(title: "Instructions Editor", button: {
+                        Button {
+                            
+                            if isIngredientTextEditing {
+                                // Just need a valid url, will fix later
+                                let scraper = Scraper(url: URL(string: "www.google.com")!)
+                                
+                                let ingredientList: [String] = ingredientText.split(separator: "\n").map{String($0)}
+                                
+                                let ingredients = ingredientList.enumerated().map{ (index, ingredientString) in
+                                    return scraper.parseIngredientFromString(ingredient: ingredientString, index: index)
+                                }
+                                
+                                recipe.ingredients = ingredients
+                            }
+                            
+                            isIngredientTextEditing.toggle()
+                            
+                        } label: {
+                            Label("Edit", systemImage: isIngredientTextEditing ? "square.and.pencil.circle.fill" : "square.and.pencil.circle")
+                                .labelStyle(.iconOnly)
+                        }
+                    }) {
+                        TextField("", text: $ingredientText, axis: .vertical)
+                            .lineLimit(nil)
+                            .disabled(!isIngredientTextEditing)
+                    }.id(2)
                 }
                 .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
             }
@@ -133,6 +164,16 @@ struct IngredientsCard: View {
         .scrollPosition(id: $activeCardIndex)
         .scrollIndicators(.hidden)
         .alert("Ingredients Added", isPresented: $showAlert, actions: {})
+        .onAppear {
+            var totalString = ""
+            
+            for ingredient in recipe.ingredients!.sorted(by: {$0.index < $1.index}) {
+                let ingredientString = ingredient.getString()
+                totalString += ingredientString + "\n"
+            }
+            
+            ingredientText = totalString
+        }
         
         if recipe.ingredientStrings != nil {
             HStack {

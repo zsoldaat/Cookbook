@@ -138,7 +138,7 @@ struct Scraper {
             
             let ingredients = getListItemsForTitle(title: "Ingredients", headings: allHeadings)?.filter{!$0.isEmpty}
             
-            let ingredientObjects: [Ingredient]? = ingredients != nil ? ingredients!.map{ parseIngredient(ingredient: $0, index: (ingredients?.firstIndex(of: $0))!) } : nil
+            let ingredientObjects: [Ingredient]? = ingredients != nil ? ingredients!.map{ parseIngredientFromString(ingredient: $0, index: (ingredients?.firstIndex(of: $0))!) } : nil
             
             return RecipeData(name: name, instructions: instructions.first ?? "", ingredients: ingredientObjects, ingredientStrings: ingredients, imageUrls: imageUrls)
             
@@ -148,8 +148,7 @@ struct Scraper {
         }
     }
     
-    private func parseIngredient(ingredient: String, index: Int) -> Ingredient {
-        
+    func parseIngredientFromString(ingredient: String, index: Int) -> Ingredient {
         
         var remainingStringToParse = ingredient
         

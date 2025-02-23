@@ -76,6 +76,21 @@ final class Ingredient: Identifiable, Hashable, ObservableObject, Codable {
         
     }
     
+    func getString() -> String {
+        
+        var string: String = ""
+        
+        let quantityString = self.getQuantityString(displayUnit: unit, scaleFactor: 1)
+        if (quantityString != "") {string += quantityString + " "}
+        
+        let unitString = self.getUnitString(displayUnit: unit)
+        if (unitString != "") {string += unitString + " "}
+        
+        string += self.name
+        
+        return string
+    }
+    
     private func getQuantity(displayUnit: Unit, scaleFactor: Int) -> Double {
         
         if (unit == displayUnit) {return quantity * Double(scaleFactor)}
