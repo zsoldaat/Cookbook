@@ -18,7 +18,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var instructions: String = ""
     @Relationship(deleteRule: .cascade, inverse: \Ingredient.recipe)
     var ingredients: [Ingredient]? = []
-    var ingredientStrings: [String]?
     var link: String?
     var imageUrl: URL?
     var difficulty: String?
@@ -26,11 +25,10 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var rating: Rating?
     var isShared: Bool { groups!.map {$0.isShared}.contains(true) }
     
-    init(name: String, instructions: String, ingredients: [Ingredient], ingredientStrings: [String]? = nil) {
+    init(name: String, instructions: String, ingredients: [Ingredient]) {
         self.name = name
         self.instructions = instructions
         self.ingredients = ingredients
-        self.ingredientStrings = ingredientStrings
     }
     
     static var dateFormatter: DateFormatter {
@@ -46,7 +44,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     //Codable conformance
     
     enum CodingKeys: CodingKey {
-        case id, date, name, instructions, ingredients, ingredientStrings, link, imageUrl, difficulty, lastMadeDate, rating, ratingString, isShared
+        case id, date, name, instructions, ingredients, link, imageUrl, difficulty, lastMadeDate, rating, ratingString, isShared
     }
     
     init(from decoder: Decoder) throws {
@@ -56,7 +54,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         name = try container.decode(String.self, forKey: .name)
         instructions = try container.decode(String.self, forKey: .instructions)
         ingredients = try container.decode([Ingredient]?.self, forKey: .ingredients)
-        ingredientStrings = try container.decode([String]?.self, forKey: .ingredientStrings)
         link = try container.decode(String?.self, forKey: .link)
         imageUrl = try container.decode(URL?.self, forKey: .imageUrl)
     }
@@ -68,7 +65,6 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
         try container.encode(name, forKey: .name)
         try container.encode(instructions, forKey: .instructions)
         try container.encode(ingredients, forKey: .ingredients)
-        try container.encode(ingredientStrings, forKey: .ingredientStrings)
         try container.encode(link, forKey: .link)
         try container.encode(imageUrl, forKey: .imageUrl)
     }

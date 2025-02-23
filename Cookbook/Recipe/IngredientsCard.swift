@@ -116,50 +116,42 @@ struct IngredientsCard: View {
                     }
                     .id(0)
                     
-                    if let ingredientStrings = recipe.ingredientStrings {
-                        CardView(title: "Ingredients (text)") {
-                            ForEach(ingredientStrings, id: \.self) { ingredientString in
-                                Text(ingredientString)
-                            }
-                            
-                            Spacer()
-                        }
-                        .id(1)
-                    }
-                    
-                    CardView(title: "Instructions Editor", button: {
+                    CardView(title: "Ingredients", button: {
                         Button {
-                            
                             if isIngredientTextEditing {
-                                // Just need a valid url, will fix later
-                                let scraper = Scraper(url: URL(string: "www.google.com")!)
+                                let scraper = Scraper()
                                 
                                 let ingredientList: [String] = ingredientText.split(separator: "\n").map{String($0)}
                                 
-                                let ingredients = ingredientList.enumerated().map{ (index, ingredientString) in
+                                recipe.ingredients = ingredientList.enumerated().map{ (index, ingredientString) in
                                     return scraper.parseIngredientFromString(ingredient: ingredientString, index: index)
                                 }
-                                
-                                recipe.ingredients = ingredients
                             }
-                            
                             isIngredientTextEditing.toggle()
                             
                         } label: {
-                            Label("Edit", systemImage: isIngredientTextEditing ? "square.and.pencil.circle.fill" : "square.and.pencil.circle")
-                                .labelStyle(.iconOnly)
+                            Label(isIngredientTextEditing ? "Done" : "Edit", systemImage: isIngredientTextEditing ? "square.and.pencil.circle.fill" : "square.and.pencil.circle")
+                                .labelStyle(.titleOnly)
                         }
                     }) {
                         TextField("", text: $ingredientText, axis: .vertical)
                             .lineLimit(nil)
                             .disabled(!isIngredientTextEditing)
-                    }.id(2)
+                            
+                        
+                        Spacer()
+                    }
+                    .id(1)
+                    .background(Color.gray.opacity(isIngredientTextEditing ? 0.1 : 0))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(Color.accent, lineWidth: isIngredientTextEditing ? 2 : 0)
+                    )
                 }
                 .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
             }
             .scrollTargetLayout()
         }
-        .scrollDisabled(recipe.ingredientStrings == nil)
         .scrollTargetBehavior(.viewAligned)
         .scrollPosition(id: $activeCardIndex)
         .scrollIndicators(.hidden)
@@ -175,20 +167,18 @@ struct IngredientsCard: View {
             ingredientText = totalString
         }
         
-        if recipe.ingredientStrings != nil {
-            HStack {
-                Spacer()
-                ForEach(0...1, id: \.self) {id in
-                    Image(systemName: "circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 10)
-                        .padding(2)
-                        .foregroundStyle(.gray)
-                        .opacity(activeCardIndex == id ? 1 : 0.5)
-                }
-                Spacer()
+        HStack {
+            Spacer()
+            ForEach(0...1, id: \.self) {id in
+                Image(systemName: "circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 10)
+                    .padding(2)
+                    .foregroundStyle(.gray)
+                    .opacity(activeCardIndex == id ? 1 : 0.5)
             }
+            Spacer()
         }
     }
 }

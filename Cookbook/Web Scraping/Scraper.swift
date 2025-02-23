@@ -16,14 +16,12 @@ struct RecipeData {
     let name: String?
     let instructions: String?
     let ingredients: [Ingredient]?
-    let ingredientStrings: [String]?
     let imageUrls: [String]?
     
-    init(name: String?, instructions: String?, ingredients: [Ingredient]?, ingredientStrings: [String]? = nil, imageUrls: [String]?) {
+    init(name: String?, instructions: String?, ingredients: [Ingredient]?, imageUrls: [String]?) {
         self.name = name
         self.instructions = instructions
         self.ingredients = ingredients
-        self.ingredientStrings = ingredientStrings
         self.imageUrls = imageUrls
     }
 }
@@ -95,9 +93,9 @@ func findUnit(in string: String) -> Unit? {
 
 struct Scraper {
     
-    let url: URL
+    let url: URL?
     
-    init (url: URL) {
+    init(url: URL? = nil) {
         self.url = url
     }
     
@@ -140,7 +138,7 @@ struct Scraper {
             
             let ingredientObjects: [Ingredient]? = ingredients != nil ? ingredients!.map{ parseIngredientFromString(ingredient: $0, index: (ingredients?.firstIndex(of: $0))!) } : nil
             
-            return RecipeData(name: name, instructions: instructions.first ?? "", ingredients: ingredientObjects, ingredientStrings: ingredients, imageUrls: imageUrls)
+            return RecipeData(name: name, instructions: instructions.first ?? "", ingredients: ingredientObjects, imageUrls: imageUrls)
             
         } catch {
             print("Didn't work")
@@ -282,7 +280,12 @@ struct Scraper {
     
     private func fetchUrl() async -> String? {
         do {
-            return try String(contentsOf: url, encoding: .utf8)
+            
+            if let url = url {
+                return try String(contentsOf: url, encoding: .utf8)
+            } else {
+                return nil
+            }
         } catch {
             return nil
         }
