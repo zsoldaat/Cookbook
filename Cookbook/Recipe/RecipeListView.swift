@@ -11,11 +11,12 @@ import SwiftData
 struct RecipeListView: View {
     
     @Environment(\.modelContext) var context
+    @EnvironmentObject var dataController: DataController
     
     @State private var isShowingItemSheet = false
     @State private var recipeToEdit: Recipe?
     @State private var addRecipeShowing: Bool = false
-    @State private var removeSharedAlertShowing: Bool = false
+    @State private var refreshCompleteAlertShowing: Bool = false
     
     @State private var searchValue: String = ""
     @State private var ratingFilterValue: Rating = .none
@@ -117,6 +118,18 @@ struct RecipeListView: View {
                     }
                 }
                 
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        Task {
+                            await dataController.addSharedGroupsToLocalContext()
+                        }
+                        refreshCompleteAlertShowing = true
+                    } label: {
+                        Label("Refresh Recipes", systemImage: "arrow.clockwise")
+                            .labelStyle(.iconOnly)
+                    }
+                }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         addRecipeShowing = true
@@ -132,7 +145,7 @@ struct RecipeListView: View {
             }
         }
         .searchable(text: $searchValue, prompt: "Search...")
-        .alert("You cannot delete a recipe that is part of a shared group.", isPresented: $removeSharedAlertShowing, actions: {})
+        .alert("Shared groups are synced.", isPresented: $refreshCompleteAlertShowing, actions: {})
         .sheet(isPresented: $filterViewShowing) {
             FilterView(searchValue: $searchValue, ratingFilterValue: $ratingFilterValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate)
         }
