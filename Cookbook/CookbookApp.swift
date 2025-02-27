@@ -12,20 +12,20 @@ import CoreData
 class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, configurationForConnecting
-        connectingSceneSession: UISceneSession,
-        options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-
+                     connectingSceneSession: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        
         // Create a scene configuration object for the
         // specified session role.
         let config = UISceneConfiguration(name: nil,
-            sessionRole: connectingSceneSession.role)
-
+                                          sessionRole: connectingSceneSession.role)
+        
         // Set the configuration's delegate class to the
         
         // scene delegate that implements the share
         // acceptance method.
         config.delegateClass = SceneDelegate.self
-
+        
         return config
     }
     
@@ -44,14 +44,15 @@ struct CookbookApp: App {
             container.mainContext.insert(ShoppingList())
         }
         
-//        container.deleteAllData()
-                
+        //        container.deleteAllData()
+        
         return container
     }()
     
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     @StateObject var selectedTab: SelectedTab = SelectedTab(selectedTabTag: 0)
     @StateObject var dataController: DataController = DataController()
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some Scene {
         WindowGroup {
@@ -59,12 +60,17 @@ struct CookbookApp: App {
                 .modelContainer(localContainer)
                 .environmentObject(selectedTab)
                 .environmentObject(dataController)
-                .task {
-                    dataController.localContainer = localContainer
-                    await dataController.addSharedGroupsToLocalContext()
-//                    let scraper = Scraper(url: URL(string: "https://www.halfbakedharvest.com/4-ingredient-chocolate-mousse/#wprm-recipe-container-87338"))
-                    
-//                    let data = await scraper.getRecipeData()
+                .onChange(of: scenePhase) {(oldValue, newValue) in
+                    if newValue == .active {
+                        Task {
+                            dataController.localContainer = localContainer
+                            await dataController.addSharedGroupsToLocalContext()
+                            
+                            let scraper = Scraper(url: URL(string: "https://www.halfbakedharvest.com/4-ingredient-chocolate-mousse/#wprm-recipe-container-87338"))
+                            
+                            let data = await scraper.getRecipeData()
+                        }
+                    }
                 }
         }
     }
