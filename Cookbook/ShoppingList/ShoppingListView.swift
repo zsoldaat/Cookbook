@@ -80,8 +80,9 @@ struct ShoppingListView: View {
                         
                         Spacer()
                     }
+                    .scrollIndicators(.hidden)
                 }
-                .padding([.bottom, .horizontal])
+                .padding([.bottom, .horizontal], 5)
                 .background(Color.gray.opacity(colorScheme == .dark ? 0 : 0.15))
                 
             }
