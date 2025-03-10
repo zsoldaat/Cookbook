@@ -155,7 +155,9 @@ struct IngredientsCard: View {
         .scrollTargetBehavior(.viewAligned)
         .scrollPosition(id: $activeCardIndex)
         .scrollIndicators(.hidden)
-        .alert("Ingredients Added", isPresented: $showAlert, actions: {})
+        .overlay(content: {
+            PrettyAlert(isShowing: $showAlert, text: "Ingredients Added", icon: "list.buller")
+        })
         .onAppear {
             var totalString = ""
             

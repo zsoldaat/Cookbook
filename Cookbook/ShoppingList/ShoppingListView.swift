@@ -86,7 +86,9 @@ struct ShoppingListView: View {
                 .background(Color.gray.opacity(colorScheme == .dark ? 0 : 0.15))
                 
             }
-            .alert("These units of these ingredients can't be added together.", isPresented: $errorShowing, actions: {})
+            .overlay(content: {
+                PrettyAlert(isShowing: $errorShowing, text: "These units of these ingredients can't be added together.", icon: "x.square")
+            })
             .alert(isPresented: $clearAlertShowing) {
                 Alert(
                     title: Text("Are you sure you want to clear your grocery list?"),
