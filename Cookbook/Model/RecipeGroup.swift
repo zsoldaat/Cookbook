@@ -10,6 +10,11 @@ import Foundation
 import SwiftData
 import CloudKit
 
+struct ShareParticipant: Codable {
+    let firstName: String
+    let lastName: String
+}
+
 @Model
 final class RecipeGroup: Identifiable, Hashable, ObservableObject, Codable {
     var id = UUID()
@@ -17,6 +22,7 @@ final class RecipeGroup: Identifiable, Hashable, ObservableObject, Codable {
     @Relationship(deleteRule: .nullify, inverse: \Recipe.groups) var recipes: [Recipe]? = []
     var encodedRecipes: Data?
     var isShared: Bool = false
+    var shareParticipants: [ShareParticipant] = []
     
     init(name: String) {
         self.name = name

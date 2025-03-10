@@ -55,7 +55,9 @@ struct CreateEditRecipeView: View {
                         ingredientToEdit = nil
                     }
                 })
-                .alert("Recipes must have a name.", isPresented: $alertShowing, actions: {})
+                .overlay(content: {
+                    PrettyAlert(isShowing: $alertShowing, text: "Recipes must have a name.", icon: "character.textbox")
+                })
                 .navigationTitle(isNewRecipe ? "New Recipe" : "Edit \"\(recipe.name)\"")
                 .scrollDismissesKeyboard(.immediately)
         }
