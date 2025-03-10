@@ -19,6 +19,21 @@ struct AddToGroupView: View {
     
     var body: some View {
         NavigationStack {
+            
+            if (groups.isEmpty) {
+                VStack {
+                    Text("There are no groups, add one?")
+                    NavigationLink {
+                        @Bindable var recipeGroup: RecipeGroup = RecipeGroup(name: "")
+                        CreateEditGroupView(recipeGroup: recipeGroup, isNewGroup: true)
+                    } label: {
+                        Label("Add", systemImage: "plus")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    .padding()
+                }.padding()
+            }
+            
             List {
                 ForEach(groups) { group in
                     HStack {

@@ -29,6 +29,8 @@ struct GroupCell: View {
             VStack(alignment: .leading) {
                 Text(group.name).font(.headline)
                 
+                Text("\(group.shareParticipants.map{$0.firstName}.joined(separator: ","))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
+                
                 HStack {
                     if (group.isShared) {
                         Image(systemName: "person.circle")

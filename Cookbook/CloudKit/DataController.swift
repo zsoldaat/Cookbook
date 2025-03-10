@@ -24,7 +24,23 @@ class DataController: ObservableObject {
             let localGroups: [RecipeGroup] = try localContainer!.mainContext.fetch(FetchDescriptor<RecipeGroup>())
             let localRecipes: [Recipe] = try localContainer!.mainContext.fetch(FetchDescriptor<Recipe>())
             
-            try sharedGroups.forEach { sharedGroupRecord in
+            for sharedGroupRecord in sharedGroups {
+                
+                let share: CKShare = try await cloudContainer.sharedCloudDatabase.record(for: sharedGroupRecord.share!.recordID) as! CKShare
+                
+                let currentUserId = share.currentUserParticipant?.participantID
+                
+                // Find other share participants
+                let shareParticipants: [ShareParticipant] = share.participants.filter{$0.participantID != currentUserId ?? nil}.compactMap{ participant in
+                    let nameComponents = participant.userIdentity.nameComponents
+                    
+                    if let nameComponents = nameComponents {
+                        return ShareParticipant(firstName: nameComponents.givenName ?? "", lastName: nameComponents.familyName ?? "")
+                    } else {
+                        return nil
+                    }
+                }
+                
                 // Update local groups' recipes to match incoming shared groups
                 let id = UUID(uuidString: sharedGroupRecord["CD_id"] as! String)
                 
@@ -43,10 +59,16 @@ class DataController: ObservableObject {
                         matchingLocalGroup.recipes!.removeAll(where: { localRecipe in
                             return incomingSharedRecipes.contains(where: {$0.id == localRecipe.id}) == false
                         })
+                        
+                        // Update share participants
+                        matchingLocalGroup.shareParticipants = shareParticipants
                     }
                 } else {
                     // Add new shared groups
-                    localContainer!.mainContext.insert(RecipeGroup(from: sharedGroupRecord))
+                    let newGroup = RecipeGroup(from: sharedGroupRecord)
+                    newGroup.shareParticipants = shareParticipants
+                    
+                    localContainer!.mainContext.insert(newGroup)
                 }
             }
             
@@ -55,6 +77,25 @@ class DataController: ObservableObject {
         } catch {
             print("Error fetching shared recipes.")
         }
+    }
+    
+    private func fetchShares(scope: CKDatabase.Scope) async throws -> [CKRecord] {
+        var groups: [CKRecord] = []
+        
+        let zones = try await cloudContainer.database(with: scope).allRecordZones()
+        
+        for zone in zones {
+            let groupResults = try await cloudContainer.database(with: scope).records(matching: CKQuery(recordType: "CD_RecipeGroup", predicate: NSPredicate(value: true)), inZoneWith: zone.zoneID).matchResults
+            
+            let groupsInZone = try groupResults.map {
+                let (_, record) = $0
+                return try record.get()
+            }
+            
+            groups.append(contentsOf: groupsInZone)
+        }
+        
+        return groups
     }
     
     private func fetchGroupRecords(scope: CKDatabase.Scope) async throws -> [CKRecord] {
