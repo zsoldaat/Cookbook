@@ -13,6 +13,7 @@ struct ListButton: View {
     
     var text: String
     var imageSystemName: String?
+    let disabled: Bool
     var onClick: () -> Void
     
     var body: some View {
@@ -40,6 +41,7 @@ struct ListButton: View {
         .cornerRadius(10.0)
         .contentShape(Rectangle())
         .listRowInsets(EdgeInsets())
+        .disabled(disabled)
     }
 }
 

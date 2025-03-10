@@ -21,6 +21,32 @@ struct CreateEditRecipeView: View {
     @State private var linkFormShowing: Bool = true
     @State private var alertShowing: Bool = false
     
+    func fetchRecipeData() async {
+        guard let link = recipe.link else {return}
+        
+        if let url = URL(string: link) {
+            let scraper = Scraper(url: url)
+            
+            guard let recipeData = await scraper.getRecipeData() else {return}
+            
+            if let name = recipeData.name {
+                recipe.name = name
+            }
+            
+            if let instructions = recipeData.instructions {
+                recipe.instructions = instructions
+            }
+            
+            if let imageUrl = recipeData.imageUrls?.first {
+                recipe.imageUrl = URL(string: imageUrl)
+            }
+            
+            if let ingredients = recipeData.ingredients {
+                recipe.ingredients = ingredients
+            }
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             form
@@ -110,37 +136,21 @@ struct CreateEditRecipeView: View {
                             .submitLabel(.done)
                             .onSubmit {
                                 Task {
-                                    guard let link = recipe.link else {return}
-                                    
-                                    if let url = URL(string: link) {
-                                        let scraper = Scraper(url: url)
-                                        
-                                        guard let recipeData = await scraper.getRecipeData() else {return}
-                                        
-                                        if let name = recipeData.name {
-                                            recipe.name = name
-                                        }
-                                        
-                                        if let instructions = recipeData.instructions {
-                                            recipe.instructions = instructions
-                                        }
-                                        
-                                        if let imageUrl = recipeData.imageUrls?.first {
-                                            recipe.imageUrl = URL(string: imageUrl)
-                                        }
-                                        
-                                        if let ingredients = recipeData.ingredients {
-                                            recipe.ingredients = ingredients
-                                        }
-                                        
-                                        linkFormShowing = false
-                                    }
+                                    await fetchRecipeData()
+                                    linkFormShowing = false
                                 }
                             }
                     } header: {
                         Text("Link")
                     }  footer: {
                         Text("Cookbook will pull recipe data from the link provided")
+                    }
+                    
+                    ListButton(text: "Search", imageSystemName: "text.page.badge.magnifyingglass", disabled: recipe.link?.isEmpty == nil) {
+                        Task {
+                            await fetchRecipeData()
+                            linkFormShowing = false
+                        }
                     }
                 }
             } else {
@@ -158,7 +168,7 @@ struct CreateEditRecipeView: View {
                         Text("Instructions")
                     }
                     
-                    ListButton(text: "Add Ingredients", imageSystemName: "plus") {
+                    ListButton(text: "Add Ingredients", imageSystemName: "plus", disabled: false) {
                         ingredientToEdit = Ingredient(name: "", quantityWhole: 1, quantityFraction: 0, unit: .item, index: recipe.getNextIngredientIndex())
                     }
                     
