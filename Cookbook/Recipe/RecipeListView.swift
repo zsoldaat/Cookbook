@@ -16,7 +16,6 @@ struct RecipeListView: View {
     @State private var isShowingItemSheet = false
     @State private var recipeToEdit: Recipe?
     @State private var addRecipeShowing: Bool = false
-    @State private var refreshCompleteAlertShowing: Bool = false
     
     @State private var searchValue: String = ""
     @State private var ratingFilterValue: Rating = .none
@@ -118,18 +117,6 @@ struct RecipeListView: View {
                     }
                 }
                 
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        Task {
-                            await dataController.addSharedGroupsToLocalContext()
-                        }
-                        refreshCompleteAlertShowing = true
-                    } label: {
-                        Label("Refresh Recipes", systemImage: "arrow.clockwise")
-                            .labelStyle(.iconOnly)
-                    }
-                }
-                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         addRecipeShowing = true
@@ -139,13 +126,17 @@ struct RecipeListView: View {
                     }
                 }
             }
+            .refreshable {
+                Task {
+                    await dataController.addSharedGroupsToLocalContext()
+                }
+            }
             .fullScreenCover(isPresented: $addRecipeShowing) {
                 @Bindable var recipe: Recipe = Recipe(name: "", instructions: "", ingredients: [])
                 CreateEditRecipeView(recipe: recipe, isNewRecipe: true)
             }
         }
         .searchable(text: $searchValue, prompt: "Search...")
-        .alert("Shared groups are synced.", isPresented: $refreshCompleteAlertShowing, actions: {})
         .sheet(isPresented: $filterViewShowing) {
             FilterView(searchValue: $searchValue, ratingFilterValue: $ratingFilterValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate)
         }
