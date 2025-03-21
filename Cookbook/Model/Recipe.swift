@@ -9,6 +9,10 @@ import Foundation
 import SwiftData
 import CloudKit
 
+struct Tag: Hashable, Codable {
+    var name: String
+}
+
 @Model
 final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var id = UUID()
@@ -21,8 +25,9 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var link: String?
     var imageUrl: URL?
     var difficulty: String?
+    var notes: String?
+    var tags: [Tag]?
     var lastMadeDate: Date?
-    var rating: Rating?
     var isShared: Bool { groups!.map {$0.isShared}.contains(true) }
     
     init(name: String, instructions: String, ingredients: [Ingredient]) {
@@ -44,7 +49,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     //Codable conformance
     
     enum CodingKeys: CodingKey {
-        case id, date, name, instructions, ingredients, link, imageUrl, difficulty, lastMadeDate, rating, ratingString, isShared
+        case id, date, name, instructions, ingredients, link, imageUrl, difficulty, lastMadeDate, isShared
     }
     
     init(from decoder: Decoder) throws {

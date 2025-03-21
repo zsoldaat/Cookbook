@@ -12,7 +12,6 @@ struct FilterView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @Binding var searchValue: String
-    @Binding var ratingFilterValue: Rating
     @Binding var difficultyFilterValue: String
     @Binding var dateFilterViewShowing: Bool
     @Binding var startDate: Date
@@ -31,13 +30,6 @@ struct FilterView: View {
             
             Form {
                 Section {
-                    Picker(selection: $ratingFilterValue) {
-                        ForEach(Rating.allCases) { rating in
-                            Text(rating.emoji()).tag(rating)
-                        }
-                    } label: {
-                        Label("Rating:", systemImage: "star.leadinghalf.filled")
-                    }
                     
                     Picker(selection: $difficultyFilterValue) {
                         ForEach(["", "Easy", "Medium", "Hard"], id: \.self) { difficulty in
@@ -83,7 +75,6 @@ struct FilterView: View {
             }
             
             Button {
-                ratingFilterValue = .none
                 difficultyFilterValue = ""
                 startDate = Date()
                 endDate = Date()
@@ -92,7 +83,7 @@ struct FilterView: View {
                 Label("Reset Filters", systemImage: "arrowshape.turn.up.backward")
             }
             .buttonStyle(.bordered)
-            .disabled(ratingFilterValue == .none && difficultyFilterValue.isEmpty && Calendar.current.isDateInToday(startDate) && Calendar.current.isDateInToday(endDate) && !dateFilterViewShowing)
+            .disabled(difficultyFilterValue.isEmpty && Calendar.current.isDateInToday(startDate) && Calendar.current.isDateInToday(endDate) && !dateFilterViewShowing)
         }
     }
 }

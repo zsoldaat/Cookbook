@@ -18,7 +18,6 @@ struct RecipeListView: View {
     @State private var addRecipeShowing: Bool = false
     
     @State private var searchValue: String = ""
-    @State private var ratingFilterValue: Rating = .none
     @State private var difficultyFilterValue: String = ""
     @State private var filterViewShowing: Bool = false
     @State private var dateFilterViewShowing: Bool = false
@@ -41,12 +40,6 @@ struct RecipeListView: View {
             }
             
             if (!recipe.name.lowercased().contains(searchValue.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())) {
-                shouldFilter = false
-            }
-        }
-        
-        if (ratingFilterValue != .none) {
-            if (recipe.rating != ratingFilterValue) {
                 shouldFilter = false
             }
         }
@@ -138,7 +131,7 @@ struct RecipeListView: View {
         }
         .searchable(text: $searchValue, prompt: "Search...")
         .sheet(isPresented: $filterViewShowing) {
-            FilterView(searchValue: $searchValue, ratingFilterValue: $ratingFilterValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate)
+            FilterView(searchValue: $searchValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate)
         }
     }
     

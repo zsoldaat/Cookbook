@@ -44,15 +44,6 @@ struct RecipeCell: View {
                             .foregroundStyle(.accent)
                     }
                     
-                    if let ratingImage = recipe.rating?.image() {
-                        ChipView {
-                            Image(uiImage: ratingImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 30)
-                        }
-                    }
-                    
                     if let difficulty = recipe.difficulty {
                         ChipView {
                             Text(difficulty)
