@@ -25,6 +25,8 @@ struct IngredientsCard: View {
     @State private var ingredientText: String = ""
     @State private var isIngredientTextEditing: Bool = false
     
+    @FocusState private var textFieldFocused: Bool
+    
     var body: some View {
         @Bindable var shoppingList = shoppingLists.first!
         
@@ -128,6 +130,7 @@ struct IngredientsCard: View {
                                 }
                             }
                             isIngredientTextEditing.toggle()
+                            textFieldFocused.toggle()
                             
                         } label: {
                             Label(isIngredientTextEditing ? "Done" : "Edit", systemImage: isIngredientTextEditing ? "square.and.pencil.circle.fill" : "square.and.pencil.circle")
@@ -137,6 +140,7 @@ struct IngredientsCard: View {
                         TextField("", text: $ingredientText, axis: .vertical)
                             .lineLimit(nil)
                             .disabled(!isIngredientTextEditing)
+                            .focused($textFieldFocused)
                             
                         
                         Spacer()

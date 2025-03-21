@@ -12,10 +12,13 @@ struct NotesView: View {
     let recipe: Recipe
     @State private var editable: Bool = false
     
+    @FocusState var textFieldFocused: Bool
+    
     var body: some View {
         CardView(title: "Notes", button: {
             Button{
                 editable.toggle()
+                textFieldFocused.toggle()
             } label: {
                 Label( editable ? "Done" : "Edit", systemImage: "square.and.pencil")
                     .labelStyle(.titleOnly)
@@ -30,6 +33,7 @@ struct NotesView: View {
             TextField("", text: notesBinding, axis: .vertical)
                 .lineLimit(5...)
                 .disabled(!editable)
+                .focused($textFieldFocused)
             
             Spacer()
         }
