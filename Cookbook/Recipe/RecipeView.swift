@@ -35,10 +35,8 @@ struct RecipeView: View {
         ScrollView {
             RecipeImageView(recipe: recipe)
             
-            CardView(title: "Instructions") {
-                Text(recipe.instructions)
-            }
-            .padding(.horizontal, 5)
+            InstructionView(recipe: recipe)
+                .padding(.horizontal, 5)
             
             IngredientsCard(recipe: recipe)
                 .padding(.horizontal, 5)
