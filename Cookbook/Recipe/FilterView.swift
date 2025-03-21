@@ -12,7 +12,7 @@ struct FilterView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @Binding var searchValue: String
-    @Binding var difficultyFilterValue: String
+    @Binding var difficultyFilterValue: Float
     @Binding var dateFilterViewShowing: Bool
     @Binding var startDate: Date
     @Binding var endDate: Date
@@ -30,15 +30,9 @@ struct FilterView: View {
             
             Form {
                 Section {
+                    GradientSlider(value: $difficultyFilterValue)
                     
-                    Picker(selection: $difficultyFilterValue) {
-                        ForEach(["", "Easy", "Medium", "Hard"], id: \.self) { difficulty in
-                            Text(difficulty).tag(difficulty)
-                        }
-                    } label: {
-                        Label("Difficulty", systemImage: "chart.bar.xaxis.ascending")
-                    }
-                } header: {Text("Filters")}
+                } header: {Text("Difficulty")}
                 
                 Section {
                     
@@ -75,7 +69,7 @@ struct FilterView: View {
             }
             
             Button {
-                difficultyFilterValue = ""
+                difficultyFilterValue = 100
                 startDate = Date()
                 endDate = Date()
                 dateFilterViewShowing = false
@@ -83,7 +77,7 @@ struct FilterView: View {
                 Label("Reset Filters", systemImage: "arrowshape.turn.up.backward")
             }
             .buttonStyle(.bordered)
-            .disabled(difficultyFilterValue.isEmpty && Calendar.current.isDateInToday(startDate) && Calendar.current.isDateInToday(endDate) && !dateFilterViewShowing)
+            .disabled(difficultyFilterValue == 100 && Calendar.current.isDateInToday(startDate) && Calendar.current.isDateInToday(endDate) && !dateFilterViewShowing)
         }
     }
 }

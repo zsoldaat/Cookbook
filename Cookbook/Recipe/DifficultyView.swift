@@ -11,67 +11,18 @@ struct DifficultyView: View {
     
     let recipe: Recipe
     
+    @State var test = 0.0
+    
     var body: some View {
         CardView(title: "Difficulty") {
-            HStack {
-                Spacer()
-                ForEach(["Easy", "Medium", "Hard"], id: \.self) { difficulty in
-                    DiffultyItem(difficulty: difficulty, isSelected: recipe.difficulty == difficulty, onSelect: {recipe.difficulty = $0})
-                        .padding(.horizontal)
-                }
-                Spacer()
-            }
-        }
-    }
-}
-
-struct DiffultyItem: View {
-    
-    let difficulty: String
-    let isSelected: Bool
-    let onSelect: (String) -> Void
-    @State var opacity: Double = 0
-    
-    func emojiForDifficulty(_ difficulty: String) -> String {
-        switch difficulty {
-        case "Easy":
-            return "🟢"
-        case "Medium":
-            return "🟡"
-        case "Hard":
-            return "🔴"
-        default:
-            return " "
-        }
-    }
-    
-    var body: some View {
-        if let image = emojiForDifficulty(difficulty).emojiToImage() {
-            Button {
-                onSelect(difficulty)
-            } label: {
-                ZStack {
-                    Circle()
-                        .fill(.gray)
-                        .opacity(opacity)
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40)
-                        
-                }
-                .scaledToFit()
-                .frame(width: 50)
-                .onAppear {
-                    opacity = isSelected ? 1 : 0
-                }
-                .onChange(of: isSelected) { oldValue, newValue in
-                    withAnimation {
-                        opacity = newValue ? 1 : 0
-                    }
-                }
-                .sensoryFeedback(.selection, trigger: isSelected)
-            }
+            
+            let difficultyBinding = Binding<Float>(get: {
+                recipe.difficulty ?? 0
+            }, set: {
+                recipe.difficulty = $0
+            })
+            
+            GradientSlider(value: difficultyBinding)
         }
     }
 }

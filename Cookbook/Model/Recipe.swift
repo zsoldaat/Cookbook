@@ -25,7 +25,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var ingredients: [Ingredient]? = []
     var link: String?
     var imageUrl: URL?
-    var difficulty: String?
+    var difficulty: Float?
     var notes: String?
     var tags: [Tag]?
     var lastMadeDate: Date?
@@ -50,7 +50,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     //Codable conformance
     
     enum CodingKeys: CodingKey {
-        case id, date, name, instructions, ingredients, link, imageUrl, difficulty, lastMadeDate, isShared
+        case id, date, name, instructions, ingredients, link, imageUrl
     }
     
     init(from decoder: Decoder) throws {

@@ -43,13 +43,6 @@ struct RecipeCell: View {
                             .frame(width: 15)
                             .foregroundStyle(.accent)
                     }
-                    
-                    if let difficulty = recipe.difficulty {
-                        ChipView {
-                            Text(difficulty)
-                                .lineLimit(1)
-                        }
-                    }
                 }
             }
         }

@@ -18,7 +18,7 @@ struct RecipeListView: View {
     @State private var addRecipeShowing: Bool = false
     
     @State private var searchValue: String = ""
-    @State private var difficultyFilterValue: String = ""
+    @State private var difficultyFilterValue: Float = 100
     @State private var filterViewShowing: Bool = false
     @State private var dateFilterViewShowing: Bool = false
     @State private var startDate: Date = Date()
@@ -44,9 +44,12 @@ struct RecipeListView: View {
             }
         }
         
-        if (!difficultyFilterValue.isEmpty) {
-            if (recipe.difficulty != difficultyFilterValue) {
-                shouldFilter = false
+        if (difficultyFilterValue < 100) {
+            
+            if let recipeDifficulty = recipe.difficulty {
+                if (recipeDifficulty > difficultyFilterValue) {
+                    shouldFilter = false
+                }
             }
         }
         
