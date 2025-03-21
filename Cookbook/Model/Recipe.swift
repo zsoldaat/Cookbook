@@ -27,7 +27,7 @@ final class Recipe: Identifiable, Hashable, ObservableObject, Codable {
     var imageUrl: URL?
     var difficulty: Float?
     var notes: String?
-    var tags: [Tag]?
+    var tags: [Tag]? = []
     var lastMadeDate: Date?
     var isShared: Bool { groups!.map {$0.isShared}.contains(true) }
     

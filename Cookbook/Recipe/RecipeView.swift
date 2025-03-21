@@ -44,6 +44,9 @@ struct RecipeView: View {
             DifficultyView(recipe: recipe)
                 .padding(.horizontal, 5)
             
+            TagsView(recipe: recipe)
+                .padding(.horizontal, 5)
+            
             NotesView(recipe: recipe)
                 .padding(.horizontal, 5)
             
