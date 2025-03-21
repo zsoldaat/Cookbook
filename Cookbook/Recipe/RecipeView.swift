@@ -46,6 +46,9 @@ struct RecipeView: View {
             DifficultyView(recipe: recipe)
                 .padding(.horizontal, 5)
             
+            NotesView(recipe: recipe)
+                .padding(.horizontal, 5)
+            
             CardView(title: "Details") {
                 VStack(alignment: .leading) {
                     if let lastMadeDate = recipe.lastMadeDate {

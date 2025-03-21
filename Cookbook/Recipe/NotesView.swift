@@ -8,11 +8,35 @@
 import SwiftUI
 
 struct NotesView: View {
+    
+    let recipe: Recipe
+    @State private var editable: Bool = false
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        CardView(title: "Notes", button: {
+            Button{
+                editable.toggle()
+            } label: {
+                Label( editable ? "Done" : "Edit", systemImage: "square.and.pencil")
+                    .labelStyle(.titleOnly)
+            }
+        }) {
+            let notesBinding = Binding<String>(get: {
+                recipe.notes ?? ""
+            }, set: {
+                recipe.notes = $0
+            })
+            
+            TextField("", text: notesBinding, axis: .vertical)
+                .lineLimit(5...)
+                .disabled(!editable)
+            
+            Spacer()
+        }
+        .background(Color.gray.opacity(editable ? 0.1 : 0))
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color.accent, lineWidth: editable ? 2 : 0)
+        )
     }
-}
-
-#Preview {
-    NotesView()
 }

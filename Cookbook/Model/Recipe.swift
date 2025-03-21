@@ -9,7 +9,8 @@ import Foundation
 import SwiftData
 import CloudKit
 
-struct Tag: Hashable, Codable {
+struct Tag: Hashable, Codable, Identifiable {
+    var id = UUID()
     var name: String
 }
 
