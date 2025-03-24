@@ -17,9 +17,11 @@ struct RecipeListView: View {
     @State private var recipeToEdit: Recipe?
     @State private var addRecipeShowing: Bool = false
     
+    @State private var filterViewShowing: Bool = false
+    
     @State private var searchValue: String = ""
     @State private var difficultyFilterValue: Float = 100
-    @State private var filterViewShowing: Bool = false
+    @State private var selectedTags: Set<Tag> = []
     @State private var dateFilterViewShowing: Bool = false
     @State private var startDate: Date = Date()
     @State private var endDate: Date = Date()
@@ -50,6 +52,16 @@ struct RecipeListView: View {
                 if (recipeDifficulty > difficultyFilterValue) {
                     shouldFilter = false
                 }
+            }
+        }
+        
+        if (selectedTags.count > 0) {
+            
+            let recipeTagIds = recipe.tags!.map{$0.id}
+            let selectedTagIds = selectedTags.map{$0.id}
+            
+            if recipeTagIds.filter({selectedTagIds.contains($0)}).count == 0 {
+                shouldFilter = false
             }
         }
         
@@ -134,7 +146,7 @@ struct RecipeListView: View {
         }
         .searchable(text: $searchValue, prompt: "Search...")
         .sheet(isPresented: $filterViewShowing) {
-            FilterView(searchValue: $searchValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate)
+            FilterView(searchValue: $searchValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate, selectedTags: $selectedTags)
         }
     }
     
