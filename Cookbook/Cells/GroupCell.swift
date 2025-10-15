@@ -16,14 +16,17 @@ struct GroupCell: View {
     var body: some View {
         
         HStack(spacing: 10) {
-            AsyncImage(url: group.recipes!.first?.imageUrl) { image in
-                image.resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: imageSize, height: imageSize, alignment: .center)
-                    .clipped()
-            } placeholder: {
-                Color.gray.frame(width: imageSize, height: imageSize)
+            
+            ZStack {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill({
+                        deterministicColor(for: group.name)
+                    }())
+                Text(group.name.first!.uppercased())
+                    .font(.system(size: 50, weight: .regular))
+                    .foregroundStyle(.white)
             }
+            .frame(width: imageSize, height: imageSize)
             .clipShape(RoundedRectangle(cornerRadius: 15))
             
             VStack(alignment: .leading) {
@@ -42,4 +45,23 @@ struct GroupCell: View {
             }
         }
     }
+}
+
+
+// MARK: - Deterministic Color from String
+
+private func deterministicColor(for string: String, saturation: Double = 0.6, brightness: Double = 0.9) -> Color {
+    // FNV-1a 64-bit hash for stability across launches/devices
+    let fnvOffsetBasis: UInt64 = 0xcbf29ce484222325
+    let fnvPrime: UInt64 = 0x100000001b3
+
+    var hash: UInt64 = fnvOffsetBasis
+    for byte in string.utf8 {
+        hash ^= UInt64(byte)
+        hash &*= fnvPrime
+    }
+
+    // Map hash to a hue in [0, 1)
+    let hue = Double(hash % 360) / 360.0
+    return Color(hue: hue, saturation: saturation, brightness: brightness)
 }
