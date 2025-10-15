@@ -11,6 +11,7 @@ import SwiftData
 struct GroupListView: View {
     
     @Environment(\.modelContext) var context
+    @EnvironmentObject var dataController: DataController
     
     @Query var groups: [RecipeGroup]
     
@@ -28,6 +29,12 @@ struct GroupListView: View {
                                 Button(role: .destructive) {
                                     context.delete(group)
                                     try! context.save()
+                                    
+                                    Task {
+                                        if group.isShared {
+                                            try! await dataController.deleteGroupShare(group: group)
+                                        }
+                                    }
                                 } label: {
                                     Label("Delete", systemImage: "trash")
                                         .labelStyle(.iconOnly)

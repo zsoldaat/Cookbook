@@ -68,7 +68,7 @@ struct IngredientsCard: View {
                                     recipe.lastMadeDate = Date()
                                     showAlert = true
                                 } label: {
-                                    Label("Add to Grocery List", systemImage: "text.badge.plus")
+                                    Label("Add to Shopping List", systemImage: "text.badge.plus")
                                         .labelStyle(.iconOnly)
                                 }
                                 .disabled(selections.isEmpty)
@@ -160,7 +160,7 @@ struct IngredientsCard: View {
         .scrollPosition(id: $activeCardIndex)
         .scrollIndicators(.hidden)
         .overlay(content: {
-            PrettyAlert(isShowing: $showAlert, text: "Ingredients Added", icon: "list.buller")
+            PrettyAlert(isShowing: $showAlert, text: "Ingredients Added", icon: "list.bullet")
         })
         .onAppear {
             var totalString = ""

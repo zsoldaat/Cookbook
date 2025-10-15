@@ -30,7 +30,7 @@ struct RecipeCell: View {
                 Text(recipe.name).font(.headline)
 
                 if let lastMadeDate = recipe.lastMadeDate {
-                    Text("Last made on \(Recipe.dateFormatter.string(from: lastMadeDate))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
+                    Text("Made on \(Recipe.dateFormatter.string(from: lastMadeDate))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
                 } else {
                     Text("Added \(Recipe.dateFormatter.string(from: recipe.date))").lineLimit(1).font(.subheadline).foregroundStyle(.secondary, .secondary)
                 }

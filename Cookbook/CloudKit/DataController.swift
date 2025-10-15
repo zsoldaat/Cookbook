@@ -169,16 +169,32 @@ class DataController: ObservableObject {
         return nil
     }
     
+    func deleteGroupShare(group: RecipeGroup) async throws {
+        if group.isShared == false { return }
+        
+        let shareReference = try await fetchRecordForGroup(group: group, scope: .shared)?.share
+        
+        guard let share: CKRecord = try await cloudContainer.sharedCloudDatabase.record(for: shareReference!.recordID) as? CKShare else {
+            print("Could not get share")
+            return
+        }
+        print("Hello")
+        try await cloudContainer.sharedCloudDatabase.deleteRecord(withID: share.recordID)
+        
+    }
+    
     func fetchOrCreateGroupShare(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
         if group.isShared {
             let shareReference = try await fetchRecordForGroup(group: group, scope: .shared)?.share
             
-            guard let share = try await cloudContainer.sharedCloudDatabase.record(for: shareReference!.recordID) as? CKShare else {
-                print("Could not get share")
-                return nil
+            if let shareReferenceRecordId = shareReference?.recordID {
+                guard let share = try await cloudContainer.sharedCloudDatabase.record(for: shareReferenceRecordId) as? CKShare else {
+                    print("Could not get share")
+                    return nil
+                }
+                
+                return (share, cloudContainer)
             }
-            
-            return (share, cloudContainer)
         }
         
         guard let associatedRecord = try await fetchRecordForGroup(group: group, scope: scope) else {
