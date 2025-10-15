@@ -91,7 +91,7 @@ struct ShoppingListView: View {
             })
             .alert(isPresented: $clearAlertShowing) {
                 Alert(
-                    title: Text("Are you sure you want to clear your grocery list?"),
+                    title: Text("Are you sure you want to clear your shopping list?"),
                     primaryButton:
                             .default(Text("Yes"), action: {
                                 shoppingList.clear()

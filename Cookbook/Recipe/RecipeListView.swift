@@ -25,6 +25,8 @@ struct RecipeListView: View {
     @State private var dateFilterViewShowing: Bool = false
     @State private var startDate: Date = Date()
     @State private var endDate: Date = Date()
+    @State private var sortBy: SortBy = .date
+    @State private var sortDirectionDescending: Bool = false
     
     @Query(sort: \Recipe.name) var recipes: [Recipe]
     
@@ -87,32 +89,50 @@ struct RecipeListView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(recipes.filter {filterSearch(recipe: $0)}) { recipe in
-                    NavigationLink {
-                        RecipeView(recipe: recipe)
-                    } label: {
-                        RecipeCell(recipe: recipe)
-                            .swipeActions {
-                                if (!recipe.isShared) {
-                                    Button(role: .destructive) {
-                                        context.delete(recipe)
-                                        try! context.save()
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                            .labelStyle(.iconOnly)
+                ForEach(recipes
+                    .filter{filterSearch(recipe: $0)}
+                    .sorted(by: { first, second in
+                        switch sortBy {
+                        case .name:
+                            return sortDirectionDescending ? first.name < second.name : first.name > second.name
+                        case .difficulty:
+                            print(recipes.map{$0.difficulty})
+                            let firstDifficulty = first.difficulty ?? 0
+                            let secondDifficulty = second.difficulty ?? 0
+                            return sortDirectionDescending ? firstDifficulty < secondDifficulty : firstDifficulty > secondDifficulty
+                        case .date:
+                            return sortDirectionDescending ? first.date < second.date : first.date > second.date
+                        case .lastMade:
+                            let firstLastMade = first.lastMadeDate ?? .distantPast
+                            let secondLastMade = second.lastMadeDate ?? .distantPast
+                            return sortDirectionDescending ? firstLastMade < secondLastMade : firstLastMade > secondLastMade
+                        }
+                    })) { recipe in
+                        NavigationLink {
+                            RecipeView(recipe: recipe)
+                        } label: {
+                            RecipeCell(recipe: recipe)
+                                .swipeActions {
+                                    if (!recipe.isShared) {
+                                        Button(role: .destructive) {
+                                            context.delete(recipe)
+                                            try! context.save()
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                                .labelStyle(.iconOnly)
+                                        }
+                                        .tint(.red)
+                                    } else {
+                                        NavigationLink {
+                                            GroupListView()
+                                        } label: {
+                                            Label("Manage shared group", systemImage: "person.2")
+                                                .labelStyle(.iconOnly)
+                                        }.tint(.yellow)
                                     }
-                                    .tint(.red)
-                                } else {
-                                    NavigationLink {
-                                        GroupListView()
-                                    } label: {
-                                        Label("Manage shared group", systemImage: "person.2")
-                                            .labelStyle(.iconOnly)
-                                    }.tint(.yellow)
                                 }
-                            }
+                        }
                     }
-                }
             }
             .navigationTitle("Recipes")
             .toolbar {
@@ -146,7 +166,7 @@ struct RecipeListView: View {
         }
         .searchable(text: $searchValue, prompt: "Search...")
         .sheet(isPresented: $filterViewShowing) {
-            FilterView(searchValue: $searchValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate, selectedTags: $selectedTags)
+            FilterView(searchValue: $searchValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate, selectedTags: $selectedTags, sortBy: $sortBy, sortDirectionDescending: $sortDirectionDescending)
         }
     }
     
@@ -155,3 +175,4 @@ struct RecipeListView: View {
 //#Preview {
 //    RecipeListView()
 //}
+

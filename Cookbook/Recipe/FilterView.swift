@@ -12,13 +12,14 @@ struct FilterView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
-    
     @Binding var searchValue: String
     @Binding var difficultyFilterValue: Float
     @Binding var dateFilterViewShowing: Bool
     @Binding var startDate: Date
     @Binding var endDate: Date
     @Binding var selectedTags: Set<Tag>
+    @Binding var sortBy: SortBy
+    @Binding var sortDirectionDescending: Bool
     
     @State var tagSearch: String = ""
     
@@ -44,6 +45,40 @@ struct FilterView: View {
             }
             
             Form {
+                Section {
+                    Picker("Sort by", selection: $sortBy) {
+                        Text("Alphabetical").tag(SortBy.name)
+                        Text("Date").tag(SortBy.date)
+                        Text("Last Made").tag(SortBy.lastMade)
+                        Text("Difficulty").tag(SortBy.difficulty)
+                    }.pickerStyle(.automatic)
+                        .onChange(of: sortBy) { oldValue, newValue in
+                            sortDirectionDescending = !(sortBy == .date || sortBy == .lastMade)
+                        }
+                    
+                    if sortBy == .name {
+                        Picker("Order", selection: $sortDirectionDescending) {
+                            Text("Ascending").tag(false)
+                            Text("Descending").tag(true)
+                        }.pickerStyle(.automatic)
+                    }
+                    
+                    if sortBy == .difficulty {
+                        Picker("Difficulty", selection: $sortDirectionDescending) {
+                            Text("Easiest").tag(true)
+                            Text("Hardest").tag(false)
+                        }.pickerStyle(.automatic)
+                    }
+                    
+                    if sortBy == .date || sortBy == .lastMade {
+                        Picker("Date", selection: $sortDirectionDescending) {
+                            Text("Newest").tag(false)
+                            Text("Oldest").tag(true)
+                        }.pickerStyle(.automatic)
+                    }
+                    
+                } header: {Text("Sort")}
+                
                 Section {
                     GradientSlider(value: $difficultyFilterValue)
                     
