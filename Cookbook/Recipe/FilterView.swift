@@ -14,7 +14,7 @@ struct FilterView: View {
     
     @Binding var searchValue: String
     @Binding var difficultyFilterValue: Float
-    @Binding var dateFilterViewShowing: Bool
+    @Binding var didChangeDates: Bool
     @Binding var startDate: Date
     @Binding var endDate: Date
     @Binding var selectedTags: Set<Tag>
@@ -140,47 +140,40 @@ struct FilterView: View {
                     }
                     
                     VStack(alignment: .leading) {
-                        Text("Dates")
+                        Text("Date Created")
                         
-                        Toggle(isOn: $dateFilterViewShowing) {
-                            Label("Filter by Date Created", systemImage: "calendar")
+                        let dateRange: ClosedRange<Date> = {
+                            let now = Date()
+                            return Date.distantPast ... now
+                        }()
+                        
+                        DatePicker("Start Date", selection: $startDate, in: dateRange, displayedComponents: [.date]).onChange(of: startDate) { oldValue, newValue in
+                            let calendar = Calendar.current
+                            if (calendar.isDateInToday(newValue) && calendar.isDateInToday(endDate)) {
+                                return
+                            }
+                            didChangeDates = true
                         }
-                        if (dateFilterViewShowing) {
-                            let startDateRange: ClosedRange<Date> = {
-                                let calendar = Calendar.current
-                                let startComponents = DateComponents(year: 2021, month: 1, day: 1)
-                                let endComponents = Calendar.current.dateComponents([.year, .month, .day], from: endDate <= Date() ? endDate : Date())
-                                return calendar.date(from:startComponents)!
-                                ...
-                                calendar.date(from:endComponents)!
-                            }()
-                            
-                            DatePicker("Start Date", selection: $startDate, in: startDateRange, displayedComponents: [.date])
-                            
-                            let endDateRange: ClosedRange<Date> = {
-                                let calendar = Calendar.current
-                                let startComponents = calendar.dateComponents([.year, .month, .day], from: startDate <= Date() ? startDate : Date())
-                                let endComponents = DateComponents(year: 2100, month: 1, day: 1)
-                                return calendar.date(from:startComponents)!
-                                ...
-                                calendar.date(from:endComponents)!
-                            }()
-                            
-                            
-                            DatePicker("End Date", selection: $endDate, in: endDateRange, displayedComponents: [.date])
+
+                        DatePicker("End Date", selection: $endDate, in: dateRange, displayedComponents: [.date]).onChange(of: endDate) { oldValue, newValue in
+                            let calendar = Calendar.current
+                            if (calendar.isDateInToday(newValue) && calendar.isDateInToday(startDate)) {
+                                return
+                            }
+                            didChangeDates = true
                         }
                     }
                     
                 } header: {Text("Filter")}
                 
                 Section {
-                    if !(difficultyFilterValue == 100 && selectedTags.count == 0 && Calendar.current.isDateInToday(startDate) && Calendar.current.isDateInToday(endDate) && !dateFilterViewShowing) {
-                        ListButton(text: "Reset Filters", imageSystemName: "arrowshape.turn.up.backward", disabled: difficultyFilterValue == 100 && selectedTags.count == 0 && Calendar.current.isDateInToday(startDate) && Calendar.current.isDateInToday(endDate) && !dateFilterViewShowing) {
+                    if (difficultyFilterValue != 100 || selectedTags.count != 0 || didChangeDates ) {
+                        ListButton(text: "Reset Filters", imageSystemName: "arrowshape.turn.up.backward", disabled: false) {
                             difficultyFilterValue = 100
                             selectedTags.removeAll()
                             startDate = Date()
                             endDate = Date()
-                            dateFilterViewShowing = false
+                            didChangeDates = false
                         }
                     }
                 }
@@ -192,3 +185,4 @@ struct FilterView: View {
 //#Preview {
 //    FilterView()
 //}
+

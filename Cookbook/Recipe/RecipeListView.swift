@@ -22,7 +22,7 @@ struct RecipeListView: View {
     @State private var searchValue: String = ""
     @State private var difficultyFilterValue: Float = 100
     @State private var selectedTags: Set<Tag> = []
-    @State private var dateFilterViewShowing: Bool = false
+    @State private var didChangeDates: Bool = false
     @State private var startDate: Date = Date()
     @State private var endDate: Date = Date()
     @State private var sortBy: SortBy = .date
@@ -62,7 +62,7 @@ struct RecipeListView: View {
             }
         }
         
-        if dateFilterViewShowing == true {
+        if didChangeDates == true {
             let calendar = Calendar.current
             
             //if user has selected a date
@@ -161,7 +161,7 @@ struct RecipeListView: View {
         }
         .searchable(text: $searchValue, prompt: "Search...")
         .sheet(isPresented: $filterViewShowing) {
-            FilterView(searchValue: $searchValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate, selectedTags: $selectedTags, sortBy: $sortBy, sortDirectionDescending: $sortDirectionDescending)
+            FilterView(searchValue: $searchValue, difficultyFilterValue: $difficultyFilterValue, didChangeDates: $didChangeDates, startDate: $startDate, endDate: $endDate, selectedTags: $selectedTags, sortBy: $sortBy, sortDirectionDescending: $sortDirectionDescending)
         }
     }
 }
