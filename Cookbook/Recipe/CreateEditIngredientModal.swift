@@ -46,7 +46,6 @@ struct CreateEditIngredientModal: View {
                     keyboardIsActive = false
                 }
             }
-            .navigationTitle("Ingredients")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

@@ -177,9 +177,16 @@ struct ShoppingListView: View {
                                 }
                             }
                         }
+                    }.toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button() {
+                                addShowing = false
+                            } label: {
+                                Label("Done", systemImage: "checkmark").labelStyle(.titleOnly)
+                            }
+                        }
                     }
                 }
-                
             })
         }
     }
