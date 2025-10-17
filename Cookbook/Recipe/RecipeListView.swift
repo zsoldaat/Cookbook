@@ -34,16 +34,11 @@ struct RecipeListView: View {
         var shouldFilter: Bool = true
         
         if (!searchValue.isEmpty) {
-            if (
-                !recipe.ingredients!
-                    .map{$0.name.lowercased()}
-                    .reduce("", {"\($0) \($1)"})
-                    .contains(searchValue.lowercased())
-            ) {
-                shouldFilter = false
-            }
-            
-            if (!recipe.name.lowercased().contains(searchValue.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())) {
+            if (!recipe.name.lowercased().contains(searchValue.lowercased()) && !recipe.ingredients!
+                .map{$0.name.lowercased()}
+                .reduce("", {"\($0) \($1)"})
+                .contains(searchValue.lowercased()))
+            {
                 shouldFilter = false
             }
         }
@@ -169,8 +164,9 @@ struct RecipeListView: View {
             FilterView(searchValue: $searchValue, difficultyFilterValue: $difficultyFilterValue, dateFilterViewShowing: $dateFilterViewShowing, startDate: $startDate, endDate: $endDate, selectedTags: $selectedTags, sortBy: $sortBy, sortDirectionDescending: $sortDirectionDescending)
         }
     }
-    
 }
+
+
 
 //#Preview {
 //    RecipeListView()
