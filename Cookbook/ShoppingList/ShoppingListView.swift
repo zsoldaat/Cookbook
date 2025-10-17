@@ -25,6 +25,22 @@ struct ShoppingListView: View {
         NavigationStack {
             @Bindable var shoppingList = shoppingLists.first!
             
+            if shoppingList.items!.isEmpty {
+                VStack {
+                    Spacer()
+                    Text("There is nothing here.")
+                    
+                    Button {
+                        addShowing = true
+                    } label: {
+                        Label("Add items", systemImage: "plus")
+                            .labelStyle(.titleAndIcon)
+                    }.padding()
+                    
+                    Spacer()
+                }
+            }
+            
             VStack {
                 ScrollView {
                     ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in

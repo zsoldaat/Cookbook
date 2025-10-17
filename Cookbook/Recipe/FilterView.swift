@@ -139,9 +139,7 @@ struct FilterView: View {
                         
                     }
                     
-                    VStack(alignment: .leading) {
-                        Text("Date Created")
-                        
+                    VStack(alignment: .leading) {                        
                         let dateRange: ClosedRange<Date> = {
                             let now = Date()
                             return Date.distantPast ... now

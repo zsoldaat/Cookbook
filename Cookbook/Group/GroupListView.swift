@@ -19,6 +19,23 @@ struct GroupListView: View {
     
     var body: some View {
         NavigationStack {
+            
+            if groups.isEmpty {
+                VStack {
+                    Spacer()
+                    Text("There is nothing here.")
+                    
+                    Button {
+                        addGroupShowing = true
+                    } label: {
+                        Label("Add a group", systemImage: "plus")
+                            .labelStyle(.titleAndIcon)
+                    }.padding()
+                    
+                    Spacer()
+                }
+            }
+            
             List {
                 ForEach(groups) { group in
                     NavigationLink {
