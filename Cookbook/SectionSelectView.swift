@@ -33,7 +33,7 @@ struct SectionSelectView: View {
                 .tabItem {
                     HStack {
                         Image(systemName: "person.2")
-                        Text("Share")
+                        Text("Groups")
                     }
                 }
                 .tag(2)
