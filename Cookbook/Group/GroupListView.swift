@@ -10,6 +10,7 @@ import SwiftData
 
 struct GroupListView: View {
     
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.modelContext) var context
     @EnvironmentObject var dataController: DataController
     
@@ -22,15 +23,20 @@ struct GroupListView: View {
             
             if groups.isEmpty {
                 VStack {
-                    Spacer()
-                    Text("There is nothing here.")
-                    
-                    Button {
-                        addGroupShowing = true
-                    } label: {
-                        Label("Add a group", systemImage: "plus")
-                            .labelStyle(.titleAndIcon)
-                    }.padding()
+                    VStack {
+                        Text("There is nothing here.")
+                        
+                        Button {
+                            addGroupShowing = true
+                        } label: {
+                            Label("Add a group", systemImage: "plus")
+                                .labelStyle(.titleAndIcon)
+                        }.padding()
+                    }
+                    .frame(width: 200, height: 200)
+                    .background(colorScheme == .dark ? .gray.opacity(0.15) : .white)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .padding(.top, 100)
                     
                     Spacer()
                 }
