@@ -174,13 +174,14 @@ class DataController: ObservableObject {
         
         let shareReference = try await fetchRecordForGroup(group: group, scope: .shared)?.share
         
-        guard let share: CKRecord = try await cloudContainer.sharedCloudDatabase.record(for: shareReference!.recordID) as? CKShare else {
-            print("Could not get share")
-            return
+        if let shareReference = shareReference {
+            guard let share: CKRecord = try await cloudContainer.sharedCloudDatabase.record(for: shareReference.recordID) as? CKShare else {
+                print("Could not get share")
+                return
+            }
+            
+            try await cloudContainer.sharedCloudDatabase.deleteRecord(withID: share.recordID)
         }
-        print("Hello")
-        try await cloudContainer.sharedCloudDatabase.deleteRecord(withID: share.recordID)
-        
     }
     
     func fetchOrCreateGroupShare(group: RecipeGroup, scope: CKDatabase.Scope) async throws -> (CKShare, CKContainer)? {
