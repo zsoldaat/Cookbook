@@ -21,10 +21,12 @@ struct PrettyAlert: View {
                     Image(systemName: icon)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 50, height: 50)
+                        .foregroundStyle(.white)
+                        .frame(width: 75, height: 75)
                         .padding()
                     Text(text)
                         .font(.headline)
+                        .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
                 }
                 .frame(width: 200, height: 200)
