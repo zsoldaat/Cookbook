@@ -25,84 +25,94 @@ struct ShoppingListView: View {
         NavigationStack {
             @Bindable var shoppingList = shoppingLists.first!
             
-            if shoppingList.items!.isEmpty {
-                VStack {
-                    Spacer()
-                    Text("There is nothing here.")
-                    
-                    Button {
-                        addShowing = true
-                    } label: {
-                        Label("Add items", systemImage: "plus")
-                            .labelStyle(.titleAndIcon)
-                    }.padding()
-                    
-                    Spacer()
-                }
-            }
-            
-            VStack {
-                ScrollView {
-                    ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
-                        HStack {
+            ZStack {
+                Color.gray.opacity(colorScheme == .dark ? 0 : 0.15).edgesIgnoringSafeArea(.all)
+                
+                if shoppingList.items!.isEmpty {
+                    VStack {
+                        VStack {
+                            Text("There is nothing here.")
+                            
                             Button {
-                                if (shoppingList.selections.contains(ingredient.id)) {
-                                    shoppingList.selections.remove(ingredient.id)
-                                } else {
-                                    shoppingList.selections.insert(ingredient.id)
-                                }
+                                addShowing = true
                             } label: {
-                                Image(systemName: shoppingList.selections.contains(ingredient.id) ? "checkmark.circle.fill" : "circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25)
-                            }
-                            .sensoryFeedback(trigger: shoppingList.selections.contains(ingredient.id)) { oldValue, newValue in
-                                return .increase
-                            }
-                            .padding(.leading, 10)
-                            
-                            IngredientCell(ingredient: ingredient)
+                                Label("Add items", systemImage: "plus")
+                                    .labelStyle(.titleAndIcon)
+                            }.padding()
                         }
-                        .contentShape(Rectangle())
-                        .frame(height: 60)
-                        .background(colorScheme == .dark ? Color.gray.opacity(0.15) : Color.white)
+                        .frame(width: 200, height: 200)
+                        .background(colorScheme == .dark ? .gray.opacity(0.15) : .white)
                         .clipShape(RoundedRectangle(cornerRadius: 15))
-                        .padding(.horizontal, 10)
-                        .draggable(ingredient.id.uuidString) {
-                            Text(ingredient.name)
-                        }
-                        .dropDestination(for: String.self) { uuids, location in
-                            let uuid = uuids.first!
-                            let draggedIngredient = shoppingList.getItems().first(where: { item in
-                                item.id.uuidString == uuid
-                            })!
-                            let targetIngredient = ingredient
-                            
-                            if (draggedIngredient.id == targetIngredient.id) { return false }
-                            
-                            if (targetIngredient.unit.possibleConversions().contains(draggedIngredient.unit)) {
-                                let newIngredient = Ingredient(name: targetIngredient.name, quantityWhole: draggedIngredient.quantityWhole, quantityFraction: draggedIngredient.quantityFraction, unit: draggedIngredient.unit, index: shoppingList.getNextIngredientIndex())
-                                shoppingList.addItem(newIngredient)
-                                shoppingList.removeById(ids: [draggedIngredient.id])
-                            } else {
-                                errorShowing = true
-                            }
-                            
-                            return true
-                        }
+                        .padding(.top, 100)
+                        
+                        Spacer()
                     }
-                    .onScrollPhaseChange({ oldPhase, newPhase in
-                        if (oldPhase == .interacting) {
-                            keyboardIsActive = false
-                        }
-                    })
                     
-                    Spacer()
                 }
-                .scrollIndicators(.hidden)
-                .padding([.bottom, .horizontal], 5)
-                .background(Color.gray.opacity(colorScheme == .dark ? 0 : 0.15))
+                
+                VStack {
+                    ScrollView {
+                        ForEach(shoppingList.getItems().sorted {$0.index < $1.index}) { ingredient in
+                            HStack {
+                                Button {
+                                    if (shoppingList.selections.contains(ingredient.id)) {
+                                        shoppingList.selections.remove(ingredient.id)
+                                    } else {
+                                        shoppingList.selections.insert(ingredient.id)
+                                    }
+                                } label: {
+                                    Image(systemName: shoppingList.selections.contains(ingredient.id) ? "checkmark.circle.fill" : "circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25)
+                                }
+                                .sensoryFeedback(trigger: shoppingList.selections.contains(ingredient.id)) { oldValue, newValue in
+                                    return .increase
+                                }
+                                .padding(.leading, 10)
+                                
+                                IngredientCell(ingredient: ingredient)
+                            }
+                            .contentShape(Rectangle())
+                            .frame(height: 60)
+                            .background(colorScheme == .dark ? Color.gray.opacity(0.15) : Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                            .padding(.horizontal, 10)
+                            .draggable(ingredient.id.uuidString) {
+                                Text(ingredient.name)
+                            }
+                            .dropDestination(for: String.self) { uuids, location in
+                                let uuid = uuids.first!
+                                let draggedIngredient = shoppingList.getItems().first(where: { item in
+                                    item.id.uuidString == uuid
+                                })!
+                                let targetIngredient = ingredient
+                                
+                                if (draggedIngredient.id == targetIngredient.id) { return false }
+                                
+                                if (targetIngredient.unit.possibleConversions().contains(draggedIngredient.unit)) {
+                                    let newIngredient = Ingredient(name: targetIngredient.name, quantityWhole: draggedIngredient.quantityWhole, quantityFraction: draggedIngredient.quantityFraction, unit: draggedIngredient.unit, index: shoppingList.getNextIngredientIndex())
+                                    shoppingList.addItem(newIngredient)
+                                    shoppingList.removeById(ids: [draggedIngredient.id])
+                                } else {
+                                    errorShowing = true
+                                }
+                                
+                                return true
+                            }
+                        }
+                        .onScrollPhaseChange({ oldPhase, newPhase in
+                            if (oldPhase == .interacting) {
+                                keyboardIsActive = false
+                            }
+                        })
+                        
+                        Spacer()
+                    }
+                    .scrollIndicators(.hidden)
+                    .padding([.bottom, .horizontal], 5)
+                }
+                
             }
             .overlay(content: {
                 PrettyAlert(isShowing: $errorShowing, text: "These units of these ingredients can't be added together.", icon: "x.square")
